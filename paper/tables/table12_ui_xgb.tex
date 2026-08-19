@@ -1,0 +1,17 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Uncertainty-index tiers (XGBoost, test set, thresholds 0.30/0.45). High-uncertainty matches are excluded by the no-bet policy; their predictive accuracy is reported separately.}
+\label{tab:uixgb}
+\resizebox{\linewidth}{!}{
+\begin{tabular}{lcccc}
+\toprule
+UI tier & N & Acc & ROI & MDD \\
+\midrule
+low & 287 & 67.9\% & 4.1\% & -4.9\% \\
+medium & 673 & 50.4\% & 1.9\% & -2.4\% \\
+high(no-bet) & 144 & 44.4\% & -13.0\% & -17.6\% \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

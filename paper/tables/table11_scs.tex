@@ -1,0 +1,17 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Scenario-complexity tiers (XGBoost, test set, thresholds 1.4/1.8). Higher SCS indicates harder matches.}
+\label{tab:scs}
+\resizebox{\linewidth}{!}{
+\begin{tabular}{lccc}
+\toprule
+SCS tier & N & Acc & ROI \\
+\midrule
+low(SCS$\leq$1.4) & 246 & 58.9\% & 5.1\% \\
+mid(1.4$<$SCS$\leq$1.8) & 356 & 57.3\% & 7.0\% \\
+high(SCS$>$1.8) & 502 & 49.6\% & -6.3\% \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

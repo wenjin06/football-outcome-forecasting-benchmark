@@ -1,0 +1,133 @@
+{
+  "top20": [
+    {
+      "feature": "close_max_h",
+      "importance": 0.01806750297546387,
+      "std": 0.000559323920128015,
+      "group": "market"
+    },
+    {
+      "feature": "mkt_prob_A",
+      "importance": 0.016209757328033446,
+      "std": 0.0015024022950655205,
+      "group": "market"
+    },
+    {
+      "feature": "close_avg_h",
+      "importance": 0.012353658676147461,
+      "std": 0.0011562185676104886,
+      "group": "market"
+    },
+    {
+      "feature": "open_avg_h",
+      "importance": 0.008257043361663819,
+      "std": 0.001376671968369649,
+      "group": "market"
+    },
+    {
+      "feature": "mkt_prob_H",
+      "importance": 0.007330656051635742,
+      "std": 0.0014165536904315885,
+      "group": "market"
+    },
+    {
+      "feature": "mkt_prob_D",
+      "importance": 0.005626857280731201,
+      "std": 0.0019118609975700817,
+      "group": "market"
+    },
+    {
+      "feature": "mkt_prob_max",
+      "importance": 0.004145777225494385,
+      "std": 0.00040930928299249235,
+      "group": "market"
+    },
+    {
+      "feature": "close_vol",
+      "importance": 0.0022179126739501954,
+      "std": 0.0008257343283353015,
+      "group": "market"
+    },
+    {
+      "feature": "H_season_ppg",
+      "importance": 0.0016976118087768555,
+      "std": 0.0007758730858289795,
+      "group": "season_cum"
+    },
+    {
+      "feature": "A_deep_y",
+      "importance": 0.0012231230735778808,
+      "std": 0.00044953145257497373,
+      "group": "xg"
+    },
+    {
+      "feature": "A_npxGA_y",
+      "importance": 0.0010527491569519043,
+      "std": 0.00016192427958071785,
+      "group": "season_cum"
+    },
+    {
+      "feature": "H_xGA",
+      "importance": 0.0009414911270141602,
+      "std": 0.0003355237239433362,
+      "group": "xg"
+    },
+    {
+      "feature": "xg_diff_roll",
+      "importance": 0.0009185552597045898,
+      "std": 0.000387109958644475,
+      "group": "xg"
+    },
+    {
+      "feature": "ref_cards_avg",
+      "importance": 0.0008850336074829101,
+      "std": 0.0003560422108793757,
+      "group": "referee"
+    },
+    {
+      "feature": "H_season_gd",
+      "importance": 0.0008604884147644043,
+      "std": 0.0003730210537834699,
+      "group": "season_cum"
+    },
+    {
+      "feature": "A_ppda_coef_y",
+      "importance": 0.000814354419708252,
+      "std": 0.00031328665471884,
+      "group": "xg"
+    },
+    {
+      "feature": "H_deep_y",
+      "importance": 0.0007376194000244141,
+      "std": 0.0006156736446589754,
+      "group": "xg"
+    },
+    {
+      "feature": "H_roll_Fouls",
+      "importance": 0.0006934404373168945,
+      "std": 0.0009571679258931928,
+      "group": "form_rolling"
+    },
+    {
+      "feature": "H_roll_Corners",
+      "importance": 0.0006874322891235352,
+      "std": 9.667117380905939e-05,
+      "group": "form_rolling"
+    },
+    {
+      "feature": "H_xpts",
+      "importance": 0.0006524562835693359,
+      "std": 0.0004374447092935948,
+      "group": "xg"
+    }
+  ],
+  "group_importance": {
+    "market": 0.07446657419204712,
+    "xg": 0.006134295463562011,
+    "season_cum": 0.0027286529541015623,
+    "rank": 0.000478053092956543,
+    "referee": 0.00046455860137939453,
+    "form_rolling": 0.0001070022583007813
+  },
+  "baseline_logloss": 0.9713131189346313
+}

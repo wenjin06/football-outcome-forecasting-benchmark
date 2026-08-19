@@ -1,0 +1,18 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Walk-forward evaluation across four test seasons. Market: de-vigged closing odds. XGB-exp: expanding training window. XGB-roll2: last two seasons only.}
+\label{tab:walkforward}
+\resizebox{\linewidth}{!}{
+\begin{tabular}{lccccc}
+\toprule
+Season & N & Market & XGB-exp & LL(exp) & XGB-roll2 \\
+\midrule
+2022/2023 & 1826 & 54.1\% & 52.5\% & 0.991 & 53.0\% \\
+2023/2024 & 1752 & 55.9\% & 53.9\% & 0.968 & 54.0\% \\
+2024/2025 & 1752 & 54.9\% & 54.1\% & 0.974 & 51.3\% \\
+2025/2026 & 1104 & 54.2\% & 54.2\% & 0.971 & 53.5\% \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

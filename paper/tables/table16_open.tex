@@ -1,0 +1,16 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Open-weight vs closed API LLM on the same 200 matches. This comparison is robustness evidence only: the sample is small and confidence intervals overlap, so no superiority claim is made for either model.}
+\label{tab:open}
+\resizebox{\linewidth}{!}{
+\begin{tabular}{lccccc}
+\toprule
+Model & Acc & LogLoss & ECE & ROI & Win rate \\
+\midrule
+DeepSeek (API) & 56.5\% & 0.934 & 0.065 & 2.0\% & 56.5\% \\
+Qwen2.5-Coder-7B (local) & 58.5\% & 0.927 & 0.056 & 7.4\% & 58.5\% \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

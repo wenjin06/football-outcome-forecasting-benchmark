@@ -1,0 +1,21 @@
+\begin{table*}[tbp]
+\centering
+\small
+\caption{Overall performance on the held-out test season (1,104 matches). The LLM parsed 100\% of matches at a cost of \$0.55. Bootstrap 95\% confidence intervals are reported in the text.}
+\label{tab:main}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lccccccc}
+\toprule
+Model & Acc & LogLoss & Brier & ECE & ROI & MDD & Sharpe \\
+\midrule
+Market (de-vig) & 54.2\% & 0.967 & 0.575 & 0.026 & -0.4\% & -3.4\% & -0.004 \\
+Dixon--Coles & 51.1\% & 0.996 & 0.594 & 0.023 & -2.0\% & -4.3\% & -0.019 \\
+Poisson & 50.8\% & 1.003 & 0.596 & 0.045 & -2.3\% & -3.6\% & -0.022 \\
+Elo & 51.6\% & 0.998 & 0.595 & 0.031 & -1.6\% & -3.9\% & -0.015 \\
+Random Forest & 54.7\% & 0.973 & 0.577 & 0.042 & 2.8\% & -2.1\% & 0.028 \\
+XGBoost & 54.2\% & 0.971 & 0.576 & 0.022 & 0.5\% & -2.7\% & 0.005 \\
+LLM (DeepSeek) & 53.9\% & 0.967 & 0.575 & 0.025 & -1.0\% & -3.2\% & -0.011 \\
+\bottomrule
+\end{tabular}
+}
+\end{table*}

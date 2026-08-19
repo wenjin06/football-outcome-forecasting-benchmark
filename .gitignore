@@ -1,0 +1,12 @@
+# API keys are user-created and never committed
+src/llm/llm-config.local.json
+*.local.json
+
+# Large/generated artifacts (recreate via scripts)
+*.pkl
+*.pyc
+__pycache__/
+data/raw_understat/*.csv
+data/raw/
+results/*.log
+paper_overleaf.zip

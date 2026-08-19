@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Cost-sensitive training: draw class weight sweep (XGBoost, test set). Weight 1.0 is the baseline.}
+\label{tab:drawweight}
+\resizebox{\linewidth}{!}{
+\begin{tabular}{lccccc}
+\toprule
+w(draw) & Acc & Macro-F1 & Draw R & Draw P & LogLoss \\
+\midrule
+1.0 & 54.2\% & 0.421 & 0.032 & 0.360 & 0.971 \\
+1.5 & 52.0\% & 0.493 & 0.356 & 0.317 & 0.987 \\
+2.0 & 46.6\% & 0.456 & 0.584 & 0.300 & 1.012 \\
+2.5 & 45.2\% & 0.443 & 0.722 & 0.303 & 1.037 \\
+3.0 & 45.6\% & 0.447 & 0.612 & 0.301 & 1.047 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

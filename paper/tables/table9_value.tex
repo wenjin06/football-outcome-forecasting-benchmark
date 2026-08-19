@@ -1,0 +1,20 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Value betting: bet when EV = $p \times odds - 1$ exceeds the threshold (XGBoost probabilities, closing odds). Higher thresholds select increasingly confident bets and lose more money.}
+\label{tab:value}
+\resizebox{\linewidth}{!}{
+\begin{tabular}{lccccc}
+\toprule
+EV thresh. & ROI & Sharpe & MDD & N bets & Coverage \\
+\midrule
+0.00 & -11.5\% & -0.077 & -14.5\% & 889 & 80.5\% \\
+0.02 & -12.7\% & -0.084 & -15.9\% & 756 & 68.5\% \\
+0.05 & -15.2\% & -0.097 & -19.1\% & 584 & 52.9\% \\
+0.08 & -15.8\% & -0.095 & -19.9\% & 420 & 38.0\% \\
+0.10 & -19.0\% & -0.113 & -25.7\% & 351 & 31.8\% \\
+0.15 & -26.7\% & -0.145 & -32.8\% & 184 & 16.7\% \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

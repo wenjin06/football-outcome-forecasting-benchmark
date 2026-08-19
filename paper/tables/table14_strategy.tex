@@ -1,0 +1,18 @@
+\begin{table*}[tbp]
+\centering
+\small
+\caption{Betting-strategy comparison (XGBoost probabilities, test set, bootstrap 95\% CI for ROI). No-bet matches are excluded from ROI but their coverage is reported.}
+\label{tab:strategy}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lccccc}
+\toprule
+Strategy & ROI & Sharpe & MDD & N bets & ROI 95\% CI \\
+\midrule
+Naive (all bets) & 0.5\% & 0.005 & -2.7\% & 1104 & [-5.3,6.7] \\
+Conf. threshold 0.4 & 1.5\% & 0.017 & -2.5\% & 894 & [-4.3,7.6] \\
+UI tiers + no-bet & 1.8\% & 0.026 & -2.5\% & 960 & [-2.6,6.2] \\
+UI tiers + stop-loss & 0.4\% & 0.026 & -0.5\% & 960 & [-0.5,1.2] \\
+\bottomrule
+\end{tabular}
+}
+\end{table*}

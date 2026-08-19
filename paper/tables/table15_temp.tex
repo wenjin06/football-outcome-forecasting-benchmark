@@ -1,0 +1,16 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Temperature sensitivity (same 120 matches). Multi-sample consistency remains near 1.0 at both temperatures and does not correlate with correctness.}
+\label{tab:temp}
+\resizebox{\linewidth}{!}{
+\begin{tabular}{lccccc}
+\toprule
+Config & Acc & LogLoss & ECE & Cons. & r(cons,corr) \\
+\midrule
+DeepSeek t=0.3 & 54.2\% & 0.927 & 0.097 & 0.995 & -0.068 \\
+DeepSeek t=0.7 & 55.0\% & 0.927 & 0.089 & 0.990 & 0.037 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

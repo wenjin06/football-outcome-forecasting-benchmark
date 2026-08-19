@@ -1,0 +1,21 @@
+\begin{table*}[tbp]
+\centering
+\small
+\caption{Ablation study (XGBoost, test set). ROI-all: all bets; ROI-t0.4: bets with model probability at least 0.4.}
+\label{tab:ablation}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lcccccc}
+\toprule
+Configuration & \#Feat & Acc & LogLoss & ECE & ROI(all) & ROI(t$\geq$0.4) \\
+\midrule
+Full (60 features) & 60 & 54.2\% & 0.971 & 0.022 & 0.5\% & 1.5\% \\
+w/o market odds & 49 & 51.1\% & 1.000 & 0.027 & -3.7\% & -3.5\% \\
+w/o referee & 56 & 54.2\% & 0.973 & 0.026 & 0.7\% & 0.1\% \\
+w/o rank & 58 & 54.1\% & 0.972 & 0.016 & 0.9\% & 1.6\% \\
+w/o xG & 53 & 54.0\% & 0.971 & 0.019 & 0.6\% & 1.2\% \\
+Structured only & 45 & 51.1\% & 1.000 & 0.013 & -3.4\% & -4.3\% \\
+w/o form & 30 & 53.4\% & 0.971 & 0.008 & -0.9\% & -1.3\% \\
+\bottomrule
+\end{tabular}
+}
+\end{table*}

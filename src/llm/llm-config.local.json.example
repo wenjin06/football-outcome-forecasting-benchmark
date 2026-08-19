@@ -1,0 +1,12 @@
+{
+  "default_provider": "deepseek",
+  "deepseek": {
+    "api_key": "YOUR_API_KEY_HERE",
+    "base_url": "https://api.deepseek.com",
+    "model": "deepseek-chat"
+  },
+  "local": {
+    "base_url": "http://127.0.0.1:8001",
+    "model": "qwen2.5-coder-7b"
+  }
+}

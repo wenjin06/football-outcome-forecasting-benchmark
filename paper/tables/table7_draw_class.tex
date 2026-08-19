@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Class-wise metrics (XGBoost, test set). Empirical draw rate is 25.5\% but the model predicts a draw in only 2.3\% of matches.}
+\label{tab:drawclass}
+\resizebox{\linewidth}{!}{
+\begin{tabular}{lcccc}
+\toprule
+Class & Prec & Recall & F1 & ECE \\
+\midrule
+Home win & 0.566 & 0.818 & 0.669 & 0.037 \\
+Draw & 0.360 & 0.032 & 0.059 & 0.007 \\
+Away win & 0.508 & 0.567 & 0.536 & 0.020 \\
+Pred. draw rate & 2.3\% & --- & --- & --- \\
+Empirical draw rate & 25.5\% & --- & --- & --- \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

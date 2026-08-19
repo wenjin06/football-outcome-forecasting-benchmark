@@ -1,0 +1,36 @@
+{
+  "provider": "local",
+  "n_matches_total": 200,
+  "temperature": 0.3,
+  "n_samples": 3,
+  "n_ok": 200,
+  "success_rate": 1.0,
+  "accuracy": 0.585,
+  "macro_f1": 0.41629030446017307,
+  "log_loss": 0.9268262642193205,
+  "brier": 0.543591618584653,
+  "ece": 0.055982047064292606,
+  "fin_all": {
+    "n_bets": 200,
+    "roi": 0.0744,
+    "sharpe": 0.07651079790046375,
+    "mdd": -0.03813601513491985,
+    "win_rate": 0.585
+  },
+  "fin_risk": {
+    "roi": 0.014772458243462263,
+    "sharpe": 0.07450879901469214,
+    "mdd": -0.011073099292190646,
+    "win_rate": 0.585,
+    "n_bets": 200,
+    "n_no_bet": 0,
+    "coverage": 1.0
+  },
+  "consistency_mean": 0.9755697430155837,
+  "cost_usd": 0.0,
+  "tokens": {
+    "prompt": 331596,
+    "completion": 99217
+  },
+  "elapsed_s": 1222.0
+}

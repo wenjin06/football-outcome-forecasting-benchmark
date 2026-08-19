@@ -1,0 +1,126 @@
+% Methodology（草稿：数据/特征/模型/SCS/UI/风控/评估协议）
+\label{sec:method}
+
+\subsection{Data}
+\label{sec:data}
+Figure~\ref{fig:framework} gives an overview of the full pipeline; the
+components are detailed below. We use 11,811 league matches from the English Premier League (E0),
+Spanish La Liga (SP1), German Bundesliga (D1), Italian Serie A (I1),
+and French Ligue 1 (F1), covering the 2019/20--2025/26 seasons
+(2025/26 is incomplete, ending 2026-02-12; we report this honestly).
+Each match record contains results, referee, and opening and closing
+odds from eight bookmakers (Bet365, Bet\&Win, Interwetten, Pinnacle,
+William Hill, Ladbrokes, Max, and average) in football-data.co.uk
+format. We additionally crawl per-match expected goals (xG, xGA,
+npxG, npxGA), pressing intensity (PPDA), and deep progression from
+Understat for all five leagues and all seven seasons
+(24,918 team-match rows; 99.3\%/99.2\% of home/away sides match
+league-match dates after name normalization).
+
+\paragraph{Leakage control.}
+The evaluation is strictly chronological:
+train = 2019/20--2023/24 (8,955 matches), validation = 2024/25
+(1,752), test = 2025/26 (1,104). All features are constructed from
+information available before kickoff; rolling statistics use a
+shift of one to exclude the current match; season standings are
+computed before kickoff; scaler statistics and missing-value medians
+are fit on the training split only and applied to validation and
+test. A manual verification script recomputes a sample of features
+from raw records to confirm the absence of leakage.
+
+\subsection{Features}
+All features are pre-match:
+\begin{itemize}
+\item \textbf{Team form:} rolling (5-match) means of goals for/
+against, points, win rate, shots, shots on target, corners, fouls;
+season cumulative points, goal difference, games, points per game,
+and league rank before kickoff (home and away separately).
+\item \textbf{xG time series:} rolling (5-match) means of xG, xGA,
+npxG, npxGA, PPDA coefficient, deep progressions, and expected
+points, plus the home--away xG difference.
+\item \textbf{Market signals:} de-vigged implied probabilities from
+closing odds (Bet365 and average), opening-to-closing odds movement
+for home/draw/away, cross-bookmaker dispersion of closing odds
+($\sigma_{market}$), and opening average odds.
+\item \textbf{Referee context:} the referee's historical per-match
+averages of cards, red cards, and fouls (expanding window over the
+referee's prior matches; available for the Premier League only).
+\end{itemize}
+This yields 60 features in total.
+
+\subsection{Models}
+\begin{itemize}
+\item \textbf{Market baseline:} de-vigged closing odds
+(probabilities obtained by inverting odds and renormalizing). This
+is the central baseline under the same evaluation protocol.
+\item \textbf{Poisson} and \textbf{Dixon--Coles} models fit per
+league by maximum likelihood on the training split.
+\item \textbf{Elo} ratings with home advantage, mapped to
+probabilities by multinomial logistic regression fit on training.
+\item \textbf{Random Forest} and \textbf{XGBoost} trained on the 60
+pre-match features with early stopping on the validation split.
+\item \textbf{Domain-enhanced LLM:} DeepSeek-Chat, prompted with a
+pre-match feature card (team form, rank, market signals, referee
+context), a system prompt stating that closing odds are a strong
+baseline and forbidding invented information, and a chain-of-thought
+request that outputs a calibrated probability triple in JSON. The
+LLM has no retrieval access. Three samples are drawn per match at
+temperature 0.3; the mean is the prediction and the pairwise
+total-variation agreement is the consistency score.
+\end{itemize}
+
+\subsection{Scenario Complexity Score}
+\label{sec:scs}
+The scenario complexity score measures how hard a match is to
+predict from \emph{market information alone}. Unlike earlier
+formulations in which a larger strength gap was treated as
+\emph{more} complex (a direction error), we define
+\[
+\mathrm{SCS} = (1 - \mathrm{gap}_{norm}) + \mathrm{vol}_{norm}
++ \mathrm{move}_{norm},
+\]
+where $\mathrm{gap}_{norm}$ is the normalized absolute league-rank
+difference between home and away teams (larger gap $\Rightarrow$
+easier to predict), $\mathrm{vol}_{norm}$ is the robust-normalized
+cross-bookmaker dispersion of closing odds, and
+$\mathrm{move}_{norm}$ is the robust-normalized opening-to-closing
+odds movement (a proxy for late information arrival). All components
+lie in $[0,1]$ and are fit on the training split. A larger SCS
+indicates a more uncertain match.
+
+\subsection{Uncertainty Index and Risk Control}
+\label{sec:ui}
+The uncertainty index is conceptually distinct from the SCS: SCS is a
+\emph{purely market-side} measure of scenario complexity (rank gap,
+odds dispersion, odds drift), whereas the UI \emph{fuses model output
+with market signals}---predictive confidence and multi-sample
+consistency from the model, plus the same normalized market-volatility
+and odds-movement terms. The shared market terms are intentional: the
+UI inherits market uncertainty and adds the model's own confidence
+signal. The index combines these components as
+\[
+\mathrm{UI} = w_1(1 - p_{\max}) + w_2(1 - C)
++ w_3\,\mathrm{vol}_{norm} + w_4\,\mathrm{move}_{norm},
+\]
+with default weights $(0.4, 0.3, 0.15, 0.15)$; $p_{\max}$ is the
+model's maximum predicted probability and $C$ the multi-sample
+consistency (1 for deterministic models). Risk tiers are
+$\mathrm{UI} \le t_{low}$ (full stake), $t_{low} < \mathrm{UI} \le
+t_{high}$ (linearly scaled stake), and $\mathrm{UI} > t_{high}$
+(no-bet). Thresholds are selected on the validation split
+($t_{low}=0.30$, $t_{high}=0.45$ given the observed UI distribution)
+and reported with a sensitivity analysis. A stop-loss rule reduces
+the stake to 20\% after five consecutive losses or a 10\% drawdown
+from peak bankroll.
+
+\subsection{Betting Protocol and Metrics}
+\label{sec:protocol}
+All financial simulations are fully specified: equal stakes of one
+unit (or fractional Kelly capped at 10\% of bankroll where stated),
+the model's maximum-probability outcome, Bet365 closing odds for
+settlement, sequential bankroll updating, and no-bet decisions
+excluded from executed-bet statistics but reported separately with
+coverage. Predictive metrics are accuracy, macro-F1, log loss,
+Brier score, and expected calibration error (ECE). Financial metrics
+are ROI, Sharpe ratio, maximum drawdown, and win rate. All main
+quantities are reported with bootstrap 95\% confidence intervals.

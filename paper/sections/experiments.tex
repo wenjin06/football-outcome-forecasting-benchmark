@@ -1,0 +1,233 @@
+% Experiments and Results（完整版：17 张表由 make_tables.py 生成，禁止手写数字）
+\label{sec:experiments}
+
+% ================= 4.1 主对比 =================
+\subsection{Overall Performance}
+\input{tables/table1_main}
+
+Table~\ref{tab:main} reports the overall performance on the held-out
+test season. Several observations are immediate. First, the de-vigged
+closing odds achieve 54.2\% accuracy and a log loss of 0.967, and no
+learned model exceeds them in accuracy within statistical uncertainty
+(bootstrap 95\% confidence intervals for accuracy all overlap the
+market point estimate; the largest gap, Random Forest at 54.7\%, is
+well inside the market's CI of [51.4\%, 57.2\%]). Second, the
+domain-enhanced LLM reaches a log loss of 0.967 and ECE of 0.025,
+statistically indistinguishable from the market (0.967 and 0.026):
+a zero-training prompt reaches market-level probability quality.
+The reliability diagram in Figure~\ref{fig:reliability} confirms
+this: all three probability sources track the diagonal, with the LLM
+and the market showing the smallest deviation.
+Third, all ROI values are small and their confidence intervals
+cross zero: no method, including the market itself, shows a stable
+profit over this test season under equal-stake betting. This is the
+expected regime of an efficient market, and it is the backdrop
+against which all subsequent analyses are interpreted. We remind the
+reader that the 2025/26 test season is incomplete (matches through
+2026-02-12): accuracy estimates are stable (they depend on many
+games), but the financial point estimates above may shift when the
+season completes, and the bootstrap intervals should be read
+accordingly.
+
+% ================= 4.2 消融 =================
+\subsection{Ablation Study}
+\input{tables/table2_ablation}
+
+Table~\ref{tab:ablation} ablates feature groups from XGBoost. Removing
+market odds costs 3.1 percentage points of accuracy (54.2\% to
+51.1\%) and 0.028 of log loss, confirming that bookmaker information
+dominates. Removing referee statistics changes nothing (54.2\% vs
+54.2\%): the referee features provide no measurable predictive gain,
+a negative result we report deliberately. (One caveat: referee
+records exist only for the Premier League in our data, so the referee
+feature group is evaluated on a subset of matches; the null result
+should be read as \emph{no gain where referee data exist}, not as a
+global statement about referee information.) xG features contribute a
+small but consistent improvement (removing them raises log loss
+slightly), and rank and recent-form features contribute little beyond
+what the market already encodes.
+
+% ================= 4.3 特征重要性 =================
+\subsection{Feature Importance}
+\input{tables/table3_importance}
+
+Permutation importance (Table~\ref{tab:importance}) quantifies the
+same hierarchy: market-derived features account for roughly 87\% of
+the total predictive information, xG for about 6\%, and referee,
+rank, and form features for under 2\% combined. The result is robust
+across the ablation and permutation analyses and motivates the
+position of this paper: the marginal information left to any
+forecasting model is small and concentrated in a few market-driven
+signals.
+
+% ================= 4.4 分联赛 =================
+\subsection{League and Season Generalization}
+\input{tables/table4_byleague}
+\input{tables/table5_lolo}
+
+Performance varies markedly across leagues (Table~\ref{tab:byleague}):
+the Bundesliga and La Liga are the most predictable (57.4\% and
+57.0\% accuracy), while the Premier League is the least (50.0\%), the
+most liquid and informationally efficient of the five. The
+leave-one-league-out experiment (Table~\ref{tab:lolo}) shows the same
+ordering in a stricter setting: a model trained on the other four
+leagues degrades most on the Premier League (47.3\%). These results
+indicate that market efficiency, not model capacity, is the binding
+constraint on accuracy.
+
+% ================= 4.5 walk-forward =================
+\subsection{Temporal Robustness}
+\input{tables/table6_walkforward}
+
+Table~\ref{tab:walkforward} evaluates the model in a walk-forward
+manner over four test seasons. The market baseline is at least as
+accurate as XGBoost in every season, and restricting training to the
+last two seasons (XGB-roll2) does not help: there is no evidence of
+``model aging'' within this seven-year window, and retraining
+frequency has no measurable effect on accuracy. This addresses the
+common concern that static models deteriorate as team dynamics
+evolve; on this data, the information content of older seasons is not
+harmful.
+
+% ================= 4.6 平局 =================
+\subsection{Draw Prediction}
+\input{tables/table7_draw_class}
+\input{tables/table8_draw_weight}
+
+Draws are systematically under-predicted: the empirical draw rate is
+25.5\%, yet the model predicts a draw in only 2.3\% of matches, and
+draw recall is 0.032 (Table~\ref{tab:drawclass}). The confusion
+matrix in Figure~\ref{fig:confusion} shows the near-empty draw
+column visually. The market behaves
+similarly (0.3\% predicted draw rate). This is not a calibration
+artifact of a single model but a structural property of the task:
+draws are the least frequent and least distinctive outcome class.
+Table~\ref{tab:drawweight} shows that cost-sensitive training
+recovers balance in a controllable way: a draw weight of 1.5 raises
+macro-F1 from 0.421 to 0.493 and draw recall from 0.032 to 0.356,
+at the cost of 2.2 points of accuracy. The accuracy--balance
+trade-off is monotone and easy to report.
+
+% ================= 4.7 价值投注 =================
+\subsection{Value Betting and Market Efficiency}
+\input{tables/table9_value}
+\input{tables/table10_value_cal}
+
+Table~\ref{tab:value} reports the value-betting experiment: bets are
+placed when the model's expected value $p \times odds - 1$ exceeds a
+threshold, using closing odds. Every threshold loses money, and
+losses grow with the threshold: the most ``confident'' bets are the
+worst. After isotonic calibration fit on the validation split
+(Table~\ref{tab:valuecal}), losses shrink from $-11.5\%$ to $-7.1\%$
+at EV $>0$ but remain strongly negative. The model's apparent value
+is concentrated exactly where it is most confident and most wrong:
+overconfidence, not information. Consistent with this, betting the
+de-vigged opening odds against closing odds (and the reverse)
+produces no positive ROI, confirming that opening-to-closing drift
+contains no exploitable information in this data. We stress that this
+value-betting result is specific to \emph{closing} odds: the market's
+final line is the hardest benchmark, and the negative finding does
+not speak to value-betting strategies evaluated against opening odds
+or other pre-closing benchmarks. A fractional Kelly
+policy amplifies the losses (a starting bankroll of 100 units falls
+to 1.6): stake sizing cannot create an edge that the probabilities do
+not have.
+
+% ================= 4.8 SCS/UI 分层 =================
+\subsection{Uncertainty-Driven Risk Control}
+\input{tables/table11_scs}
+\input{tables/table12_ui_xgb}
+\input{tables/table13_ui_llm}
+
+The central positive result of this paper is that uncertainty signals
+stratify risk in a monotone and cross-model way. Figure~\ref{fig:ui}
+shows the UI distribution and the resulting accuracy by tier.
+Table~\ref{tab:scs}
+splits the test set by the scenario-complexity score: accuracy falls
+from 58.9\% (low complexity) to 49.6\% (high complexity), and ROI
+from +7.0\% to $-6.3\%$. Table~\ref{tab:uixgb} shows the same
+pattern for the uncertainty index on XGBoost: low-uncertainty matches
+reach 67.9\% accuracy and +4.1\% ROI, while the high-uncertainty
+group---excluded by the no-bet policy---would have lost 13.0\% ROI.
+Table~\ref{tab:uillm} replicates the stratification for the LLM
+(68.7\% / 49.8\% / 47.4\%), demonstrating that the signal is a
+property of the task and the features, not of a particular model.
+
+\paragraph{Weight and threshold sensitivity.}
+The UI weights $(0.4, 0.3, 0.15, 0.15)$ are a fixed preset and the
+tier thresholds $(0.30, 0.45)$ are tuned on the validation split. To
+rule out overfitting to these choices, we recompute the stratification
+on the validation set under six weight configurations (varying each
+component by $\pm 0.1$ while keeping the sum at 1). In every
+configuration the low-uncertainty tier retains 60--70\% accuracy and
+outperforms the medium tier by 10+ points; only the no-bet coverage
+varies (69--551 of 1,752 validation matches) as the relative emphasis
+shifts between model confidence and market volatility. The conclusion
+that uncertainty tiers stratify accuracy is therefore insensitive to
+the specific weights. Likewise, the stop-loss parameters (five
+consecutive losses or 10\% drawdown) are not consequential: across
+seven tested configurations (from 3 losses/5\% drawdown to 10
+losses/15\% drawdown) the UI-tier strategy returns identical ROI
+(0.37\%), Sharpe (0.026), and drawdown ($-0.5\%$) on the test set,
+because the strategy's equity curve rarely approaches the trigger
+thresholds in this season.
+
+% ================= 4.9 策略对比 =================
+\subsection{Betting-Strategy Comparison}
+\input{tables/table14_strategy}
+
+Table~\ref{tab:strategy} compares betting policies on the same
+XGBoost probabilities, and Figure~\ref{fig:roi} plots the
+corresponding cumulative return curves. The naive strategy
+(all bets, equal stake)
+returns $+0.5\%$; a confidence threshold of 0.4 raises this to
+$+1.5\%$; and the UI-tier policy---full stake at low UI, scaled stake
+at medium UI, no-bet at high UI---achieves $+1.8\%$ ROI with a
+Sharpe ratio of 0.026, while excluding 144 of 1,104 matches. Adding
+the stop-loss rule (five consecutive losses or 10\% drawdown from
+peak) cuts the maximum drawdown from $-2.7\%$ to $-0.5\%$ at a small
+ROI cost. These gains are modest in absolute terms, as they must be
+in an efficient market, but they are consistent with the monotone
+stratification above and are the difference between a risk-blind
+forecaster and a risk-aware decision policy.
+
+% ================= 4.10 LLM =================
+\subsection{LLM Analysis}
+\label{sec:llm_analysis}
+\input{tables/table15_temp}
+\input{tables/table16_open}
+
+The LLM row of Table~\ref{tab:main} summarizes the full test season:
+1104 of 1104 matches parsed successfully at a total cost of \$0.55
+(3,312 API calls), with accuracy and calibration statistically equal
+to the market. Table~\ref{tab:temp} reports the
+ temperature
+sensitivity: raising temperature from 0.3 to 0.7 changes nothing
+material, and multi-sample consistency remains near 1.0 at both
+temperatures with no correlation to correctness ($r = -0.07$ and
+$+0.04$). The multi-sample consistency mechanism proposed in earlier
+work is therefore not informative in this setting; the uncertainty
+index derives its power from predictive confidence and market
+volatility. Table~\ref{tab:open} compares an open-weight 7B model
+(Qwen2.5-Coder-7B, quantized, running on a laptop GPU) against the
+API model on the same 200 matches: the open-weight model matches or
+slightly exceeds the API model in accuracy and calibration at zero
+marginal cost. This comparison is \emph{robustness evidence only}: the
+sample is small (200 matches), all confidence intervals overlap, and
+we make no claim of superiority for either model. Its purpose is to
+show that the paper's qualitative conclusions do not depend on a
+specific proprietary API.
+
+Finally, we offer a mechanistic explanation for the null
+consistency result. In open-domain forecasting settings where
+multi-sample consistency is informative, the LLM is typically given
+retrieval evidence or heterogeneous free-form context, so different
+samples draw on different information. Here the model receives a
+\emph{fixed, complete, structured feature card} with no retrieval: at
+any temperature the input is identical across samples, the reasoning
+path is short, and the output probabilities collapse to a narrow
+range (consistency $\geq 0.95$ for 99\% of matches at both
+temperatures). Sampling consistency is thus informative only when the
+input itself carries sampling variance; in a deterministic structured
+task it degrades to a constant and contributes nothing to the
+uncertainty index.

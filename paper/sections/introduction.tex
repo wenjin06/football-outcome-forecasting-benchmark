@@ -1,0 +1,63 @@
+% Introduction（草稿）
+Sports outcome forecasting has attracted sustained attention from
+statistics, machine learning, and, more recently, large language
+models (LLMs). The task is attractive because outcomes are public,
+structured, and frequent, and because a predictive model can be
+evaluated not only on accuracy but also on downstream financial
+consequences in betting markets. However, the same properties make
+football forecasting a demanding test bed: betting markets aggregate
+vast amounts of information into closing odds, and any method that
+hopes to add value must do so \emph{against} a strong, continuously
+updated baseline.
+
+The literature has moved in two directions. On the modeling side,
+classical approaches---Poisson and Dixon--Coles models, Elo ratings,
+and gradient-boosted trees---provide strong and interpretable
+baselines. On the representation side, LLM-based forecasting
+systems~\citep{halawi2024approaching, alur2025aia, yang2025llm}
+demonstrate that language models can produce calibrated probability
+forecasts when given structured evidence. Yet most published
+evaluations in the LLM forecasting line measure accuracy and Brier
+scores in isolation, without a market baseline, without explicit
+leakage controls, and without a betting protocol that would make the
+financial claims reproducible.
+
+In this paper we address these gaps with a deliberately conservative
+evaluation design. Our contributions are as follows.
+
+\begin{itemize}
+\item \textbf{A leakage-controlled benchmark against the market.}
+We assemble 11,811 matches from the top five European leagues
+(2019/20--2025/26), restrict all features to information available
+before kickoff, fit every statistic on the training split only, and
+evaluate on a held-out future season (1,104 matches). Against this
+backdrop we compare de-vigged closing odds, Poisson and Dixon--Coles
+models, Elo, random forests, gradient boosting, and a domain-enhanced
+LLM. None of the learned methods exceeds market accuracy; the LLM
+matches market-level probability calibration at negligible cost.
+\item \textbf{An interpretable decomposition of predictive
+information.} Permutation importance and ablations show that market
+signals account for approximately 87\% of predictive information,
+expected-goals (xG) features add a small but consistent gain, and
+referee statistics provide no measurable improvement.
+\item \textbf{Empirical validation of uncertainty-driven risk
+control.} We define a corrected scenario-complexity score and an
+uncertainty index, and show on held-out data that they stratify
+matches monotonically: low-uncertainty matches reach 68--69\%
+accuracy while high-uncertainty matches lose 9.6--13\% ROI. A no-bet
+policy on high-uncertainty matches improves risk-adjusted returns,
+whereas value-based selection of high-confidence bets loses money---
+evidence that apparent model edge reflects overconfidence, not
+information.
+\item \textbf{A reproducible betting protocol.} All financial
+evaluations use equal-stake or fractional-Kelly sizing on a single
+bookmaker's closing odds, with bootstrap confidence intervals,
+coverage reporting, and no-bet decisions separated from executed
+bets.
+\end{itemize}
+
+The remainder of the paper is organized as follows. Section~\ref{sec:related} reviews
+related work. Section~\ref{sec:method} describes the data, features,
+models, and risk-control framework. Section~\ref{sec:experiments}
+presents the experimental results. Section~\ref{sec:discussion}
+discusses implications and limitations, and Section~\ref{sec:conclusion} concludes.

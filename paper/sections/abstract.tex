@@ -1,0 +1,33 @@
+% Abstract（草稿，随数据定稿）
+In sports betting, the closing odds of major bookmakers are widely
+regarded as an efficient aggregation of public information, making
+predictive gains over the market difficult to achieve and even harder
+to verify. We present a leakage-controlled evaluation of statistical,
+machine-learning, and large-language-model (LLM) methods for football
+match outcome forecasting, built on 11,811 matches from the five
+major European leagues across seven seasons (2019/20--2025/26), with
+a held-out test season of 1,104 matches. All features are restricted
+to pre-match information, all normalization statistics are fit on the
+training split only, and every reported quantity is accompanied by a
+bootstrap confidence interval. \emph{The test season (2025/26) is
+incomplete (through 2026-02-12): financial point estimates may shift
+when the season completes, so ROI values should be read as indicative
+rather than definitive.} Three findings stand out. First,
+neither tree-based models nor a domain-enhanced LLM exceed the
+predictive accuracy of de-vigged closing odds (54.2\% accuracy,
+0.967 log loss): the market remains unbeaten, and the LLM matches
+market-level probability calibration at a cost of \$0.55 for the
+entire test season. Second, permutation importance and ablations
+show that market signals carry roughly 87\% of the predictive
+information, while referee statistics provide no measurable gain.
+Third, and most importantly, an uncertainty index built from
+prediction confidence and market volatility reliably stratifies
+risk: low-uncertainty matches are predicted at 68--69\% accuracy,
+whereas matches flagged as high uncertainty lose 9.6--13\% ROI and
+are best skipped by a no-bet policy. Uncertainty filtering improves
+risk-adjusted returns, whereas value-based selection of
+high-confidence bets systematically loses money, indicating that
+apparent model edge is overconfidence rather than information. These
+results provide a rigorous benchmark for sports forecasting research
+and evidence that uncertainty-driven risk control, not accuracy, is
+the lever that connects prediction quality to financial stability.
