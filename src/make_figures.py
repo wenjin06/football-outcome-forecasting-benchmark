@@ -218,4 +218,36 @@ plt.tight_layout()
 plt.savefig(os.path.join(OUT, "fig5_confusion.png"))
 plt.close()
 
+# ============ 图6：coverage-accuracy / coverage-ROI 曲线（策略对比） ============
+print("[6/6] coverage curves ...")
+pc = json.load(open(os.path.join(RES, "policy_comparison.json"), encoding="utf-8"))
+names = {"UI": "UI (uncertainty index)", "SCS": "SCS",
+         "market_conf": "Market confidence", "model_conf": "Model confidence",
+         "random": "Random filtering"}
+colors = {"UI": "#1f77b4", "SCS": "#2ca02c", "market_conf": "#d62728",
+          "model_conf": "#ff7f0e", "random": "#7f7f7f"}
+fig, axes = plt.subplots(1, 2, figsize=(7.0, 3.0))
+for name in names:
+    curve = pc["strategies"][name]
+    xs = [r["coverage"] for r in curve]
+    accs = [r["acc"] * 100 for r in curve]
+    rois = [r["roi"] * 100 for r in curve]
+    axes[0].plot(xs, accs, label=names[name], lw=1.4, color=colors[name], marker="o", ms=2.5)
+    axes[1].plot(xs, rois, label=names[name], lw=1.4, color=colors[name], marker="o", ms=2.5)
+axes[0].axhline(54.2, color="k", ls=":", lw=0.8)
+axes[0].text(0.42, 55.0, "market acc.", fontsize=6.5, color="k")
+axes[1].axhline(0, color="k", ls=":", lw=0.8)
+for ax, ylab, title in [(axes[0], "Accuracy (%)", "Coverage vs accuracy"),
+                        (axes[1], "ROI (%)", "Coverage vs ROI")]:
+    ax.set_xlabel("Coverage (fraction of matches bet)")
+    ax.set_ylabel(ylab)
+    ax.set_title(title, fontsize=9)
+    ax.set_xlim(0.38, 1.02)
+    ax.grid(alpha=0.3)
+axes[1].legend(fontsize=6.5, frameon=False, loc="lower left")
+axes[0].legend(fontsize=6.5, frameon=False, loc="upper left")
+plt.tight_layout()
+plt.savefig(os.path.join(OUT, "fig6_coverage.png"))
+plt.close()
+
 print("\n图表已保存到", OUT)
