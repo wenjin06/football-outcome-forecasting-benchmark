@@ -247,9 +247,9 @@ for ax, ylab, title in [(axes[0], "Accuracy (%)", "Coverage vs accuracy"),
     ax.set_title(title, fontsize=9)
     ax.set_xlim(0.38, 1.02)
     ax.grid(alpha=0.3)
-# 共用底部图例，避免遮挡任意曲线
+# 共用底部图例（放在 axes 下方的空白区，避免遮挡任意曲线）
 fig.legend(handles, labels, loc="lower center", ncol=5, fontsize=7,
-           frameon=False, bbox_to_anchor=(0.5, -0.06))
+           frameon=False, bbox_to_anchor=(0.5, 0.02))
 fig.subplots_adjust(bottom=0.20)
 plt.savefig(os.path.join(OUT, "fig6_coverage.png"))
 plt.close()
