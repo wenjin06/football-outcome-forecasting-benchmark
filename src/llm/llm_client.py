@@ -90,7 +90,9 @@ class LLMClient:
                 data = json.loads(resp.read().decode("utf-8"))
             out = []
             for c in data.get("choices", []):
-                out.append({"content": c["message"]["content"]})
+                msg = c.get("message", {})
+                out.append({"content": msg.get("content") or "",
+                            "reasoning": msg.get("reasoning_content") or ""})
             usage = data.get("usage", {})
             self.total_prompt_tokens += usage.get("prompt_tokens", 0)
             self.total_completion_tokens += usage.get("completion_tokens", 0)
@@ -137,26 +139,37 @@ class LLMClient:
         ok = 0
         for _ in range(n_samples):
             try:
-                out = self._call(messages, temperature=temperature)
-                content = out[0]["content"]
+                out = self._call(messages, temperature=temperature,
+                                 max_tokens=4000)
+                content = out[0].get("content") or ""
                 p = self.parse_probs(content)
+                if p is None and out[0].get("reasoning"):
+                    # deepseek-reasoner 把推理放在 reasoning_content，
+                    # 最终回答可能为空或未截断：尝试从推理中解析 JSON
+                    p = self.parse_probs(out[0]["reasoning"])
                 if p is None:
                     probs_list.append(None)
                     continue
                 probs_list.append(p)
-                reasons.append(content)
+                reasons.append(content or out[0].get("reasoning", ""))
                 ok += 1
             except Exception as e:
                 probs_list.append(None)
                 print(f"  [llm] 调用失败: {e}")
         return probs_list, ok, reasons
 
-    def estimate_cost(self, price_per_m_input=0.14, price_per_m_output=0.28):
-        """DeepSeek-chat 参考价：$0.14/M input, $0.28/M output（美元/百万 token）。本地模型返回 0。"""
+    def estimate_cost(self):
+        """按模型实际价格估算成本（美元/百万 token）。本地模型返回 0。
+        deepseek-chat: $0.14/M in, $0.28/M out；deepseek-reasoner: $0.55/M in, $2.19/M out。"""
         if self.provider == "local":
             return 0.0
-        return (self.total_prompt_tokens / 1e6 * price_per_m_input
-                + self.total_completion_tokens / 1e6 * price_per_m_output)
+        model = (self.config.get(self.provider, {}) or {}).get("model", "")
+        if "reasoner" in model:
+            p_in, p_out = 0.55, 2.19
+        else:
+            p_in, p_out = 0.14, 0.28
+        return (self.total_prompt_tokens / 1e6 * p_in
+                + self.total_completion_tokens / 1e6 * p_out)
 
 
 def np_isfinite(x):
