@@ -273,22 +273,40 @@ save("table15_temp.tex", table_wrap(
     ["Config", "Acc", "LogLoss", "ECE", "Cons.", "r(cons,corr)"], rows))
 
 rows = []
-items = [("deepseek_t0.3", "DeepSeek-Chat (API)"),
-         ("deepseek_reasoner", "DeepSeek-Reasoner (API)"),
-         ("qwen_local", "Qwen2.5-Coder-7B (local)")]
-for k, name in items:
-    if k not in lc["open_vs_closed"]:
-        continue
-    d = lc["open_vs_closed"][k]
-    rows.append([name, pct(d["acc"]), num(d["logloss"]), num(d["ece"]),
-                 pct(d["roi"]), pct(d["win_rate"])])
-save("table16_open.tex", table_wrap(
-    "LLM model comparison on the same test-set matches: DeepSeek-Chat and "
-    "the local Qwen on 200 matches, DeepSeek-Reasoner on the same first 120 "
-    "matches (single sample, for runtime reasons). This comparison is "
-    "robustness evidence only: the samples are small and confidence "
-    "intervals overlap, so no superiority claim is made for any model.",
-    "tab:open", ["Model", "Acc", "LogLoss", "ECE", "ROI", "Win rate"], rows))
+rn = lc.get("reasoner_notes", {})
+if rn:
+    # 同批前 120 场三模型对比（reasoner 为单采样，其余为 3 采样平均）
+    items = [("deepseek_t0.3_same_120", "DeepSeek-Chat (API)"),
+             ("deepseek_reasoner", "DeepSeek-Reasoner (API)"),
+             ("qwen_local_same_120", "Qwen2.5-Coder-7B (local)")]
+    for k, name in items:
+        d = rn.get(k) or lc["open_vs_closed"].get(k)
+        if not d:
+            continue
+        rows.append([name, pct(d["acc"]), num(d["logloss"]), num(d["ece"]),
+                     pct(d["roi"]), pct(d["win_rate"])])
+    save("table16_open.tex", table_wrap(
+        "LLM model comparison on the same first 120 test-set matches: "
+        "DeepSeek-Chat and the local Qwen with 3 samples each, "
+        "DeepSeek-Reasoner with 1 sample (reasoning models are ~10x slower; "
+        "runtime constraint). This comparison is robustness evidence only: "
+        "the sample is small and confidence intervals overlap, so no "
+        "superiority claim is made for any model.",
+        "tab:open", ["Model", "Acc", "LogLoss", "ECE", "ROI", "Win rate"], rows))
+else:
+    rows = []
+    items = [("deepseek_t0.3", "DeepSeek-Chat (API)"),
+             ("qwen_local", "Qwen2.5-Coder-7B (local)")]
+    for k, name in items:
+        d = lc["open_vs_closed"][k]
+        rows.append([name, pct(d["acc"]), num(d["logloss"]), num(d["ece"]),
+                     pct(d["roi"]), pct(d["win_rate"])])
+    save("table16_open.tex", table_wrap(
+        "LLM model comparison on the same 200 test-set matches. This "
+        "comparison is robustness evidence only: the sample is small and "
+        "confidence intervals overlap, so no superiority claim is made for "
+        "any model.",
+        "tab:open", ["Model", "Acc", "LogLoss", "ECE", "ROI", "Win rate"], rows))
 
 # ============ 表17：错误分析（失败与异动/分歧关联） ============
 ea = load("error_analysis.json")

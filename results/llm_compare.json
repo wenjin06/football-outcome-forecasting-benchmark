@@ -59,6 +59,38 @@
       "n": 200,
       "roi": 0.0744,
       "win_rate": 0.585
+    },
+    "deepseek_reasoner": {
+      "acc": 0.5523809523809524,
+      "logloss": 0.9063577870440886,
+      "brier": 0.5320039997754779,
+      "ece": 0.09004299510013795,
+      "n": 105,
+      "roi": -0.043619047619047634,
+      "win_rate": 0.5523809523809524
+    }
+  },
+  "reasoner_notes": {
+    "n_matches": 105,
+    "n_samples": 1,
+    "comparison": "same first 120 matches of the test set (chronological order), all three models",
+    "deepseek_t0.3_same_120": {
+      "acc": 0.5416666666666666,
+      "logloss": 0.9270422720856957,
+      "brier": 0.5455523494136884,
+      "ece": 0.0972640718724052,
+      "n": 120,
+      "roi": -0.05483333333333334,
+      "win_rate": 0.5416666666666666
+    },
+    "qwen_local_same_120": {
+      "acc": 0.575,
+      "logloss": 0.9149941577602827,
+      "brier": 0.5350801421139083,
+      "ece": 0.08133226700870586,
+      "n": 120,
+      "roi": 0.03608333333333332,
+      "win_rate": 0.575
     }
   }
 }

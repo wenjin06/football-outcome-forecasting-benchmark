@@ -245,15 +245,22 @@ temperatures with no correlation to correctness ($r = -0.07$ and
 $+0.04$). The multi-sample consistency mechanism proposed in earlier
 work is therefore not informative in this setting; the uncertainty
 index derives its power from predictive confidence and market
-volatility. Table~\ref{tab:open} compares an open-weight 7B model
-(Qwen2.5-Coder-7B, quantized, running on a laptop GPU) against the
-API model on the same 200 matches: the open-weight model matches or
-slightly exceeds the API model in accuracy and calibration at zero
-marginal cost. This comparison is \emph{robustness evidence only}: the
-sample is small (200 matches), all confidence intervals overlap, and
-we make no claim of superiority for either model. Its purpose is to
+volatility. Table~\ref{tab:open} compares models on the same first
+120 matches of the test set: an open-weight 7B model
+(Qwen2.5-Coder-7B, quantized, running on a laptop GPU), the
+chat-optimized API model, and a reasoning model (DeepSeek-Reasoner,
+run with a single sample because reasoning models are roughly an
+order of magnitude slower). The open-weight model matches or slightly
+exceeds both API models in accuracy and calibration at zero marginal
+cost; the reasoning model improves log loss over chat
+(0.906 vs 0.927) but not accuracy, at a cost of \$0.60 for 120
+matches---more than the \$0.55 of the entire 1,104-match chat
+run. This comparison is \emph{robustness evidence only}: the sample
+is small (120 matches), all confidence intervals overlap, and
+we make no claim of superiority for any model. Its purpose is to
 show that the paper's qualitative conclusions do not depend on a
-specific proprietary API.
+specific proprietary API or on the choice of reasoning vs
+non-reasoning model.
 
 Finally, we offer a mechanistic explanation for the null
 consistency result. In open-domain forecasting settings where

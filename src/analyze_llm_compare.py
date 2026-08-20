@@ -110,22 +110,25 @@ if _os.path.exists(reasoner_path):
     p03_120b = sub03_120[["p_H", "p_D", "p_A"]].values
     y120b = sub03_120["y"].values.astype(int)
     odds120b = sub03_120[["odds_H", "odds_D", "odds_A"]].values
+    subq_120 = dl.head(120).reset_index(drop=True)
+    pq_120 = subq_120[["p_H", "p_D", "p_A"]].values
+    yq_120 = subq_120["y"].values.astype(int)
+    oddsq_120 = subq_120[["odds_H", "odds_D", "odds_A"]].values
     yr = dr["y"].values.astype(int)
     oddsr = dr[["odds_H", "odds_D", "odds_A"]].values
     out["open_vs_closed"]["deepseek_reasoner"] = metrics(yr, pr, oddsr)
     out["reasoner_notes"] = {
         "n_matches": int(len(dr)), "n_samples": 1,
         "comparison": "same first 120 matches of the test set "
-                       "(chronological order), matched against deepseek_t0.3",
+                       "(chronological order), all three models",
         "deepseek_t0.3_same_120": metrics(y120b, p03_120b, odds120b),
+        "qwen_local_same_120": metrics(yq_120, pq_120, oddsq_120),
     }
-    print("\n=== 推理模型对照（同批前 120 场） ===")
-    for k in ["deepseek_t0.3", "deepseek_reasoner"]:
-        m = out["open_vs_closed"][k]
+    print("\n=== 推理模型对照（同批前 120 场，三模型） ===")
+    for k in ["deepseek_t0.3_same_120", "deepseek_reasoner", "qwen_local_same_120"]:
+        m = out["reasoner_notes"][k] if k.endswith("_same_120") else out["open_vs_closed"][k]
         print(f"  {k}: acc={m['acc']:.3f} logloss={m['logloss']:.4f} ece={m['ece']:.4f} "
               f"roi={m['roi']*100:.2f}% win={m['win_rate']:.3f}")
-    m120 = out["reasoner_notes"]["deepseek_t0.3_same_120"]
-    print(f"  deepseek_t0.3 (same 120): acc={m120['acc']:.3f} logloss={m120['logloss']:.4f}")
 else:
     print("\n[skip] reasoner 对照未运行（缺少 llm_deepseek_deepseek-reasoner_t0.3_per_match.csv）")
 
