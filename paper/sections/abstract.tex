@@ -6,7 +6,8 @@ to verify. This paper presents a leakage-controlled evaluation of statistical,
 machine-learning, and large-language-model (LLM) methods for football
 match outcome forecasting, built on 11,811 matches from the five
 major European leagues across seven seasons (2019/20--2025/26), with
-a held-out test season of 1,104 matches. All features are restricted
+a temporally held-out test period of 1,104 matches (the 2025/26
+season to date). All features are restricted
 to pre-match information, all normalization statistics are fit on the
 training split only, and every reported quantity is accompanied by a
 bootstrap confidence interval. \emph{The test season (2025/26) is
@@ -17,7 +18,7 @@ neither tree-based models nor a domain-enhanced LLM exceed the
 predictive accuracy of de-vigged closing odds (54.2\% accuracy,
 0.967 log loss): the market remains unbeaten, and the LLM matches
 market-level probability calibration at a cost of \$0.55 for the
-entire test season. Second, permutation importance and ablations
+entire test period. Second, permutation importance and ablations
 show that market-derived features account for roughly 87\% of the
 aggregate permutation importance, while referee statistics provide no measurable gain.
 Third, and most importantly, an uncertainty index built from

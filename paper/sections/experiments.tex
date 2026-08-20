@@ -18,8 +18,8 @@ before the test set is examined.
 \subsection{Overall Performance}
 \input{tables/table1_main}
 
-Table~\ref{tab:main} reports the overall performance on the held-out
-test season. Several observations are immediate. First, the de-vigged
+Table~\ref{tab:main} reports the overall performance on the
+temporally held-out test period (2025/26 season to date). Several observations are immediate. First, the de-vigged
 closing odds achieve 54.2\% accuracy and a log loss of 0.967, and no
 learned model exceeds them in accuracy within statistical uncertainty
 (bootstrap 95\% confidence intervals for accuracy all overlap the
@@ -33,7 +33,7 @@ this: all three probability sources track the diagonal, with the LLM
 and the market showing the smallest deviation.
 Third, all ROI values are small and their confidence intervals
 cross zero: no method, including the market itself, shows a stable
-profit over this test season under equal-stake betting. This is the
+profit over this test period under equal-stake betting. This is the
 expected regime of an efficient market, and it is the backdrop
 against which all subsequent analyses are interpreted. The reader is
 reminded that the 2025/26 test season is incomplete (matches through
@@ -261,7 +261,7 @@ forecaster and a risk-aware decision policy.
 \input{tables/table16_open}
 \input{tables/table21_llm_ablation}
 
-The LLM row of Table~\ref{tab:main} summarizes the full test season:
+The LLM row of Table~\ref{tab:main} summarizes the full test period:
 1104 of 1104 matches parsed successfully at a total cost of \$0.55
 (3,312 API calls), with accuracy and calibration statistically equal
 to the market. Table~\ref{tab:temp} reports the

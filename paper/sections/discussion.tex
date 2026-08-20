@@ -118,12 +118,26 @@ gains are not statistically significant in this single season; the
 contribution is the stratification structure, not a demonstrated
 profit.
 
+In the language of selective prediction~\citep{chow1970optimum,
+geifman2017selective}, the no-bet rule is an abstention policy and
+the UI threshold is its coverage control: raising the threshold
+increases coverage (more bets, higher risk) and lowering it increases
+abstention (fewer bets, lower risk). The empirical contribution of
+this paper is that the coverage--risk trade-off is controlled by a
+score---the uncertainty index---that is calibrated to outcome
+uncertainty rather than to market strength, whereas a market-
+confidence-based abstention rule trades coverage against the wrong
+quantity: it concentrates bets on low-odds favourites whose accuracy
+is high but whose financial value is already priced away. Selective
+forecasting, not selective accuracy, is the actionable form of
+selective prediction in efficient betting markets.
+
 \input{tables/table19_policy}
 
 \subsection{LLM Results in Context}
 The domain-enhanced LLM reaches market-level probability calibration
 (log loss 0.967 vs 0.967, ECE 0.025 vs 0.026) with no training and no
-retrieval, at a cost of \$0.55 for the entire test season. Two
+retrieval, at a cost of \$0.55 for the entire test period. Two
 caveats keep this claim honest. First, multi-sample consistency---a
 mechanism proposed in earlier LLM-forecasting work---carries no
 information in this setting: at both temperature 0.3 and 0.7 the
