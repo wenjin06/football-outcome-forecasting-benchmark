@@ -379,4 +379,28 @@ save("table18_difficulty.tex", table_wrap(
 # 交叉增量（文字引用数字，脚本产出）
 cross = {f"{c['mkt_q']}_{c['ui_q']}": c for c in dm["mkt_x_ui_cross"]}
 
+# ============ 表19：策略级对比（UI vs market-conf vs SCS vs model-conf vs random） ============
+pc = load("policy_comparison.json")
+rows = []
+for name in ["UI", "SCS", "market_conf", "model_conf", "random"]:
+    for r in pc["strategies"][name]:
+        if r["coverage"] not in (0.7, 0.5):
+            continue
+        label = {"UI": "UI", "SCS": "SCS", "market_conf": "Market conf.",
+                 "model_conf": "Model conf.", "random": "Random"}[name]
+        rows.append([label, f"{r['coverage']:.1f}", pct(r["acc"]), pct(r["roi"]),
+                     f"[{r['roi_ci'][0]*100:.1f},{r['roi_ci'][1]*100:.1f}]",
+                     num(r["sharpe"]), num(r["avg_odds"], 2)])
+save("table19_policy.tex", table_wrap(
+    "No-bet policy comparison at two coverage levels (test set, XGBoost "
+    "probabilities, equal-stake betting). Policies drop the highest-risk "
+    "matches according to each score; coverage 0.5 drops half the matches. "
+    "Market confidence is the strongest accuracy stratifier but selects "
+    "low-odds favourites (avg odds 1.43 at coverage 0.7), so its financial "
+    "stratification fails (negative ROI at coverage 0.5); uncertainty-based "
+    "policies (UI, SCS) keep positive ROI. Bootstrap 95\\% CIs for ROI all "
+    "cross zero: gains are not statistically significant in a single season.",
+    "tab:policy", ["Policy", "Cov", "Acc", "ROI", "ROI 95\\% CI", "Sharpe", "Avg odds"],
+    rows))
+
 print("\n全部表格已生成:", len(os.listdir(OUT)), "个文件")

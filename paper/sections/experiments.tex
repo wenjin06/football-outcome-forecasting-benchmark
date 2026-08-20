@@ -1,5 +1,18 @@
-% Experiments and Results（完整版：17 张表由 make_tables.py 生成，禁止手写数字）
+% Experiments and Results（完整版：18 张表由 make_tables.py 生成，禁止手写数字）
 \label{sec:experiments}
+
+\noindent\textbf{Confirmatory versus exploratory analysis.} The test
+set is used for one confirmatory evaluation---the head-to-head
+comparison of Table~\ref{tab:main}---and for the financial protocol
+described in Section~\ref{sec:protocol}. All other analyses
+(ablations, permutation importance, difficulty stratification,
+policy comparisons, error analysis, and LLM diagnostics) are
+\emph{exploratory}: they generate hypotheses about the structure of
+the task rather than testing pre-registered claims, and they should
+be read as descriptive evidence on a single season rather than as
+confirmatory tests. No threshold, weight, or hyperparameter is tuned
+on the test set; all such choices are fixed on the validation split
+before the test set is examined.
 
 % ================= 4.1 主对比 =================
 \subsection{Overall Performance}
@@ -53,7 +66,8 @@ what the market already encodes.
 
 Permutation importance (Table~\ref{tab:importance}) quantifies the
 same hierarchy: market-derived features account for roughly 87\% of
-the total predictive information, xG for about 6\%, and referee,
+the aggregate permutation importance under the XGBoost specification,
+xG for about 6\%, and referee,
 rank, and form features for under 2\% combined. The result is robust
 across the ablation and permutation analyses and motivates the
 position of this paper: the marginal information left to any

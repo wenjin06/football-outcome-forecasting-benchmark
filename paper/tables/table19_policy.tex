@@ -1,0 +1,24 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{No-bet policy comparison at two coverage levels (test set, XGBoost probabilities, equal-stake betting). Policies drop the highest-risk matches according to each score; coverage 0.5 drops half the matches. Market confidence is the strongest accuracy stratifier but selects low-odds favourites (avg odds 1.43 at coverage 0.7), so its financial stratification fails (negative ROI at coverage 0.5); uncertainty-based policies (UI, SCS) keep positive ROI. Bootstrap 95\% CIs for ROI all cross zero: gains are not statistically significant in a single season.}
+\label{tab:policy}
+\resizebox{\linewidth}{!}{
+\begin{tabular}{lcccccc}
+\toprule
+Policy & Cov & Acc & ROI & ROI 95\% CI & Sharpe & Avg odds \\
+\midrule
+UI & 0.7 & 66.5\% & 3.2\% & [-5.4,12.1] & 0.040 & 1.63 \\
+UI & 0.5 & 60.7\% & 2.0\% & [-5.8,9.4] & 0.023 & 1.77 \\
+SCS & 0.7 & 60.1\% & 8.0\% & [-1.8,18.5] & 0.083 & 1.91 \\
+SCS & 0.5 & 57.8\% & 5.8\% & [-2.4,13.4] & 0.059 & 1.95 \\
+Market conf. & 0.7 & 73.2\% & 3.5\% & [-3.7,10.3] & 0.055 & 1.43 \\
+Market conf. & 0.5 & 63.8\% & -2.3\% & [-8.4,4.0] & -0.031 & 1.58 \\
+Model conf. & 0.7 & 71.0\% & 1.0\% & [-6.4,8.1] & 0.015 & 1.45 \\
+Model conf. & 0.5 & 64.3\% & 0.1\% & [-6.1,6.4] & 0.001 & 1.61 \\
+Random & 0.7 & 52.3\% & -3.4\% & [-13.5,7.1] & -0.034 & 1.97 \\
+Random & 0.5 & 51.3\% & -6.1\% & [-14.2,2.1] & -0.062 & 1.96 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

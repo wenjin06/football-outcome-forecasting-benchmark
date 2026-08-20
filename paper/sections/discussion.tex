@@ -4,8 +4,8 @@
 \subsection{Why the Market Remains Unbeaten}
 The results are consistent with semi-strong market efficiency in
 football betting: closing odds aggregate information more accurately
-than any single model evaluated here. The 87\% share of predictive
-information carried by market features, the failure of value betting
+than any single model evaluated here. The 87\% share of aggregate
+permutation importance carried by market features, the failure of value betting
 even after calibration, and the absence of exploitable
 opening-to-closing drift all point in the same direction. The
 practical implication is not that forecasting models are useless,
@@ -99,6 +99,26 @@ betting to matches where the market---and the model's estimate of
 it---is most certain. This is consistent with the value-betting
 result (Table~\ref{tab:value}): confidence-based selection loses
 money, but certainty-based filtering does not.
+
+A natural objection is that the no-bet rule could simply use the
+market's own probability level, the strongest accuracy stratifier
+(73.2\% at coverage 0.7, Table~\ref{tab:policy}). It should not,
+because accuracy stratification does not imply financial
+stratification. Market-confidence filtering selects low-odds
+favourites---retained matches carry average odds of 1.43 at coverage
+0.7, and the policy loses money at coverage 0.5 (ROI $-2.3\%$)---whereas
+uncertainty-based policies retain matches with normal odds (UI 1.63,
+SCS 1.91 at coverage 0.7) and keep positive ROI at both coverage
+levels; random filtering loses 3--6\% at the same coverages. Market
+certainty identifies which matches are predictable, not which
+matches are worth betting; the two diverge precisely because the
+market prices its certainty into the odds. The bootstrap intervals in
+Table~\ref{tab:policy} all cross zero, however, so the financial
+gains are not statistically significant in this single season; the
+contribution is the stratification structure, not a demonstrated
+profit.
+
+\input{tables/table19_policy}
 
 \subsection{LLM Results in Context}
 The domain-enhanced LLM reaches market-level probability calibration
