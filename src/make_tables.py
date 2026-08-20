@@ -284,4 +284,54 @@ save("table16_open.tex", table_wrap(
     "either model.",
     "tab:open", ["Model", "Acc", "LogLoss", "ECE", "ROI", "Win rate"], rows))
 
+# ============ 表17：错误分析（失败与异动/分歧关联） ============
+ea = load("error_analysis.json")
+mvm = ea["market_vs_model"]
+rows = [
+    ["All matches", str(mvm["n_agree"] + mvm["n_disagree"]),
+     pct(mvm["acc_model_overall"]), pct(mvm["acc_market_overall"])],
+    ["Model = market", str(mvm["n_agree"]),
+     pct(mvm["acc_model_on_agree"]), pct(mvm["acc_market_on_agree"])],
+    ["Model $\\neq$ market", str(mvm["n_disagree"]),
+     pct(mvm["acc_model_on_disagree"]), pct(mvm["acc_market_on_disagree"])],
+]
+for thr in ["50", "60", "70"]:
+    d = ea[f"high_conf_{thr}"]
+    rows.append([f"conf $\\geq$ 0.{thr}", f"{d['model_n']}/{d['market_n']}",
+                 pct(d["model_error_rate"]), pct(d["market_error_rate"])])
+
+rows += [
+    ["Odds-move Q0 (small)", str(ea["odds_movement_bins"][0]["n"]),
+     pct(ea["odds_movement_bins"][0]["error_rate"]), pct(ea["odds_movement_bins"][0]["fav_share"], 0)],
+    ["Odds-move Q4 (large)", str(ea["odds_movement_bins"][4]["n"]),
+     pct(ea["odds_movement_bins"][4]["error_rate"]), pct(ea["odds_movement_bins"][4]["fav_share"], 0)],
+    ["Dispersion Q0 (low)", str(ea["market_dispersion_bins"][0]["n"]),
+     pct(ea["market_dispersion_bins"][0]["error_rate"]), pct(ea["market_dispersion_bins"][0]["fav_share"], 0)],
+    ["Dispersion Q4 (high)", str(ea["market_dispersion_bins"][4]["n"]),
+     pct(ea["market_dispersion_bins"][4]["error_rate"]), pct(ea["market_dispersion_bins"][4]["fav_share"], 0)],
+]
+de = ea["draw_errors"]
+rows += [
+    ["Draws, correctly predicted", str(de["correctly_predicted"]["n"]),
+     num(de["correctly_predicted"]["mean_conf"], 3), "---"],
+    ["Draws, misclassified", str(de["misclassified"]["n"]),
+     num(de["misclassified"]["mean_conf"], 3), "---"],
+]
+lines = ["\\begin{table*}[tbp]", "\\centering", "\\small",
+         "\\caption{Error analysis on the test set. Rows 1--3: accuracy of XGBoost",
+         "vs de-vigged closing odds on subsets where the two agree or disagree.",
+         "Rows 4--6: error rate among predictions with model confidence at least",
+         "0.50/0.60/0.70 (N = model/market). Rows 7--10: error rate and share of",
+         "strong favourites (min opening odds $\\leq$ 1.6) for the extreme",
+         "quintiles of odds movement and of market dispersion ((Max-Avg)/Avg",
+         "closing odds). Rows 11--12: mean model confidence for draws that were",
+         "correctly vs incorrectly classified.}", "\\label{tab:error}",
+         "\\resizebox{\\textwidth}{!}{",
+         "\\begin{tabular}{lccc}", "\\toprule",
+         "Group & N & Acc/Err. & Fav. share \\\\", "\\midrule"]
+for r in rows:
+    lines.append(" & ".join(sanitize_label(c) for c in r) + " \\\\")
+lines += ["\\bottomrule", "\\end{tabular}", "}", "\\end{table*}"]
+save("table17_error.tex", "\n".join(lines) + "\n")
+
 print("\n全部表格已生成:", len(os.listdir(OUT)), "个文件")

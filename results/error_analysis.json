@@ -1,0 +1,175 @@
+{
+  "meta": {
+    "n_test": 1104,
+    "model": "XGBoost(v3, xG)",
+    "test_window": "2025/26 through 2026-02-12"
+  },
+  "market_vs_model": {
+    "n_agree": 1034,
+    "n_disagree": 70,
+    "acc_model_overall": 0.5416666666666667,
+    "acc_market_overall": 0.5416666666666667,
+    "acc_model_on_agree": 0.5560928433268859,
+    "acc_market_on_agree": 0.5560928433268859,
+    "acc_model_on_disagree": 0.3285714285714286,
+    "acc_market_on_disagree": 0.3285714285714286,
+    "model_win_disagree": 0.0
+  },
+  "odds_movement_bins": [
+    {
+      "bin": 0,
+      "move_range": "[0.000,0.083]",
+      "n": 229,
+      "error_rate": 0.5065502183406113,
+      "error_rate_ci": [
+        0.4366812227074236,
+        0.5720524017467249
+      ],
+      "fav_share": 0.1091703056768559,
+      "market_max_prob": 0.47045362328488083
+    },
+    {
+      "bin": 1,
+      "move_range": "[0.083,0.143]",
+      "n": 215,
+      "error_rate": 0.46511627906976744,
+      "error_rate_ci": [
+        0.4,
+        0.5302325581395348
+      ],
+      "fav_share": 0.09767441860465116,
+      "market_max_prob": 0.4699438828672808
+    },
+    {
+      "bin": 2,
+      "move_range": "[0.143,0.217]",
+      "n": 218,
+      "error_rate": 0.5091743119266054,
+      "error_rate_ci": [
+        0.44036697247706424,
+        0.573394495412844
+      ],
+      "fav_share": 0.17889908256880735,
+      "market_max_prob": 0.4890397200394132
+    },
+    {
+      "bin": 3,
+      "move_range": "[0.217,0.340]",
+      "n": 222,
+      "error_rate": 0.5135135135135135,
+      "error_rate_ci": [
+        0.44594594594594594,
+        0.581081081081081
+      ],
+      "fav_share": 0.26576576576576577,
+      "market_max_prob": 0.5169865298055499
+    },
+    {
+      "bin": 4,
+      "move_range": "[0.340,2.387]",
+      "n": 220,
+      "error_rate": 0.29545454545454547,
+      "error_rate_ci": [
+        0.23636363636363636,
+        0.35454545454545455
+      ],
+      "fav_share": 0.6636363636363637,
+      "market_max_prob": 0.631365071784681
+    }
+  ],
+  "market_dispersion_bins": [
+    {
+      "bin": 0,
+      "disp_range": "[0.0166,0.0302]",
+      "n": 221,
+      "error_rate": 0.5294117647058824,
+      "error_rate_ci": [
+        0.46153846153846156,
+        0.5972850678733032
+      ],
+      "fav_share": 0.058823529411764705,
+      "market_max_prob": 0.4421857994871121
+    },
+    {
+      "bin": 1,
+      "disp_range": "[0.0302,0.0373]",
+      "n": 221,
+      "error_rate": 0.4751131221719457,
+      "error_rate_ci": [
+        0.4072398190045249,
+        0.5384615384615384
+      ],
+      "fav_share": 0.07239819004524888,
+      "market_max_prob": 0.46046643443732393
+    },
+    {
+      "bin": 2,
+      "disp_range": "[0.0373,0.0433]",
+      "n": 220,
+      "error_rate": 0.5,
+      "error_rate_ci": [
+        0.4318181818181818,
+        0.5681818181818182
+      ],
+      "fav_share": 0.1409090909090909,
+      "market_max_prob": 0.48491997251977015
+    },
+    {
+      "bin": 3,
+      "disp_range": "[0.0433,0.0542]",
+      "n": 221,
+      "error_rate": 0.4298642533936652,
+      "error_rate_ci": [
+        0.3665158371040724,
+        0.49321266968325794
+      ],
+      "fav_share": 0.334841628959276,
+      "market_max_prob": 0.545033186216045
+    },
+    {
+      "bin": 4,
+      "disp_range": "[0.0544,0.9669]",
+      "n": 221,
+      "error_rate": 0.3574660633484163,
+      "error_rate_ci": [
+        0.29411764705882354,
+        0.42081447963800905
+      ],
+      "fav_share": 0.7058823529411765,
+      "market_max_prob": 0.6444928829020877
+    }
+  ],
+  "high_conf_50": {
+    "model_n": 528,
+    "model_error_rate": 0.3390151515151515,
+    "market_n": 524,
+    "market_error_rate": 0.34923664122137404
+  },
+  "high_conf_60": {
+    "model_n": 296,
+    "model_error_rate": 0.2702702702702703,
+    "market_n": 259,
+    "market_error_rate": 0.24324324324324326
+  },
+  "high_conf_70": {
+    "model_n": 139,
+    "model_error_rate": 0.22302158273381295,
+    "market_n": 100,
+    "market_error_rate": 0.16
+  },
+  "draw_errors": {
+    "draw_true_n": 281,
+    "correctly_predicted": {
+      "n": 9,
+      "mean_move": 0.21074074074074067,
+      "mean_disp": 0.03941379289785169,
+      "mean_conf": 0.36577093601226807
+    },
+    "misclassified": {
+      "n": 272,
+      "mean_move": 0.21116421568627453,
+      "mean_disp": 0.0426944192151256,
+      "mean_conf": 0.4984860122203827
+    }
+  }
+}

@@ -1,0 +1,33 @@
+\begin{table*}[tbp]
+\centering
+\small
+\caption{Error analysis on the test set. Rows 1--3: accuracy of XGBoost
+vs de-vigged closing odds on subsets where the two agree or disagree.
+Rows 4--6: error rate among predictions with model confidence at least
+0.50/0.60/0.70 (N = model/market). Rows 7--10: error rate and share of
+strong favourites (min opening odds $\leq$ 1.6) for the extreme
+quintiles of odds movement and of market dispersion ((Max-Avg)/Avg
+closing odds). Rows 11--12: mean model confidence for draws that were
+correctly vs incorrectly classified.}
+\label{tab:error}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lccc}
+\toprule
+Group & N & Acc/Err. & Fav. share \\
+\midrule
+All matches & 1104 & 54.2\% & 54.2\% \\
+Model = market & 1034 & 55.6\% & 55.6\% \\
+Model $\neq$ market & 70 & 32.9\% & 32.9\% \\
+conf $\geq$ 0.50 & 528/524 & 33.9\% & 34.9\% \\
+conf $\geq$ 0.60 & 296/259 & 27.0\% & 24.3\% \\
+conf $\geq$ 0.70 & 139/100 & 22.3\% & 16.0\% \\
+Odds-move Q0 (small) & 229 & 50.7\% & 11\% \\
+Odds-move Q4 (large) & 220 & 29.5\% & 66\% \\
+Dispersion Q0 (low) & 221 & 52.9\% & 6\% \\
+Dispersion Q4 (high) & 221 & 35.7\% & 71\% \\
+Draws, correctly predicted & 9 & 0.366 & --- \\
+Draws, misclassified & 272 & 0.498 & --- \\
+\bottomrule
+\end{tabular}
+}
+\end{table*}

@@ -18,6 +18,7 @@ DeepSeek 全量 1104 场 × 3 采样成本约 $1 量级，可接受。
 import argparse
 import json
 import os
+import re
 import sys
 import time
 
@@ -38,6 +39,10 @@ DROP_COLS = ["Div", "Date", "Season", "HomeTeam", "AwayTeam", "FTR", "y"]
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--provider", default="deepseek", choices=["deepseek", "local"])
+    ap.add_argument("--model", default=None,
+                    help="Override the model name from llm-config.local.json "
+                         "(in-memory only; the config file is never modified). "
+                         "Example: --model deepseek-reasoner, or a local GGUF id.")
     ap.add_argument("--n_matches", type=int, default=300)
     ap.add_argument("--n_samples", type=int, default=3)
     ap.add_argument("--temperature", type=float, default=0.3)
@@ -73,12 +78,17 @@ def main():
     move_stats = fit_robust(train, "odds_move_H")
 
     client = LLMClient(provider=args.provider)
+    if args.model:
+        client.config[args.provider]["model"] = args.model
+    model_tag = ""
+    if args.model:
+        model_tag = "_" + re.sub(r"[^A-Za-z0-9]", "-", args.model)
     print(f"provider={args.provider} matches={len(test)} samples={args.n_samples}")
 
     rows = []
     t0 = time.time()
     feat_cols_all = [c for c in test.columns if c not in DROP_COLS]
-    ckpt_path = os.path.join(RES, f"llm_{args.provider}_t{args.temperature}_s{args.n_samples}_partial.csv")
+    ckpt_path = os.path.join(RES, f"llm_{args.provider}{model_tag}_t{args.temperature}_s{args.n_samples}_partial.csv")
     # 断点续跑：若已有部分结果，加载并跳过已完成场次（只加载 idx 在当前范围内的）
     done_idx = set()
     if os.path.exists(ckpt_path):
@@ -176,7 +186,7 @@ def main():
                    "completion": client.total_completion_tokens},
         "elapsed_s": round(time.time() - t0, 1),
     }
-    with open(os.path.join(RES, f"llm_{args.provider}_t{args.temperature}.json"), "w", encoding="utf-8") as f:
+    with open(os.path.join(RES, f"llm_{args.provider}{model_tag}_t{args.temperature}.json"), "w", encoding="utf-8") as f:
         json.dump(summary, f, ensure_ascii=False, indent=2, default=float)
 
     rec = pd.DataFrame({
@@ -187,9 +197,9 @@ def main():
         "odds_H": tmeta_d["B365CH"].values, "odds_D": tmeta_d["B365CD"].values,
         "odds_A": tmeta_d["B365CA"].values,
     })
-    rec.to_csv(os.path.join(RES, f"llm_{args.provider}_t{args.temperature}_per_match.csv"), index=False)
+    rec.to_csv(os.path.join(RES, f"llm_{args.provider}{model_tag}_t{args.temperature}_per_match.csv"), index=False)
 
-    print(f"\n===== LLM ({args.provider}) =====")
+    print(f"\n===== LLM ({args.provider}{model_tag}) =====")
     print(f"  acc={res['accuracy']:.4f} macroF1={res['macro_f1']:.4f} "
           f"logloss={res['log_loss']:.4f} brier={res['brier']:.4f} ece={res['ece']:.4f}")
     print(f"  全下注: ROI={fin['roi']*100:.2f}% Sharpe={fin['sharpe']:.3f} "
@@ -198,7 +208,7 @@ def main():
           f"MDD={fin_r['mdd']*100:.1f}% 胜率={fin_r['win_rate']*100:.1f}% "
           f"({n_bet}注, no-bet {n_nobet}, 覆盖率={n_bet/len(y):.2f})")
     print(f"  cost=${summary['cost_usd']:.2f} elapsed={summary['elapsed_s']}s")
-    print("已保存:", os.path.join(RES, f"llm_{args.provider}_t{args.temperature}.json"))
+    print("已保存:", os.path.join(RES, f"llm_{args.provider}{model_tag}_t{args.temperature}.json"))
 
 
 if __name__ == "__main__":

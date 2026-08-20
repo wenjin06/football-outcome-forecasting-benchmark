@@ -133,7 +133,44 @@ policy amplifies the losses (a starting bankroll of 100 units falls
 to 1.6): stake sizing cannot create an edge that the probabilities do
 not have.
 
-% ================= 4.8 SCS/UI 分层 =================
+% ================= 4.8 错误分析 =================
+\subsection{Error Analysis: Where the Model Fails}
+\input{tables/table17_error}
+
+Table~\ref{tab:error} dissects the model's errors on the test set.
+First, the model and the market disagree on only 70 of 1,104 matches
+(6.3\%), and on those matches the two are equally accurate (32.9\%
+each); on the 1,034 agreeing matches they are again equal (55.6\%).
+The model therefore contributes no incremental information beyond the
+closing line: it neither corrects the market where they disagree nor
+adds accuracy on the easy majority where they agree. The low accuracy
+on disagreeing matches (32.9\%) further indicates that these are
+intrinsically difficult matches, not mispriced ones.
+
+Second, the apparent relationships between error rate and market
+dynamics are confounded by market strength. The error rate is lowest
+in the largest odds-movement quintile (29.5\%) and the largest
+dispersion quintile (35.7\%), but those quintiles are dominated by
+strong favourites (66\% and 71\% of matches with minimum opening odds
+$\leq$ 1.6, versus 11\% and 6\% in the smallest quintiles), where the
+favourite wins most often. Odds movement and bookmaker dispersion are
+therefore not independent difficulty signals. The uncertainty index
+of Table~\ref{tab:uixgb} is, by contrast, a monotone stratifier
+(67.9\% vs 44.4\% accuracy across tiers) that is not reducible to
+market strength.
+
+Third, the model is overconfident exactly where it is wrong. The
+error rate among predictions with confidence $\geq$ 0.7 is 22.3\%
+for the model versus 16.0\% for the market at the same threshold.
+For draws---which the model almost never predicts
+(Table~\ref{tab:drawclass})---the 272 misclassified draws carry a
+mean confidence of 0.498, higher than the 0.366 of the 9 correctly
+predicted draws. Confidence is highest precisely when the model is
+wrong, consistent with the value-betting result of
+Table~\ref{tab:value}: apparent edge is overconfidence, not
+information.
+
+% ================= 4.9 SCS/UI 分层 =================
 \subsection{Uncertainty-Driven Risk Control}
 \input{tables/table11_scs}
 \input{tables/table12_ui_xgb}
@@ -172,7 +209,7 @@ losses/15\% drawdown) the UI-tier strategy returns identical ROI
 because the strategy's equity curve rarely approaches the trigger
 thresholds in this season.
 
-% ================= 4.9 策略对比 =================
+% ================= 4.10 策略对比 =================
 \subsection{Betting-Strategy Comparison}
 \input{tables/table14_strategy}
 
@@ -191,7 +228,7 @@ in an efficient market, but they are consistent with the monotone
 stratification above and are the difference between a risk-blind
 forecaster and a risk-aware decision policy.
 
-% ================= 4.10 LLM =================
+% ================= 4.11 LLM =================
 \subsection{LLM Analysis}
 \label{sec:llm_analysis}
 \input{tables/table15_temp}
