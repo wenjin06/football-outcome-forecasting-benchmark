@@ -83,7 +83,13 @@ heterogeneous across leagues and matches. Without these controls,
 text features would reintroduce exactly the leakage this paper is
 designed to eliminate.
 \item The test season (2025/26) is incomplete; results may shift
-slightly at season end.
+slightly at season end. This limitation is actionable: every number in
+this paper is produced by a script-driven pipeline
+(\texttt{refresh\_all.cmd} reruns feature construction, all
+\texttt{run\_*.py} experiments, and table/figure generation from the
+updated CSV files in a single pass), so the complete result set and
+every table can be regenerated without manual editing once the season
+finishes. The public repository documents the exact refresh procedure.
 \item Financial results are gross of betting taxes and use a single
 bookmaker's closing odds; real-world execution may differ.
 \item The LLM evaluation uses a proprietary API (DeepSeek-Chat);
