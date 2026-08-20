@@ -71,7 +71,14 @@ the lowest de-vig max-probability quintile to 75.3\% in the highest
 (with some noise in the middle quintiles), and the highest quintile
 is dominated by strong favourites (98\% of matches with minimum
 opening odds $\leq$ 1.6). How sure the market is about a match
-predicts how predictable the match is. This is not a violation of
+predicts how predictable the match is. One caveat is that match
+difficulty has no ground-truth label: both the market's probability
+level and the SCS/UI scores are proxies, validated here against
+held-out accuracy and, for the UI, against the market's own
+probability level via the conditioning analysis below. This is the
+same latent-variable status that volatility holds in financial
+forecasting, and the proxies are deliberately triangulated rather
+than treated as observed quantities. This is not a violation of
 market efficiency: efficiency constrains expected returns, not the
 heterogeneity of outcome uncertainty. The financial analogue is the
 well-known asymmetry that returns are unpredictable while volatility

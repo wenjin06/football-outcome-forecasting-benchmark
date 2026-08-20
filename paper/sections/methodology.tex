@@ -103,9 +103,15 @@ signal. The index combines these components as
 \mathrm{UI} = w_1(1 - p_{\max}) + w_2(1 - C)
 + w_3\,\mathrm{vol}_{norm} + w_4\,\mathrm{move}_{norm},
 \]
-with default weights $(0.4, 0.3, 0.15, 0.15)$; $p_{\max}$ is the
+\noindent with default weights $(0.4, 0.3, 0.15, 0.15)$; $p_{\max}$ is the
 model's maximum predicted probability and $C$ the multi-sample
-consistency (1 for deterministic models). Risk tiers are
+consistency (1 for deterministic models). The consistency term is
+retained even though Section~\ref{sec:llm_analysis} shows it carries
+no information in this setting: it is the mechanism proposed by
+earlier LLM-forecasting work, and including it lets this study test
+and falsify that mechanism rather than silently dropping it; the
+weight sensitivity analysis confirms the UI's stratification is
+insensitive to this term. Risk tiers are
 $\mathrm{UI} \le t_{low}$ (full stake), $t_{low} < \mathrm{UI} \le
 t_{high}$ (linearly scaled stake), and $\mathrm{UI} > t_{high}$
 (no-bet). Thresholds are selected on the validation split

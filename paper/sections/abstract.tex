@@ -18,7 +18,10 @@ neither tree-based models nor a domain-enhanced LLM exceed the
 predictive accuracy of de-vigged closing odds (54.2\% accuracy,
 0.967 log loss): the market remains unbeaten, and the LLM matches
 market-level probability calibration at a cost of \$0.55 for the
-entire test period. Second, permutation importance and ablations
+entire test period---an input-ablation (Table~\ref{tab:llmablation})
+shows this calibration is driven by the market signal provided in
+the prompt, not by independent reasoning over non-market features.
+Second, permutation importance and ablations
 show that market-derived features account for roughly 87\% of the
 aggregate permutation importance, while referee statistics provide no measurable gain.
 Third, and most importantly, an uncertainty index built from
