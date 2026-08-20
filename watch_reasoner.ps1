@@ -1,4 +1,4 @@
-# watch_reasoner.ps1 - DeepSeek-Reasoner experiment progress monitor
+﻿# watch_reasoner.ps1 - DeepSeek-Reasoner experiment progress monitor
 # Usage (in E:\论文\sci_redo):
 #   powershell -ExecutionPolicy Bypass -File watch_reasoner.ps1
 #   powershell -ExecutionPolicy Bypass -File watch_reasoner.ps1 -Interval 3
