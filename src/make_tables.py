@@ -273,15 +273,21 @@ save("table15_temp.tex", table_wrap(
     ["Config", "Acc", "LogLoss", "ECE", "Cons.", "r(cons,corr)"], rows))
 
 rows = []
-for k, name in [("deepseek_t0.3", "DeepSeek (API)"), ("qwen_local", "Qwen2.5-Coder-7B (local)")]:
+items = [("deepseek_t0.3", "DeepSeek-Chat (API)"),
+         ("deepseek_reasoner", "DeepSeek-Reasoner (API)"),
+         ("qwen_local", "Qwen2.5-Coder-7B (local)")]
+for k, name in items:
+    if k not in lc["open_vs_closed"]:
+        continue
     d = lc["open_vs_closed"][k]
     rows.append([name, pct(d["acc"]), num(d["logloss"]), num(d["ece"]),
                  pct(d["roi"]), pct(d["win_rate"])])
 save("table16_open.tex", table_wrap(
-    "Open-weight vs closed API LLM on the same 200 matches. This "
-    "comparison is robustness evidence only: the sample is small and "
-    "confidence intervals overlap, so no superiority claim is made for "
-    "either model.",
+    "LLM model comparison on the same test-set matches: DeepSeek-Chat and "
+    "the local Qwen on 200 matches, DeepSeek-Reasoner on the same first 120 "
+    "matches (single sample, for runtime reasons). This comparison is "
+    "robustness evidence only: the samples are small and confidence "
+    "intervals overlap, so no superiority claim is made for any model.",
     "tab:open", ["Model", "Acc", "LogLoss", "ECE", "ROI", "Win rate"], rows))
 
 # ============ 表17：错误分析（失败与异动/分歧关联） ============

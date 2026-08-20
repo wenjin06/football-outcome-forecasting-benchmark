@@ -82,7 +82,7 @@ for k in ["t0.3", "t0.7"]:
           f"cons_mean={c['cons_mean']:.3f} cons>=0.95占比={c['cons_frac_ge095']:.2f} "
           f"cons-correct r={c['point_biserial']:.3f}")
 
-# ============ 2. 开源对照（同批 200 场） ============
+# ============ 2. 开源/模型对照（同批场次） ============
 dl, pl = load("llm_local_per_match.csv")
 sub03_200 = d03.head(200).reset_index(drop=True)
 p03_200 = sub03_200[["p_H", "p_D", "p_A"]].values
@@ -95,11 +95,39 @@ out["open_vs_closed"] = {
     "deepseek_t0.3": metrics(y200, p03_200, odds200),
     "qwen_local": metrics(yl, pl, oddsl),
 }
-print("\n=== 开源对照（同批 200 场） ===")
+print("\n=== 模型对照（deepseek-chat 200 场 / qwen 200 场） ===")
 for k in ["deepseek_t0.3", "qwen_local"]:
     m = out["open_vs_closed"][k]
     print(f"  {k}: acc={m['acc']:.3f} logloss={m['logloss']:.4f} ece={m['ece']:.4f} "
           f"roi={m['roi']*100:.2f}% win={m['win_rate']:.3f}")
+
+# reasoner（推理模型）对照：同批前 120 场（n_samples=1，耗时限制）
+import os as _os
+reasoner_path = _os.path.join(RES, "llm_deepseek_deepseek-reasoner_t0.3_per_match.csv")
+if _os.path.exists(reasoner_path):
+    dr, pr = load("llm_deepseek_deepseek-reasoner_t0.3_per_match.csv")
+    sub03_120 = d03.head(120).reset_index(drop=True)
+    p03_120b = sub03_120[["p_H", "p_D", "p_A"]].values
+    y120b = sub03_120["y"].values.astype(int)
+    odds120b = sub03_120[["odds_H", "odds_D", "odds_A"]].values
+    yr = dr["y"].values.astype(int)
+    oddsr = dr[["odds_H", "odds_D", "odds_A"]].values
+    out["open_vs_closed"]["deepseek_reasoner"] = metrics(yr, pr, oddsr)
+    out["reasoner_notes"] = {
+        "n_matches": int(len(dr)), "n_samples": 1,
+        "comparison": "same first 120 matches of the test set "
+                       "(chronological order), matched against deepseek_t0.3",
+        "deepseek_t0.3_same_120": metrics(y120b, p03_120b, odds120b),
+    }
+    print("\n=== 推理模型对照（同批前 120 场） ===")
+    for k in ["deepseek_t0.3", "deepseek_reasoner"]:
+        m = out["open_vs_closed"][k]
+        print(f"  {k}: acc={m['acc']:.3f} logloss={m['logloss']:.4f} ece={m['ece']:.4f} "
+              f"roi={m['roi']*100:.2f}% win={m['win_rate']:.3f}")
+    m120 = out["reasoner_notes"]["deepseek_t0.3_same_120"]
+    print(f"  deepseek_t0.3 (same 120): acc={m120['acc']:.3f} logloss={m120['logloss']:.4f}")
+else:
+    print("\n[skip] reasoner 对照未运行（缺少 llm_deepseek_deepseek-reasoner_t0.3_per_match.csv）")
 
 with open(os.path.join(RES, "llm_compare.json"), "w", encoding="utf-8") as f:
     json.dump(out, f, ensure_ascii=False, indent=2, default=float)
