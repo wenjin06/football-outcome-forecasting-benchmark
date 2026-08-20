@@ -4,16 +4,16 @@
 \subsection{Data}
 \label{sec:data}
 Figure~\ref{fig:framework} gives an overview of the full pipeline; the
-components are detailed below. We use 11,811 league matches from the English Premier League (E0),
+components are detailed below. The evaluation uses 11,811 league matches from the English Premier League (E0),
 Spanish La Liga (SP1), German Bundesliga (D1), Italian Serie A (I1),
 and French Ligue 1 (F1), covering the 2019/20--2025/26 seasons
-(2025/26 is incomplete, ending 2026-02-12; we report this honestly).
+(2025/26 is incomplete, ending 2026-02-12; this is reported honestly).
 Each match record contains results, referee, and opening and closing
 odds from eight bookmakers (Bet365, Bet\&Win, Interwetten, Pinnacle,
 William Hill, Ladbrokes, Max, and average) in football-data.co.uk
-format. We additionally crawl per-match expected goals (xG, xGA,
-npxG, npxGA), pressing intensity (PPDA), and deep progression from
-Understat for all five leagues and all seven seasons
+format. Per-match expected goals (xG, xGA,
+npxG, npxGA), pressing intensity (PPDA), and deep progression are
+additionally crawled from Understat for all five leagues and all seven seasons
 (24,918 team-match rows; 99.3\%/99.2\% of home/away sides match
 league-match dates after name normalization).
 
@@ -74,7 +74,8 @@ total-variation agreement is the consistency score.
 The scenario complexity score measures how hard a match is to
 predict from \emph{market information alone}. Unlike earlier
 formulations in which a larger strength gap was treated as
-\emph{more} complex (a direction error), we define
+\emph{more} complex (a direction error), the corrected SCS is
+defined as
 \[
 \mathrm{SCS} = (1 - \mathrm{gap}_{norm}) + \mathrm{vol}_{norm}
 + \mathrm{move}_{norm},

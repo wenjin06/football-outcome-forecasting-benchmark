@@ -22,8 +22,8 @@ Third, all ROI values are small and their confidence intervals
 cross zero: no method, including the market itself, shows a stable
 profit over this test season under equal-stake betting. This is the
 expected regime of an efficient market, and it is the backdrop
-against which all subsequent analyses are interpreted. We remind the
-reader that the 2025/26 test season is incomplete (matches through
+against which all subsequent analyses are interpreted. The reader is
+reminded that the 2025/26 test season is incomplete (matches through
 2026-02-12): accuracy estimates are stable (they depend on many
 games), but the financial point estimates above may shift when the
 season completes, and the bootstrap intervals should be read
@@ -38,8 +38,8 @@ market odds costs 3.1 percentage points of accuracy (54.2\% to
 51.1\%) and 0.028 of log loss, confirming that bookmaker information
 dominates. Removing referee statistics changes nothing (54.2\% vs
 54.2\%): the referee features provide no measurable predictive gain,
-a negative result we report deliberately. (One caveat: referee
-records exist only for the Premier League in our data, so the referee
+a negative result reported deliberately. (One caveat: referee
+records exist only for the Premier League in the present data, so the referee
 feature group is evaluated on a subset of matches; the null result
 should be read as \emph{no gain where referee data exist}, not as a
 global statement about referee information.) xG features contribute a
@@ -86,7 +86,7 @@ last two seasons (XGB-roll2) does not help: there is no evidence of
 ``model aging'' within this seven-year window, and retraining
 frequency has no measurable effect on accuracy. This addresses the
 common concern that static models deteriorate as team dynamics
-evolve; on this data, the information content of older seasons is not
+evolve; on these data, the information content of older seasons is not
 harmful.
 
 % ================= 4.6 平局 =================
@@ -124,7 +124,7 @@ is concentrated exactly where it is most confident and most wrong:
 overconfidence, not information. Consistent with this, betting the
 de-vigged opening odds against closing odds (and the reverse)
 produces no positive ROI, confirming that opening-to-closing drift
-contains no exploitable information in this data. We stress that this
+contains no exploitable information in these data. This
 value-betting result is specific to \emph{closing} odds: the market's
 final line is the hardest benchmark, and the negative finding does
 not speak to value-betting strategies evaluated against opening odds
@@ -193,8 +193,8 @@ property of the task and the features, not of a particular model.
 \paragraph{Weight and threshold sensitivity.}
 The UI weights $(0.4, 0.3, 0.15, 0.15)$ are a fixed preset and the
 tier thresholds $(0.30, 0.45)$ are tuned on the validation split. To
-rule out overfitting to these choices, we recompute the stratification
-on the validation set under six weight configurations (varying each
+rule out overfitting to these choices, the stratification
+is recomputed on the validation set under six weight configurations (varying each
 component by $\pm 0.1$ while keeping the sum at 1). In every
 configuration the low-uncertainty tier retains 60--70\% accuracy and
 outperforms the medium tier by 10+ points; only the no-bet coverage
@@ -257,13 +257,13 @@ cost; the reasoning model improves log loss over chat
 matches---more than the \$0.55 of the entire 1,104-match chat
 run. This comparison is \emph{robustness evidence only}: the sample
 is small (120 matches), all confidence intervals overlap, and
-we make no claim of superiority for any model. Its purpose is to
+no claim of superiority is made for any model. Its purpose is to
 show that the paper's qualitative conclusions do not depend on a
 specific proprietary API or on the choice of reasoning vs
 non-reasoning model.
 
-Finally, we offer a mechanistic explanation for the null
-consistency result. In open-domain forecasting settings where
+Finally, a mechanistic explanation for the null
+consistency result is offered. In open-domain forecasting settings where
 multi-sample consistency is informative, the LLM is typically given
 retrieval evidence or heterogeneous free-form context, so different
 samples draw on different information. Here the model receives a

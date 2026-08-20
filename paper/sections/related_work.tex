@@ -23,9 +23,9 @@ exploitable information once transaction costs are considered. Any
 claimed predictive edge must therefore be evaluated against
 de-vigged closing odds under an identical protocol; evaluations that
 omit this baseline cannot distinguish model skill from market
-inefficiency. Our work follows this prescription, and additionally
+inefficiency. The present work follows this prescription, and additionally
 reports the opening-to-closing drift experiment as a direct test of
-market efficiency on our data.
+market efficiency on the present data.
 
 \subsection{LLM Probabilistic Forecasting}
 Large language models have recently been shown to produce calibrated
@@ -38,18 +38,18 @@ LLM-as-a-Prophet~\citep{yang2025llm} provides a controlled
 ``prophet arena'' in which the predictive intelligence of LLMs can be
 benchmarked. These systems rely on web retrieval and fine-tuning,
 which raises the bar for reproducibility and makes leakage control
-difficult to audit. Our setting is deliberately simpler: the LLM
+difficult to audit. The present setting is deliberately simpler: the LLM
 receives only a pre-match feature card, has no retrieval access, and
 is evaluated against the market under the same protocol as all other
 models. This isolates the contribution of domain-enhanced reasoning
 from retrieval and training data effects.
 
 \subsection{Gaps}
-Three gaps motivate our design. (i)~Most evaluations lack a
+Three gaps motivate the design. (i)~Most evaluations lack a
 de-vigged market baseline under an identical betting protocol.
 (ii)~Leakage controls---pre-match information cutoffs, train-only
 statistics, temporal splits---are rarely stated precisely enough to
 reproduce. (iii)~Uncertainty and risk are either absent or defined by
-hand-crafted scores whose empirical validity is not tested. We
-address all three with a conservative, fully specified evaluation and
-with empirically validated uncertainty signals.
+hand-crafted scores whose empirical validity is not tested. All
+three are addressed with a conservative, fully specified evaluation
+and with empirically validated uncertainty signals.

@@ -2,9 +2,9 @@
 \label{sec:discussion}
 
 \subsection{Why the Market Remains Unbeaten}
-Our results are consistent with semi-strong market efficiency in
+The results are consistent with semi-strong market efficiency in
 football betting: closing odds aggregate information more accurately
-than any single model we evaluated. The 87\% share of predictive
+than any single model evaluated here. The 87\% share of predictive
 information carried by market features, the failure of value betting
 even after calibration, and the absence of exploitable
 opening-to-closing drift all point in the same direction. The
@@ -13,7 +13,7 @@ but that their contribution must be measured in risk-adjusted terms
 rather than raw accuracy.
 
 The draw is the clearest example of a task-inherent limitation:
-both our models and the betting market itself under-predict draws by
+both the models and the betting market itself under-predict draws by
 an order of magnitude (predicted draw rates of 2.3\% for XGBoost and
 0.3\% for the market versus an empirical rate of 25.5\%). Draws are
 the least frequent and least distinctive outcome class in football;
@@ -32,10 +32,10 @@ hurts---is the central practical insight of the paper.
 
 \subsection{Real-World Frictions}
 All financial results are gross of transaction costs. Bookmaker
-margins are already embedded in the odds we settle against, but
+margins are already embedded in the odds settled against, but
 real-world execution would add betting taxes, withdrawal fees, and
 odds slippage---typically 3--7\% of turnover depending on the
-jurisdiction. The small positive ROIs we observe (up to 1.8\% for the
+jurisdiction. The small positive ROIs observed (up to 1.8\% for the
 UI-tier strategy) would be entirely consumed by such frictions. The
 practical value of the risk-control framework is therefore not
 \emph{profitability} but \emph{risk stratification}: identifying, in
@@ -59,20 +59,20 @@ The domain-enhanced LLM reaches market-level probability calibration
 retrieval, at a cost of \$0.55 for the entire test season. Two
 caveats keep this claim honest. First, multi-sample consistency---a
 mechanism proposed in earlier LLM-forecasting work---carries no
-information in our setting: at both temperature 0.3 and 0.7 the
+information in this setting: at both temperature 0.3 and 0.7 the
 sampled probabilities agree almost perfectly and do not correlate
 with correctness. Second, an open-weight 7B model matches or exceeds
 the API model on a 200-match subset, so the result is not a property
-of a specific proprietary model. We therefore frame the LLM
-contribution as \emph{calibration without training} and a
+of a specific proprietary model. The LLM contribution is therefore
+framed as \emph{calibration without training} and a
 cost--performance reference point, not as predictive superiority.
 
 \subsection{Limitations}
 \begin{itemize}
-\item Text modality: we deliberately exclude news text. Publicly
+\item Text modality: news text is deliberately excluded. Publicly
 available news corpora lack reliable pre-match timestamps at scale;
 a rigorous text experiment would require timestamped, match-linked
-articles. We sketch the constraints such an extension would need:
+articles. The constraints such an extension would need are:
 (i)~a strict pre-match cutoff, with every article's publication time
 verified against the kickoff time and any post-kickoff or undated
 article discarded; (ii)~protection against retrieval contamination, so
@@ -93,6 +93,6 @@ finishes. The public repository documents the exact refresh procedure.
 \item Financial results are gross of betting taxes and use a single
 bookmaker's closing odds; real-world execution may differ.
 \item The LLM evaluation uses a proprietary API (DeepSeek-Chat);
-we additionally report an open-weight model comparison
+an open-weight model comparison is additionally reported
 (see \S\ref{sec:llm_analysis}).
 \end{itemize}
