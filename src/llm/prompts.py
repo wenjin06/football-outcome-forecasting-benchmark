@@ -43,8 +43,14 @@ RULES:
 """
 
 
-def build_feature_card(feat_row):
-    """把一行赛前特征整理成文本卡片（只含赛前可得项）。"""
+def build_feature_card(feat_row, mode="full"):
+    """把一行赛前特征整理成文本卡片（只含赛前可得项）。
+    mode: full | market | stats | market_stats
+      - full: HOME/AWAY + MARKET + REFEREE（默认，论文主实验）
+      - market: 仅市场信号（de-vig 概率/赔率变动/离散度）
+      - stats: 仅球队状态/排名（无市场、无裁判）
+      - market_stats: 市场 + 球队状态（无裁判）
+    """
     def g(key):
         v = feat_row.get(key)
         if v is None:
@@ -54,32 +60,36 @@ def build_feature_card(feat_row):
         return str(v)
 
     card = []
-    card.append("== HOME TEAM ==")
-    card.append(f"  league rank: {g('H_rank')}   season points: {g('H_season_pts')}")
-    card.append(f"  recent 5: GF avg={g('H_roll_GF')} GA avg={g('H_roll_GA')} "
-                f"pts avg={g('H_roll_Pts')} win rate={g('H_roll_Win')}")
-    card.append(f"  shots avg={g('H_roll_Shots')} on-target={g('H_roll_ShotsT')} "
-                f"corners={g('H_roll_Corners')} fouls={g('H_roll_Fouls')}")
-    card.append("== AWAY TEAM ==")
-    card.append(f"  league rank: {g('A_rank')}   season points: {g('A_season_pts')}")
-    card.append(f"  recent 5: GF avg={g('A_roll_GF')} GA avg={g('A_roll_GA')} "
-                f"pts avg={g('A_roll_Pts')} win rate={g('A_roll_Win')}")
-    card.append(f"  shots avg={g('A_roll_Shots')} on-target={g('A_roll_ShotsT')} "
-                f"corners={g('A_roll_Corners')} fouls={g('A_roll_Fouls')}")
-    card.append("== MARKET (pre-match) ==")
-    card.append(f"  de-vig implied probs: H={g('mkt_prob_H')} D={g('mkt_prob_D')} A={g('mkt_prob_A')}")
-    card.append(f"  odds move H={g('odds_move_H')} D={g('odds_move_D')} A={g('odds_move_A')} "
-                f"(positive = closing shorter than opening)")
-    card.append(f"  closing-odds dispersion (bookmaker disagreement): {g('close_vol')}")
-    card.append("== REFEREE (historical, pre-match) ==")
-    card.append(f"  avg cards={g('ref_cards_avg')} avg reds={g('ref_reds_avg')} "
-                f"avg fouls={g('ref_fouls_avg')} games officiated={g('ref_games')}")
+    if mode in ("full", "stats", "market_stats"):
+        card.append("== HOME TEAM ==")
+        card.append(f"  league rank: {g('H_rank')}   season points: {g('H_season_pts')}")
+        card.append(f"  recent 5: GF avg={g('H_roll_GF')} GA avg={g('H_roll_GA')} "
+                    f"pts avg={g('H_roll_Pts')} win rate={g('H_roll_Win')}")
+        card.append(f"  shots avg={g('H_roll_Shots')} on-target={g('H_roll_ShotsT')} "
+                    f"corners={g('H_roll_Corners')} fouls={g('H_roll_Fouls')}")
+        card.append("== AWAY TEAM ==")
+        card.append(f"  league rank: {g('A_rank')}   season points: {g('A_season_pts')}")
+        card.append(f"  recent 5: GF avg={g('A_roll_GF')} GA avg={g('A_roll_GA')} "
+                    f"pts avg={g('A_roll_Pts')} win rate={g('A_roll_Win')}")
+        card.append(f"  shots avg={g('A_roll_Shots')} on-target={g('A_roll_ShotsT')} "
+                    f"corners={g('A_roll_Corners')} fouls={g('A_roll_Fouls')}")
+    if mode in ("full", "market", "market_stats"):
+        card.append("== MARKET (pre-match) ==")
+        card.append(f"  de-vig implied probs: H={g('mkt_prob_H')} D={g('mkt_prob_D')} A={g('mkt_prob_A')}")
+        card.append(f"  odds move H={g('odds_move_H')} D={g('odds_move_D')} A={g('odds_move_A')} "
+                    f"(positive = closing shorter than opening)")
+        card.append(f"  closing-odds dispersion (bookmaker disagreement): {g('close_vol')}")
+    if mode == "full":
+        card.append("== REFEREE (historical, pre-match) ==")
+        card.append(f"  avg cards={g('ref_cards_avg')} avg reds={g('ref_reds_avg')} "
+                    f"avg fouls={g('ref_fouls_avg')} games officiated={g('ref_games')}")
     return "\n".join(card)
 
 
-def build_messages(feat_row):
-    """feat_row: dict（一行特征，赛前可得）。返回 messages 列表。"""
-    card = build_feature_card(feat_row)
+def build_messages(feat_row, mode="full"):
+    """feat_row: dict（一行特征，赛前可得）。mode 见 build_feature_card。
+    返回 messages 列表。"""
+    card = build_feature_card(feat_row, mode=mode)
     user = (
         "Pre-match feature card for the match (information cutoff = kickoff time, "
         "no post-match information included):\n\n"

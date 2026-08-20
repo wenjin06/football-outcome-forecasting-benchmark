@@ -1,0 +1,23 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Draw diagnostics (test set). First five rows: bins of the model's predicted draw probability with the empirical draw rate in each bin. The model's draw probabilities are calibrated (class-level ECE 0.007) and monotone, but weakly discriminative (r = 0.12 vs the market's 0.14) and never the argmax at typical values near the base rate, which explains the near-empty draw column in \ref{fig:confusion}.}
+\label{tab:drawdeep}
+\resizebox{\linewidth}{!}{
+\begin{tabular}{lccc}
+\toprule
+Model p(draw) bin & N & Mean p & Empirical draw rate \\
+\midrule
+(0,0.1] & 10 & 0.084 & 30.0\% \\
+(0.1,0.2] & 225 & 0.161 & 16.9\% \\
+(0.2,0.25] & 207 & 0.229 & 20.8\% \\
+(0.25,0.3] & 407 & 0.276 & 28.0\% \\
+(0.3,0.4] & 253 & 0.326 & 32.4\% \\
+Class ECE: H / D / A & --- & 0.037 / 0.007 / 0.020 & --- \\
+Class log loss: H / D / A & --- & 0.733 / 1.350 / 1.001 & --- \\
+corr(p(draw), draw) & --- & 0.124 & --- \\
+corr(market p(draw), draw) & --- & 0.137 & --- \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

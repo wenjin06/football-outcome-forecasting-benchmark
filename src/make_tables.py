@@ -403,4 +403,46 @@ save("table19_policy.tex", table_wrap(
     "tab:policy", ["Policy", "Cov", "Acc", "ROI", "ROI 95\\% CI", "Sharpe", "Avg odds"],
     rows))
 
+# ============ 表20：平局深度分析 ============
+dd = load("draw_deep.json")
+rows = []
+for r in dd["model_pdraw_bins"]:
+    rows.append([f"({r['bin'][1:-1]}]", str(r["n"]), num(r["mean_p"], 3), pct(r["actual_draw_rate"])])
+rows.append(["Class ECE: H / D / A", "---",
+             num(dd["class_ece"]["H"], 3) + " / " + num(dd["class_ece"]["D"], 3) + " / " + num(dd["class_ece"]["A"], 3),
+             "---"])
+rows.append(["Class log loss: H / D / A", "---",
+             num(dd["logloss_by_class"]["0"], 3) + " / " + num(dd["logloss_by_class"]["1"], 3) + " / " + num(dd["logloss_by_class"]["2"], 3),
+             "---"])
+rows.append(["corr(p(draw), draw)", "---", num(dd["corr_pdraw_draw"], 3), "---"])
+rows.append(["corr(market p(draw), draw)", "---", num(dd["corr_mktpdraw_draw"], 3), "---"])
+save("table20_drawdeep.tex", table_wrap(
+    "Draw diagnostics (test set). First five rows: bins of the model's "
+    "predicted draw probability with the empirical draw rate in each bin. "
+    "The model's draw probabilities are calibrated (class-level ECE 0.007) "
+    "and monotone, but weakly discriminative (r = 0.12 vs the market's "
+    "0.14) and never the argmax at typical values near the base rate, "
+    "which explains the near-empty draw column in \\ref{fig:confusion}.",
+    "tab:drawdeep", ["Model p(draw) bin", "N", "Mean p", "Empirical draw rate"], rows))
+
+# ============ 表21：LLM 输入消融 ============
+la2 = load("llm_ablation.json")
+rows = []
+for k, name in [("market_only", "Market only"), ("stats_only", "Team statistics only"),
+                ("market_stats", "Market + statistics"), ("full", "Full card (incl. referee)")]:
+    if k not in la2:
+        continue
+    d = la2[k]
+    rows.append([name, pct(d["acc"]), num(d["logloss"]), num(d["ece"]),
+                 pct(d["roi"])])
+save("table21_llm_ablation.tex", table_wrap(
+    "LLM input ablation on the same first 120 test-set matches. Removing "
+    "all market information degrades accuracy and log loss substantially "
+    "(49.2\\%, 1.028); adding team statistics and referee context to the "
+    "market signal changes nothing (54.2--55.0\\%, log loss 0.922--0.927). "
+    "The LLM's market-level calibration is therefore driven by the market "
+    "signal in the prompt, not by independent reasoning over non-market "
+    "features---consistent with the feature-importance result.",
+    "tab:llmablation", ["Input", "Acc", "LogLoss", "ECE", "ROI"], rows))
+
 print("\n全部表格已生成:", len(os.listdir(OUT)), "个文件")

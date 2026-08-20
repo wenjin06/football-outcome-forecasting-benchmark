@@ -43,6 +43,10 @@ def main():
                     help="Override the model name from llm-config.local.json "
                          "(in-memory only; the config file is never modified). "
                          "Example: --model deepseek-reasoner, or a local GGUF id.")
+    ap.add_argument("--feature_mode", default="full",
+                    choices=["full", "market", "stats", "market_stats"],
+                    help="Which feature groups to include in the prompt "
+                         "(LLM input ablation).")
     ap.add_argument("--n_matches", type=int, default=300)
     ap.add_argument("--n_samples", type=int, default=3)
     ap.add_argument("--temperature", type=float, default=0.3)
@@ -53,7 +57,6 @@ def main():
 
     from llm.llm_client import LLMClient
     from llm.prompts import build_feature_card
-
     feat = pd.read_csv(os.path.join(OUT, "all_matches_featurized.csv"),
                        parse_dates=["Date"])
     test = feat[feat["Date"] >= "2025-08-01"].sort_values("Date").reset_index(drop=True)
@@ -83,12 +86,13 @@ def main():
     model_tag = ""
     if args.model:
         model_tag = "_" + re.sub(r"[^A-Za-z0-9]", "-", args.model)
+    fm_tag = "" if args.feature_mode == "full" else f"_fm{args.feature_mode}"
     print(f"provider={args.provider} matches={len(test)} samples={args.n_samples}")
 
     rows = []
     t0 = time.time()
     feat_cols_all = [c for c in test.columns if c not in DROP_COLS]
-    ckpt_path = os.path.join(RES, f"llm_{args.provider}{model_tag}_t{args.temperature}_s{args.n_samples}_partial.csv")
+    ckpt_path = os.path.join(RES, f"llm_{args.provider}{model_tag}{fm_tag}_t{args.temperature}_s{args.n_samples}_partial.csv")
     # 断点续跑：若已有部分结果，加载并跳过已完成场次（只加载 idx 在当前范围内的）
     done_idx = set()
     if os.path.exists(ckpt_path):
@@ -112,7 +116,8 @@ def main():
             continue
         card = r[feat_cols_all].to_dict()  # 只含赛前特征，不含 y/结果/日期
         probs_list, ok, reasons = client.predict_match(card, n_samples=args.n_samples,
-                                                       temperature=args.temperature)
+                                                       temperature=args.temperature,
+                                                       feature_mode=args.feature_mode)
         n_ok = len([p for p in probs_list if p is not None])
         if n_ok == 0:
             rows.append({"idx": i, "ok": 0, "proba": None, "consistency": None})
@@ -186,7 +191,7 @@ def main():
                    "completion": client.total_completion_tokens},
         "elapsed_s": round(time.time() - t0, 1),
     }
-    with open(os.path.join(RES, f"llm_{args.provider}{model_tag}_t{args.temperature}.json"), "w", encoding="utf-8") as f:
+    with open(os.path.join(RES, f"llm_{args.provider}{model_tag}{fm_tag}_t{args.temperature}.json"), "w", encoding="utf-8") as f:
         json.dump(summary, f, ensure_ascii=False, indent=2, default=float)
 
     rec = pd.DataFrame({
@@ -197,9 +202,9 @@ def main():
         "odds_H": tmeta_d["B365CH"].values, "odds_D": tmeta_d["B365CD"].values,
         "odds_A": tmeta_d["B365CA"].values,
     })
-    rec.to_csv(os.path.join(RES, f"llm_{args.provider}{model_tag}_t{args.temperature}_per_match.csv"), index=False)
+    rec.to_csv(os.path.join(RES, f"llm_{args.provider}{model_tag}{fm_tag}_t{args.temperature}_per_match.csv"), index=False)
 
-    print(f"\n===== LLM ({args.provider}{model_tag}) =====")
+    print(f"\n===== LLM ({args.provider}{model_tag}{fm_tag}) =====")
     print(f"  acc={res['accuracy']:.4f} macroF1={res['macro_f1']:.4f} "
           f"logloss={res['log_loss']:.4f} brier={res['brier']:.4f} ece={res['ece']:.4f}")
     print(f"  全下注: ROI={fin['roi']*100:.2f}% Sharpe={fin['sharpe']:.3f} "
@@ -208,7 +213,7 @@ def main():
           f"MDD={fin_r['mdd']*100:.1f}% 胜率={fin_r['win_rate']*100:.1f}% "
           f"({n_bet}注, no-bet {n_nobet}, 覆盖率={n_bet/len(y):.2f})")
     print(f"  cost=${summary['cost_usd']:.2f} elapsed={summary['elapsed_s']}s")
-    print("已保存:", os.path.join(RES, f"llm_{args.provider}{model_tag}_t{args.temperature}.json"))
+    print("已保存:", os.path.join(RES, f"llm_{args.provider}{model_tag}{fm_tag}_t{args.temperature}.json"))
 
 
 if __name__ == "__main__":

@@ -125,16 +125,18 @@ class LLMClient:
         return [p / s for p in probs]
 
     # ---------- 领域增强预测 ----------
-    def predict_match(self, match_prompt, n_samples=3, temperature=0.3):
+    def predict_match(self, match_prompt, n_samples=3, temperature=0.3,
+                      feature_mode="full"):
         """
         对一场比赛做 n_samples 次推理，返回:
         (probs_list, ok_count, reasons)
         - probs_list: 每次的 [pH,pD,pA]（解析失败的样本为 None）
         - ok_count: 成功解析的样本数
         - reasons: 成功样本的 reasoning 文本
+        feature_mode: 见 prompts.build_feature_card（LLM 输入消融）
         """
         from llm.prompts import build_messages
-        messages = build_messages(match_prompt)
+        messages = build_messages(match_prompt, mode=feature_mode)
         probs_list, reasons = [], []
         ok = 0
         for _ in range(n_samples):

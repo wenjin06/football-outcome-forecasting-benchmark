@@ -22,6 +22,19 @@ scores in isolation, without a market baseline, without explicit
 leakage controls, and without a betting protocol that would make the
 financial claims reproducible.
 
+A separate literature on selective prediction and classification
+with a reject option~\citep{chow1970optimum, geifman2017selective}
+has established that a predictor may abstain on a subset of inputs,
+trading coverage against risk. In betting markets this distinction
+matters more than accuracy: a forecast that is accurate on average is
+not necessarily actionable, because the market prices its own
+certainty into the odds. A model that never beats the market can
+still identify which matches the market itself is most uncertain
+about---and abstention on those matches may be the only decision
+with positive expected value. This paper studies that distinction:
+predicting the \emph{difficulty} of a match, rather than claiming an
+edge over the market.
+
 In this paper, these gaps are addressed with a deliberately conservative
 evaluation design. The contributions are three empirical findings,
 a protocol, and a public benchmark.

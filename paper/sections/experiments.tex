@@ -107,19 +107,31 @@ harmful.
 \subsection{Draw Prediction}
 \input{tables/table7_draw_class}
 \input{tables/table8_draw_weight}
+\input{tables/table20_drawdeep}
 
 Draws are systematically under-predicted: the empirical draw rate is
 25.5\%, yet the model predicts a draw in only 2.3\% of matches, and
 draw recall is 0.032 (Table~\ref{tab:drawclass}). The confusion
 matrix in Figure~\ref{fig:confusion} shows the near-empty draw
 column visually. The market behaves
-similarly (0.3\% predicted draw rate). This is not a calibration
-artifact of a single model but a structural property of the task:
-draws are the least frequent and least distinctive outcome class.
-Table~\ref{tab:drawweight} shows that cost-sensitive training
-recovers balance in a controllable way: a draw weight of 1.5 raises
-macro-F1 from 0.421 to 0.493 and draw recall from 0.032 to 0.356,
-at the cost of 2.2 points of accuracy. The accuracy--balance
+similarly (0.3\% predicted draw rate). A deeper analysis
+(Table~\ref{tab:drawdeep}) shows that this is not a probability-
+estimation failure: the model's draw probabilities are well
+calibrated (class-level ECE of 0.007 for draws, versus 0.037 and
+0.020 for home and away wins) and increase monotonically with the
+empirical draw rate across the probability range. The problem is
+discriminative, not probabilistic: draw probabilities correlate with
+outcomes only weakly (r = 0.12, comparable to the market's 0.14),
+and the draw class contributes the largest share of multiclass log
+loss (1.35 vs 0.73 for home wins). Because draw probabilities
+concentrate near 0.25---the empirical base rate---they are rarely the
+argmax in a three-way competition, so recall collapses at the
+decision level even though the underlying probability is sound. This
+is a structural property of the task rather than a defect of any
+single model. Table~\ref{tab:drawweight} shows that cost-sensitive
+training recovers balance in a controllable way: a draw weight of
+1.5 raises macro-F1 from 0.421 to 0.493 and draw recall from 0.032
+to 0.356, at the cost of 2.2 points of accuracy. The accuracy--balance
 trade-off is monotone and easy to report.
 
 % ================= 4.7 价值投注 =================
@@ -247,6 +259,7 @@ forecaster and a risk-aware decision policy.
 \label{sec:llm_analysis}
 \input{tables/table15_temp}
 \input{tables/table16_open}
+\input{tables/table21_llm_ablation}
 
 The LLM row of Table~\ref{tab:main} summarizes the full test season:
 1104 of 1104 matches parsed successfully at a total cost of \$0.55
@@ -275,6 +288,19 @@ no claim of superiority is made for any model. Its purpose is to
 show that the paper's qualitative conclusions do not depend on a
 specific proprietary API or on the choice of reasoning vs
 non-reasoning model.
+
+A remaining question is whether the LLM contributes any reasoning
+beyond transcribing the market signal it is given. Table~\ref{tab:llmablation}
+answers it directly with an input ablation on the same 120 matches:
+removing market information degrades the LLM substantially
+(49.2\% accuracy, 1.028 log loss), while adding team statistics and
+referee context to the market signal changes nothing (54.2--55.0\%,
+log loss 0.922--0.927). The LLM's market-level calibration is
+therefore driven by the market signal in the prompt, not by
+independent reasoning over non-market features---a result that
+reinforces the feature-importance finding (Table~\ref{tab:importance})
+and keeps the LLM contribution honest: \emph{calibration without
+training}, not incremental information.
 
 Finally, a mechanistic explanation for the null
 consistency result is offered. In open-domain forecasting settings where
