@@ -1,0 +1,21 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Difficulty signals on the test set. First five rows: quintiles of the de-vigged closing-odds max probability (market strength). Last two rows: the UI tiers of Table~\ref{tab:uixgb}. Fav. share = fraction of matches with minimum opening odds $\leq$ 1.6. The market's own probability level is itself a strong difficulty signal, and the UI adds to it (see text).}
+\label{tab:difficulty}
+\resizebox{\linewidth}{!}{
+\begin{tabular}{lccc}
+\toprule
+Group & N & Acc & Fav. share \\
+\midrule
+Q0 & 222 & 40.1\% & 0\% \\
+Q1 & 221 & 50.7\% & 0\% \\
+Q2 & 219 & 43.8\% & 0\% \\
+Q3 & 223 & 61.0\% & 33\% \\
+Q4 & 219 & 75.3\% & 98\% \\
+UI low (0.30) & 287 & 67.9\% & 64\% \\
+UI high (no-bet) & 144 & 44.4\% & 10\% \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

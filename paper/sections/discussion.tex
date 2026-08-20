@@ -53,6 +53,53 @@ Section~\ref{sec:llm_analysis}); the effective components of the UI
 are predictive confidence and market volatility, both cheap and
 available at prediction time.
 
+\subsection{Why Difficulty Is Identifiable in an Efficient Market}
+\input{tables/table18_difficulty}
+
+The error analysis (Table~\ref{tab:error}) shows that two intuitive
+market-based difficulty signals fail. Neither odds movement nor
+cross-bookmaker dispersion stratifies prediction error once market
+strength is accounted for: both are confounded with the presence of
+strong favourites, and their relationship with error rate is not
+monotone. A difficulty signal must satisfy three requirements: it
+must be available pre-match, it must stratify accuracy monotonically,
+and its effect must survive conditioning on market strength.
+
+Table~\ref{tab:difficulty} shows that the market's own probability
+level satisfies these requirements. Accuracy rises from 40.1\% in
+the lowest de-vig max-probability quintile to 75.3\% in the highest
+(with some noise in the middle quintiles), and the highest quintile
+is dominated by strong favourites (98\% of matches with minimum
+opening odds $\leq$ 1.6). How sure the market is about a match
+predicts how predictable the match is. This is not a violation of
+market efficiency: efficiency constrains expected returns, not the
+heterogeneity of outcome uncertainty. The financial analogue is the
+well-known asymmetry that returns are unpredictable while volatility
+is predictable and clustered; here, match outcomes (the ``return'')
+are unpredictable beyond the market, but the difficulty of a match
+(its ``volatility'') is identifiable ex ante.
+
+The uncertainty index sits on top of this market signal. Its low
+tier coincides with strong-market matches (64\% favourites) but is
+not reducible to market strength: within the strongest market third,
+matches assigned to the lowest UI tier are predicted at 73.3\%
+accuracy versus 63.4\% for the highest tier; within the weakest
+market third the corresponding gap is 53.2\% versus 44.4\%. The UI
+therefore adds roughly ten percentage points of stratification beyond
+the market's own probability level. The mechanism is calibration:
+the model's confidence is a calibrated estimate of outcome
+uncertainty, and the UI combines it with market volatility and
+movement terms that measure how much the market itself disagrees.
+Calibrated confidence is a difficulty estimate; raw odds movement is
+not.
+
+Practically, this reframes the no-bet policy: it is not a claim that
+the model knows better than the market, but a rule that restricts
+betting to matches where the market---and the model's estimate of
+it---is most certain. This is consistent with the value-betting
+result (Table~\ref{tab:value}): confidence-based selection loses
+money, but certainty-based filtering does not.
+
 \subsection{LLM Results in Context}
 The domain-enhanced LLM reaches market-level probability calibration
 (log loss 0.967 vs 0.967, ECE 0.025 vs 0.026) with no training and no

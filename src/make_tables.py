@@ -358,4 +358,25 @@ for r in rows:
 lines += ["\\bottomrule", "\\end{tabular}", "}", "\\end{table*}"]
 save("table17_error.tex", "\n".join(lines) + "\n")
 
+# ============ 表18：难度信号分层（市场概率 vs UI） ============
+dm = load("ui_vs_market_difficulty.json")
+rows = []
+for b, d in enumerate(dm["mkt_max_quintiles"]):
+    rows.append([f"Q{b}", str(d["n"]), pct(d["acc"]), pct(d["fav_share"], 0)])
+rows.append(["UI low (0.30)", str(dm["ui_tiers"]["low"]["n"]),
+             pct(dm["ui_tiers"]["low"]["acc"]), pct(dm["ui_tiers"]["low"]["fav_share"], 0)])
+rows.append(["UI high (no-bet)", str(dm["ui_tiers"]["high"]["n"]),
+             pct(dm["ui_tiers"]["high"]["acc"]), pct(dm["ui_tiers"]["high"]["fav_share"], 0)])
+save("table18_difficulty.tex", table_wrap(
+    "Difficulty signals on the test set. First five rows: quintiles of the "
+    "de-vigged closing-odds max probability (market strength). Last two rows: "
+    "the UI tiers of Table~\\ref{tab:uixgb}. Fav. share = fraction of matches "
+    "with minimum opening odds $\\leq$ 1.6. The market's own probability "
+    "level is itself a strong difficulty signal, and the UI adds to it (see "
+    "text).", "tab:difficulty",
+    ["Group", "N", "Acc", "Fav. share"], rows))
+
+# 交叉增量（文字引用数字，脚本产出）
+cross = {f"{c['mkt_q']}_{c['ui_q']}": c for c in dm["mkt_x_ui_cross"]}
+
 print("\n全部表格已生成:", len(os.listdir(OUT)), "个文件")
