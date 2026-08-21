@@ -1,14 +1,17 @@
 """
-Walk-forward 时序回测（跨赛季稳定性）
+Walk-forward backtesting (cross-season stability)
 ====================
+Required revision #8 (per-season) + recommended enhancement #2 (cross-season);
+the real version of the original "sliding-window incremental learning" plan.
 
-设计：
-- 测试赛季 S ∈ {2022/23, 2023/24, 2024/25, 2025/26}
-- 扩展窗口：用 S 之前所有数据训练
-- 滚动窗口：只用最近 2 个赛季训练（检验"遗忘旧数据"是否有益，即模型老化问题）
-- 对照：市场 de-vig（无需训练）
-- 指标：acc / logloss / ROI，每个测试赛季独立报告
-输出：results/walkforward.json
+Design:
+- Test seasons S in {2022/23, 2023/24, 2024/25, 2025/26}
+- Expanding window: train on all data before S
+- Rolling window: train on the last two seasons only (tests whether forgetting
+  old data helps, i.e., the model-aging question)
+- Reference: market de-vig (no training)
+- Metrics: acc / logloss / ROI, reported independently per test season
+Output: results/walkforward.json
 """
 import os
 import json
@@ -27,7 +30,8 @@ os.makedirs(RES, exist_ok=True)
 feat = pd.read_csv(os.path.join(OUT, "all_matches_featurized.csv"), parse_dates=["Date"])
 drop_cols = ["Div", "Date", "Season", "HomeTeam", "AwayTeam", "FTR", "y"]
 feature_cols = [c for c in feat.columns if c not in drop_cols and feat[c].notna().sum() > 0]
-# 全局 median 填充（按 train 2019-2024 拟合；walk-forward 中沿用，避免逐窗口重算引入不一致）
+# Global median imputation (fitted on train 2019-2024 and reused across
+# walk-forward windows to avoid inconsistency from per-window refitting)
 medians = feat[feat["Date"] < "2024-08-01"][feature_cols].median()
 feat[feature_cols] = feat[feature_cols].fillna(medians)
 
@@ -52,7 +56,7 @@ for year, start in TEST_SEASONS.items():
 
     entry = {"n": int(len(te))}
 
-    # 市场基线
+    # Market baseline
     acc_m = accuracy_score(yte, mkt.argmax(axis=1))
     ll_m = log_loss(yte, mkt, labels=[0, 1, 2])
     rets, placed = simulate_bets(yte, mkt, tmeta["B365CH"].values,
@@ -60,7 +64,7 @@ for year, start in TEST_SEASONS.items():
     fin = financial_metrics(rets, placed)
     entry["market"] = {"acc": acc_m, "logloss": ll_m, "roi": fin["roi"]}
 
-    # 扩展窗口 XGB（用训练窗口内最近 12 个月做早停验证）
+    # Expanding-window XGB (last 12 months of the training window used for early-stopping validation)
     tr = feat[feat["Date"] < start]
     tr_cut = pd.Timestamp(start) - pd.DateOffset(months=12)
     tr_fit = tr[tr["Date"] < tr_cut]
@@ -80,7 +84,7 @@ for year, start in TEST_SEASONS.items():
     print(f"  {year}/{year+1}: market acc={acc_m:.3f} | xgb_exp acc={acc:.3f} "
           f"ll={ll:.3f} roi={fin['roi']*100:.2f}%")
 
-    # 滚动窗口 XGB（最近 2 个赛季；同样用窗口内最近 12 个月做验证）
+    # Rolling-window XGB (last two seasons; likewise validated on the last 12 months of the window)
     cutoff2 = pd.Timestamp(start) - pd.DateOffset(years=2)
     tr2 = feat[(feat["Date"] >= cutoff2) & (feat["Date"] < start)]
     if len(tr2) > 500:
@@ -105,4 +109,4 @@ for year, start in TEST_SEASONS.items():
 
 with open(os.path.join(RES, "walkforward.json"), "w", encoding="utf-8") as f:
     json.dump(results, f, ensure_ascii=False, indent=2, default=float)
-print("\n已保存:", os.path.join(RES, "walkforward.json"))
+print("\nsaved:", os.path.join(RES, "walkforward.json"))

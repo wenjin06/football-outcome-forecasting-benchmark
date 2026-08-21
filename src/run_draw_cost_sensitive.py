@@ -1,9 +1,11 @@
 """
-成本敏感平局模型（样本加权训练，超越阈值扫描）
+Cost-sensitive draw model (sample-weighted training, beyond threshold scanning)
 ====================
-- XGB 样本权重：平局权重 w ∈ {1.5, 2.0, 2.5, 3.0}（主/客=1）
-- 对比：宏 F1 / 平局 recall / acc / logloss
-输出：results/draw_cost_sensitive.json
+Extension of recommended enhancement #1: instead of post-hoc decision-threshold
+tuning, the draw class is weighted during training.
+- XGB sample weights: draw weight w in {1.5, 2.0, 2.5, 3.0} (home/away = 1)
+- Compared: macro F1 / draw recall / acc / logloss
+Output: results/draw_cost_sensitive.json
 """
 import os
 import json
@@ -50,4 +52,4 @@ for w_draw in [1.0, 1.5, 2.0, 2.5, 3.0]:
 
 with open(os.path.join(RES, "draw_cost_sensitive.json"), "w", encoding="utf-8") as f:
     json.dump(results, f, ensure_ascii=False, indent=2, default=float)
-print("已保存:", os.path.join(RES, "draw_cost_sensitive.json"))
+print("saved:", os.path.join(RES, "draw_cost_sensitive.json"))

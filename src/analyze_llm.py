@@ -1,12 +1,13 @@
 """
-LLM 实验结果后处理分析
-====================
-run_llm.py 的风控段用了旧阈值（0.4/0.7），这里用论文正确阈值（0.30/0.45）重算，
-并补充一致性分析：
-1. UI 分层表（LLM，阈值 0.30/0.45）+ no-bet 报告
-2. 一致性 vs 正确性：一致性是否预测错误（不确定性信号验证）
-3. LLM vs 市场 vs XGB 主表行汇总
-输出：results/llm_analysis.json
+Post-processing analysis of LLM experiment results
+==================================================
+The risk-control section of run_llm.py used the old thresholds (0.4/0.7); here
+we recompute with the correct paper thresholds (0.30/0.45) and add consistency
+analysis:
+1. UI-tier table (LLM, thresholds 0.30/0.45) + no-bet report
+2. Consistency vs. correctness: whether consistency predicts errors (validation of the uncertainty signal)
+3. Summary of main-table rows (LLM vs. market vs. XGB)
+Output: results/llm_analysis.json
 """
 import os
 import json
@@ -31,7 +32,7 @@ n = len(pm)
 
 out = {"n_matches": n}
 
-# ============ 1. UI 分层（阈值 0.30/0.45） ============
+# ============ 1. UI tiers (thresholds 0.30/0.45) ============
 tier, _ = risk_tiers(ui, 0.30, 0.45)
 tiers = {}
 for t, label in [(0, "low"), (1, "medium"), (2, "high(no-bet)")]:
@@ -55,9 +56,9 @@ for t, label in [(0, "low"), (1, "medium"), (2, "high(no-bet)")]:
     print(f"  UI {label}: n={mask.sum()} acc={acc:.3f} ROI={fin['roi']*100:.2f}%")
 out["ui_tiers"] = tiers
 
-# ============ 2. 一致性 vs 正确性 ============
+# ============ 2. Consistency vs. correctness ============
 correct = (proba.argmax(axis=1) == y).astype(float)
-# 按一致性分箱
+# Bin by consistency
 bins = [0, 0.8, 0.9, 0.95, 1.0]
 cons_table = []
 for i in range(len(bins) - 1):
@@ -66,14 +67,14 @@ for i in range(len(bins) - 1):
         continue
     cons_table.append({"bin": f"[{bins[i]},{bins[i+1]})", "n": int(mask.sum()),
                        "acc": float(correct[mask].mean())})
-# 一致性-正确性相关系数（点二列相关）
+# Consistency-correctness correlation (point-biserial)
 corr = np.corrcoef(cons, correct)[0, 1]
 out["consistency_analysis"] = {"bins": cons_table, "point_biserial": float(corr)}
-print(f"\n一致性-正确性相关: {corr:.3f}")
+print(f"\nconsistency-correctness correlation: {corr:.3f}")
 for r in cons_table:
     print(f"  cons {r['bin']}: n={r['n']} acc={r['acc']:.3f}")
 
-# 一致性作为 UI 的组成部分是否有效：高一致性组准确率 vs 低一致性组
+# Is consistency effective as a component of UI: accuracy of high- vs. low-consistency groups
 hi_c = cons >= 0.95
 lo_c = cons < 0.95
 if lo_c.sum() > 20:
@@ -81,10 +82,10 @@ if lo_c.sum() > 20:
     out["consistency_analysis"]["acc_lo"] = float(correct[lo_c].mean())
     out["consistency_analysis"]["n_hi"] = int(hi_c.sum())
     out["consistency_analysis"]["n_lo"] = int(lo_c.sum())
-    print(f"  高一致性(>=0.95): acc={correct[hi_c].mean():.3f} (n={hi_c.sum()})")
-    print(f"  低一致性(<0.95):  acc={correct[lo_c].mean():.3f} (n={lo_c.sum()})")
+    print(f"  high consistency (>=0.95): acc={correct[hi_c].mean():.3f} (n={hi_c.sum()})")
+    print(f"  low consistency (<0.95):  acc={correct[lo_c].mean():.3f} (n={lo_c.sum()})")
 
-# ============ 3. 主表行（LLM vs 市场 vs XGB） ============
+# ============ 3. Main-table rows (LLM vs. market vs. XGB) ============
 from sklearn.metrics import log_loss as sk_ll
 import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -113,4 +114,4 @@ out["main_row_llm"] = row("LLM", proba, y, odds)
 
 with open(os.path.join(RES, "llm_analysis.json"), "w", encoding="utf-8") as f:
     json.dump(out, f, ensure_ascii=False, indent=2, default=float)
-print("\n已保存:", os.path.join(RES, "llm_analysis.json"))
+print("\nsaved:", os.path.join(RES, "llm_analysis.json"))

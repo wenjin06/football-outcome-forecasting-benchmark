@@ -1,8 +1,9 @@
 """
-论文图表生成器：从 results/*.json 与管道产物生成论文配图
+Paper figure generator: produces publication figures from results/*.json and
+pipeline artifacts
 ====================
-输出：paper/figures/fig1_framework.png ~ fig5_confusion.png（300dpi）
-图表全部由真实数据绘制，禁止手工美化数字。
+Output: paper/figures/fig1_framework.png ~ fig5_confusion.png (300 dpi)
+All figures are rendered directly from the real data by scripts; numbers are never hand-edited.
 """
 import os
 import json
@@ -32,7 +33,7 @@ val = feat[(feat["Date"] >= "2024-08-01") & (feat["Date"] < "2025-08-01")]
 test = feat[feat["Date"] >= "2025-08-01"]
 yte = test["y"].values.astype(int)
 
-print("[1/5] 训练 XGB（用于可靠性图/ROI 曲线）...")
+print("[1/5] training XGB (for reliability/ROI curves)...")
 xgb = XGBClassifier(n_estimators=500, max_depth=6, learning_rate=0.05,
                     subsample=0.8, colsample_bytree=0.8, eval_metric="mlogloss",
                     early_stopping_rounds=30, random_state=42)
@@ -40,8 +41,8 @@ xgb.fit(train[feature_cols], train["y"].values.astype(int),
         eval_set=[(val[feature_cols], val["y"].values.astype(int))], verbose=False)
 proba_xgb = xgb.predict_proba(test[feature_cols])
 
-# ============ 图1：框架图 ============
-print("[2/5] 框架图 ...")
+# ============ Fig 1: framework diagram ============
+print("[2/5] framework diagram ...")
 fig, ax = plt.subplots(figsize=(7.5, 3.2))
 ax.axis("off")
 
@@ -79,8 +80,8 @@ plt.tight_layout()
 plt.savefig(os.path.join(OUT, "fig1_framework.png"), bbox_inches="tight")
 plt.close()
 
-# ============ 图2：可靠性图 ============
-print("[3/5] 可靠性图 ...")
+# ============ Fig 2: reliability diagram ============
+print("[3/5] reliability diagram ...")
 llm = pd.read_csv(os.path.join(RES, "llm_deepseek_t0.3_per_match.csv"))
 llm = llm.dropna(subset=["p_H"]).reset_index(drop=True)
 proba_llm = llm[["p_H", "p_D", "p_A"]].values
@@ -109,8 +110,8 @@ plt.tight_layout()
 plt.savefig(os.path.join(OUT, "fig2_reliability.png"))
 plt.close()
 
-# ============ 图3：UI 分布 + 分层 ============
-print("[4/5] UI 分布与分层 ...")
+# ============ Fig 3: UI distribution + tiers ============
+print("[4/5] UI distribution and tiers ...")
 from risk import compute_ui, fit_robust
 vol_stats = fit_robust(train, "close_vol")
 move_stats = fit_robust(train, "odds_move_H")
@@ -139,8 +140,8 @@ plt.tight_layout()
 plt.savefig(os.path.join(OUT, "fig3_ui.png"))
 plt.close()
 
-# ============ 图4：累计 ROI 曲线 ============
-print("[5/5] 累计 ROI 曲线 ...")
+# ============ Fig 4: cumulative ROI curves ============
+print("[5/5] cumulative ROI curves ...")
 import glob
 raw = pd.concat([pd.read_csv(p) for p in glob.glob(r"E:\论文\structured_data\*.csv")], ignore_index=True)
 raw["Date"] = pd.to_datetime(raw["Date"], format="%d/%m/%Y", errors="coerce")
@@ -197,8 +198,8 @@ plt.tight_layout()
 plt.savefig(os.path.join(OUT, "fig4_roi.png"))
 plt.close()
 
-# ============ 图5：混淆矩阵 ============
-print("[6/5] 混淆矩阵 ...")
+# ============ Fig 5: confusion matrix ============
+print("[6/5] confusion matrix ...")
 da = json.load(open(os.path.join(RES, "draw_analysis.json"), encoding="utf-8"))
 cm = np.array(da["xgb"]["confusion_matrix"])
 fig, ax = plt.subplots(figsize=(3.4, 3.0))
@@ -218,15 +219,17 @@ plt.tight_layout()
 plt.savefig(os.path.join(OUT, "fig5_confusion.png"))
 plt.close()
 
-# ============ 图6：coverage-accuracy / coverage-ROI 曲线（策略对比） ============
+# ============ Fig 6: coverage-accuracy / coverage-ROI curves (policy comparison) ============
 print("[6/6] coverage curves ...")
 pc = json.load(open(os.path.join(RES, "policy_comparison.json"), encoding="utf-8"))
 names = {"UI": "UI (uncertainty index)", "SCS": "SCS",
+         "entropy": "Entropy", "exp_brier": "1-Sum p^2",
          "market_conf": "Market confidence", "model_conf": "Model confidence",
          "random": "Random filtering"}
-colors = {"UI": "#1f77b4", "SCS": "#2ca02c", "market_conf": "#d62728",
+colors = {"UI": "#1f77b4", "SCS": "#2ca02c", "entropy": "#9467bd",
+          "exp_brier": "#17becf", "market_conf": "#d62728",
           "model_conf": "#ff7f0e", "random": "#7f7f7f"}
-fig, axes = plt.subplots(1, 2, figsize=(7.0, 3.2))
+fig, axes = plt.subplots(1, 2, figsize=(7.2, 3.8))
 handles, labels = [], []
 for name in names:
     curve = pc["strategies"][name]
@@ -247,11 +250,23 @@ for ax, ylab, title in [(axes[0], "Accuracy (%)", "Coverage vs accuracy"),
     ax.set_title(title, fontsize=9)
     ax.set_xlim(0.38, 1.02)
     ax.grid(alpha=0.3)
-# 共用底部图例（放在 axes 下方的空白区，避免遮挡任意曲线）
-fig.legend(handles, labels, loc="lower center", ncol=5, fontsize=7,
-           frameon=False, bbox_to_anchor=(0.5, 0.02))
-fig.subplots_adjust(bottom=0.20)
+# Shared bottom legend: 7 curves in two rows (ncol=4), with extra bottom space (bottom=0.32),
+# to avoid overlap with axis labels/titles
+leg = fig.legend(handles, labels, loc="lower center", ncol=4, fontsize=7,
+           frameon=False, bbox_to_anchor=(0.5, 0.0))
+fig.subplots_adjust(bottom=0.32, top=0.92)
+# Overlap check: the legend must not intersect any subplot title/axis label and must lie fully inside the canvas
+fig.canvas.draw()
+leg_box = leg.get_window_extent()
+for ax in axes:
+    for it in [ax.title, ax.xaxis.label, ax.yaxis.label]:
+        if leg_box.overlaps(it.get_window_extent()):
+            print(f"WARNING: fig6 legend overlaps '{it.get_text()}'")
+fb = fig.get_window_extent()
+if not (fb.x0 <= leg_box.x0 and fb.y0 <= leg_box.y0
+        and fb.x1 >= leg_box.x1 and fb.y1 >= leg_box.y1):
+    print("WARNING: fig6 legend outside canvas")
 plt.savefig(os.path.join(OUT, "fig6_coverage.png"))
 plt.close()
 
-print("\n图表已保存到", OUT)
+print("\nfigures saved to", OUT)

@@ -1,17 +1,17 @@
-% fig1_framework.tex — 顶刊级框架图（TikZ 矢量，语义化配色 + 图标 + 协议条）
-% 结构对应 Methodology：数据源 -> 特征 -> 模型 -> 风控 -> 决策
+% fig1_framework.tex - top-tier framework diagram (TikZ vector, semantic colors + icons + protocol bar)
+% Structure follows Methodology: data sources -> features -> models -> risk control -> decision
 \begin{figure*}[tbp]
 \centering
 \resizebox{\textwidth}{!}{%
 \begin{tikzpicture}[
   font=\scriptsize,
-  % ===== 配色（语义化，灰度友好）=====
+  % ===== colors (semantic, grayscale-friendly) =====
   cDataBG/.style={fill=blue!7},   cDataBD/.style={draw=blue!55!black},
   cFeatBG/.style={fill=violet!6}, cFeatBD/.style={draw=violet!55!black},
   cModBG/.style={fill=teal!6},    cModBD/.style={draw=teal!55!black},
   cRiskBG/.style={fill=orange!8}, cRiskBD/.style={draw=orange!70!black},
   cDecBG/.style={fill=gray!8},    cDecBD/.style={draw=gray!55!black},
-  % ===== 样式 =====
+  % ===== style =====
   dsrc/.style={draw, rounded corners=2pt, fill=white, line width=0.7pt,
                minimum height=9.5mm, minimum width=30mm, align=center},
   sub/.style={draw, rounded corners=2pt, fill=white, line width=0.7pt,
@@ -24,7 +24,7 @@
   note/.style={font=\scriptsize\itshape, gray!60!black},
   lab/.style={font=\scriptsize\bfseries}
 ]
-% ===== 数据源图标（手绘迷你图）=====
+% ===== data-source icons (hand-drawn mini figures) =====
 \newcommand{\icondb}{\tikz[baseline=-0.4ex, scale=0.42]{%
 \draw[line width=0.9pt] (0,0) ellipse (0.9 and 0.3);
 \draw[line width=0.9pt] (0,0.6) ellipse (0.9 and 0.3);
@@ -44,7 +44,7 @@
 \draw[line width=0.9pt, rounded corners=0.6pt] (0,0) rectangle (1.0,1.4);
 \draw[line width=0.9pt, rounded corners=0.6pt] (0.4,0.3) rectangle (1.4,1.7);}}
 
-% ================= 阶段1：数据源 =================
+% ================= stage 1: data sources =================
 \node[dsrc] (s1) at (0, 1.30) {{\icondb}\\ Structured\\ statistics};
 \node[dsrc] (s2) at (0, 0.35) {{\iconline}\\ xG time series};
 \node[dsrc] (s3) at (0, -0.60) {{\iconbars}\\ Market odds (8 books)};
@@ -52,7 +52,7 @@
 \node[panel, cDataBG, cDataBD, fit=(s1)(s2)(s3)(s4)] (A) {};
 \node[stageLab, cDataBD] at ([yshift=1.6mm]A.north) {Pre-match data};
 
-% ================= 阶段2：特征工程 =================
+% ================= stage 2: feature engineering =================
 \node[dsrc] (f1) at (4.9, 0.55) {\textbf{Feature card}\\ \scriptsize 60 features\\[1pt]
   \scriptsize rolling form, rank\\ \scriptsize de-vig probabilities\\ \scriptsize odds movement, xG\\ \scriptsize referee stats};
 \node[chip, fill=red!70!black, minimum width=22mm] (f2) at (4.9, -1.15) {no leakage};
@@ -60,14 +60,14 @@
 \node[panel, cFeatBG, cFeatBD, fit=(f1)(f2)] (B) {};
 \node[stageLab, cFeatBD] at ([yshift=1.6mm]B.north) {Feature engineering};
 
-% ================= 阶段3：模型 =================
+% ================= stage 3: models =================
 \node[sub] (m1) at (9.0, 1.10) {\scriptsize\textbf{Statistical}\\ Poisson, Dixon--Coles, Elo};
 \node[sub] (m2) at (9.0, 0.10) {\scriptsize\textbf{Machine learning}\\ Random Forest, XGBoost};
 \node[sub] (m3) at (9.0, -0.90) {\scriptsize\textbf{LLM (DeepSeek)}\\ domain-enhanced, no retrieval};
 \node[panel, cModBG, cModBD, fit=(m1)(m2)(m3)] (C) {};
 \node[stageLab, cModBD] at ([yshift=1.6mm]C.north) {Forecast models};
 
-% ================= 阶段4：风控 =================
+% ================= stage 4: risk control =================
 \node[dsrc] (r1) at (13.4, 1.10) {\textbf{SCS}\\ complexity score};
 \node[dsrc] (r2) at (13.4, 0.10) {\textbf{UI}\\ uncertainty index};
 \node[chip, fill=green!60!black] (r3) at (12.2, -1.05) {full stake};
@@ -77,19 +77,19 @@
 \node[panel, cRiskBG, cRiskBD, fit=(r1)(r2)(r3)(r4)(r5)] (D) {};
 \node[stageLab, cRiskBD] at ([yshift=1.6mm]D.north) {Risk control};
 
-% ================= 阶段5：决策 =================
+% ================= stage 5: decision =================
 \node[dsrc] (o1) at (16.6, 0) {\textbf{Bet decision}\\[1pt]
   \scriptsize stake or no-bet\\ \scriptsize stop-loss rule};
 \node[panel, cDecBG, cDecBD, fit=(o1)] (E) {};
 \node[stageLab, cDecBD] at ([yshift=1.6mm]E.north) {Decision};
 
-% ================= 评估协议条 =================
+% ================= evaluation protocol bar =================
 \node[panel, cDecBG, cDecBD, minimum width=150mm] (P) at (8.3, -3.3) {
   \scriptsize\textbf{Evaluation protocol:} chronological split
   (train 2019/20--2023/24 \textbullet{} val 2024/25 \textbullet{} test 2025/26) \quad
   bootstrap 95\% CI \quad equal-stake betting \quad no-bet reported separately};
 
-% ================= 箭头 =================
+% ================= arrows =================
 \foreach \s in {s1, s2, s3, s4} {
   \draw[arr] (\s.east) -- (f1.west);
 }
@@ -98,7 +98,7 @@
 \draw[arr] (m2.east) -- (r2.west);
 \draw[arr] (r2.east) -- (o1.west);
 \node[note, yshift=2mm] at ($(r2.east)!0.5!(o1.west)$) {position limits};
-% 决策到协议条（虚线，表示评估闭环）
+% decision -> protocol bar (dashed: evaluation loop)
 \draw[line width=0.7pt, dashed, gray] (E.south) -- (P.north);
 \end{tikzpicture}%
 }

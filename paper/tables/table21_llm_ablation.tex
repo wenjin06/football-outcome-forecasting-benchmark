@@ -1,7 +1,7 @@
 \begin{table}[htbp]
 \centering
 \small
-\caption{LLM input ablation on the same first 120 test-set matches. Removing all market information degrades accuracy and log loss substantially (49.2\%, 1.028); adding team statistics and referee context to the market signal changes nothing (54.2--55.0\%, log loss 0.922--0.927). The LLM's market-level calibration is therefore driven by the market signal in the prompt, not by independent reasoning over non-market features---consistent with the feature-importance result.}
+\caption{LLM input ablation on the same first 120 test-set matches. Removing all market information degrades accuracy and log loss substantially (49.2\%, 1.028); adding team statistics and referee context to the market signal changes nothing (54.2--55.0\%, log loss 0.922--0.927). The final row is a no-LLM baseline that directly outputs the de-vigged market probabilities: the LLM is statistically indistinguishable from this transcription baseline, confirming that its market-level calibration is inherited from the market signal in the prompt rather than produced by independent reasoning.}
 \label{tab:llmablation}
 \resizebox{\linewidth}{!}{
 \begin{tabular}{lcccc}
@@ -12,6 +12,7 @@ Market only & 55.0\% & 0.922 & 0.087 & -3.5\% \\
 Team statistics only & 49.2\% & 1.028 & 0.072 & -7.2\% \\
 Market + statistics & 54.2\% & 0.927 & 0.084 & -5.5\% \\
 Full card (incl. referee) & 54.2\% & 0.927 & 0.097 & -5.5\% \\
+Market transcription (no LLM) & 55.0\% & 0.923 & 0.087 & -3.5\% \\
 \bottomrule
 \end{tabular}
 }

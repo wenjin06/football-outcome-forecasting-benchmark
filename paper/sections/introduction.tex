@@ -1,19 +1,25 @@
-% Introduction（草稿）
-Sports outcome forecasting has attracted sustained attention from
-statistics, machine learning, and, more recently, large language
-models (LLMs). The task is attractive because outcomes are public,
+% Introduction (draft)
+Efficient betting markets aggregate vast amounts of information into
+closing odds that are notoriously difficult to beat: across a large
+body of sports-forecasting research, models that outperform the
+market's own probabilities---on accuracy, let alone on
+profitability---are rare and fragile. Efficiency of this kind is not
+a nuisance for forecasting research; it is the environment in which
+any honest evaluation must be conducted, and it sharpens the
+question a forecasting paper can credibly answer.
+
+Under such conditions the central forecasting problem shifts from
+\emph{predicting outcomes} to \emph{predicting when predictions are
+unreliable}. Sports outcome forecasting has attracted
+sustained attention from statistics, machine learning, and, more
+recently, large language models (LLMs) because outcomes are public,
 structured, and frequent, and because a predictive model can be
 evaluated not only on accuracy but also on downstream financial
-consequences in betting markets. However, the same properties make
-football forecasting a demanding test bed: betting markets aggregate
-vast amounts of information into closing odds, and any method that
-hopes to add value must do so \emph{against} a strong, continuously
-updated baseline.
-
-The literature has moved in two directions. On the modeling side,
-classical approaches---Poisson and Dixon--Coles models, Elo ratings,
-and gradient-boosted trees---provide strong and interpretable
-baselines. On the representation side, LLM-based forecasting
+consequences in betting markets. The literature has moved in two
+directions. On the modeling side, classical approaches---Poisson and
+Dixon--Coles models, Elo ratings, and gradient-boosted
+trees---provide strong and interpretable baselines. On the
+representation side, LLM-based forecasting
 systems~\citep{halawi2024approaching, alur2025aia, yang2025llm}
 demonstrate that language models can produce calibrated probability
 forecasts when given structured evidence. Yet most published
@@ -31,49 +37,63 @@ not necessarily actionable, because the market prices its own
 certainty into the odds. A model that never beats the market can
 still identify which matches the market itself is most uncertain
 about---and abstention on those matches may be the only decision
-with positive expected value. This paper studies that distinction:
-predicting the \emph{difficulty} of a match, rather than claiming an
-edge over the market.
+with positive expected value. This paper studies that distinction.
+\emph{Forecast difficulty} is defined as the ex-ante probability that
+a forecasting system produces an incorrect outcome prediction; the
+term refers to the reliability of the system's own decision, not to
+any colloquial property of the match such as strong versus weak
+teams or close versus one-sided games. Predicting difficulty rather
+than claiming an edge over the market is then a well-posed
+forecasting problem of its own, and one that remains tractable
+precisely where outcome prediction does not.
 
-In this paper, these gaps are addressed with a deliberately conservative
-evaluation design. The contributions are as follows.
+Football is used as the empirical environment because its markets
+are deep, liquid, and continuously updated, and because match
+outcomes are public, structured, and frequent. The questions above
+are addressed with a deliberately conservative evaluation design.
+The contributions are as follows.
 
 \begin{itemize}
-\item \textbf{Contribution 1: a leakage-controlled benchmark.}
-Closing-market probabilities remain a very strong upper benchmark:
-under a strictly leakage-controlled protocol (pre-match features
-only, train-only statistics, chronological split, manual
-verification), no learned method exceeds de-vigged closing odds
-(54.2\% accuracy, 0.967 log loss) on a temporally held-out test
-period of 1,104 matches, and a domain-enhanced LLM matches
-market-level probability calibration at negligible cost.
-Market-derived features account for approximately 87\% of the
-aggregate permutation importance under the XGBoost specification.
-\item \textbf{Contribution 2: difficulty is predictable even when
-outcomes are not.} Outcome predictability and difficulty
-predictability are different objects. The market cannot be beaten
-($\mathrm{E}[\mathrm{edge}] \approx 0$), yet the probability of a
-correct prediction is strongly heterogeneous and identifiable ex
-ante: the market's own probability level stratifies accuracy from
-40.1\% to 75.3\%, whereas odds movement and bookmaker dispersion do
-not (they are confounded with market strength), and an uncertainty
-index adds roughly ten percentage points of stratification beyond
-market strength. A no-bet policy on high-uncertainty matches
-improves risk-adjusted returns.
-\item \textbf{Contribution 3: decision-level uncertainty control.}
-Prediction confidence should not be interpreted as betting edge, but
-uncertainty can be used to decide when to abstain. Value-based
-selection of high-confidence bets loses money (ROI $-11.5\%$,
-$-7.1\%$ after calibration); error rates among high-confidence
-predictions exceed the market's (22.3\% vs 16.0\% at confidence
-$\geq 0.7$), and the no-bet rule driven by the uncertainty index is
-an abstention policy whose threshold is a coverage control in the
+\item \textbf{Contribution 1: predictive edge disappears in
+efficient betting markets.} Under a strictly leakage-controlled
+protocol (pre-match features only, train-only statistics,
+chronological split, manual verification), no learned method exceeds
+de-vigged closing odds (54.2\% accuracy, 0.967 log loss) on a
+temporally held-out test period of 1,104 matches, and a
+domain-enhanced LLM matches market-level probability calibration at
+negligible cost. Value-based selection of high-confidence bets
+produces consistently negative returns, and market-derived features
+account for approximately 87\% of the aggregate permutation
+importance under the XGBoost specification.
+\item \textbf{Contribution 2: forecast reliability remains
+heterogeneous and predictable even when outcomes are not.}
+Outcome predictability and difficulty predictability are different
+objects. The market cannot be beaten ($\mathrm{E}[\mathrm{edge}]
+\approx 0$), yet the ex-ante probability of a correct prediction is
+strongly heterogeneous and identifiable: the market's own probability
+level stratifies accuracy from 40.1\% to 75.3\%, whereas odds
+movement and bookmaker dispersion do not (they are confounded with
+market strength), and an uncertainty index adds roughly ten
+percentage points of stratification beyond market strength.
+\item \textbf{Contribution 3: an uncertainty-aware abstention
+framework improves decision quality.} Prediction confidence should
+not be interpreted as betting edge, but uncertainty can be used to
+decide when to abstain. A no-bet policy on high-uncertainty matches
+improves risk-adjusted returns (error rates among high-confidence
+predictions exceed the market's: 22.3\% vs 16.0\% at confidence
+$\geq 0.7$), and the rule is an abstention policy in the
 selective-prediction sense---trading coverage against risk rather
-than against accuracy. All financial evaluations share one betting
-protocol (equal-stake and fractional-Kelly on a single bookmaker's
-closing odds, bootstrap confidence intervals, coverage reporting,
-and no-bet decisions separated from executed bets), and the full
-pipeline is public and script-driven.
+than against accuracy---whose threshold is a coverage control.
+\item \textbf{Contribution 4: a leakage-controlled benchmark
+including LLMs.} The full pipeline is public and script-driven; every
+number is reproducible from raw public data. The benchmark makes the
+three contributions above credible: it is the methodology that
+supports the negative result on edge, the positive result on
+difficulty, and the abstention framework. All financial evaluations
+share one betting protocol (equal-stake and fractional-Kelly on a
+single bookmaker's closing odds, bootstrap confidence intervals,
+coverage reporting, and no-bet decisions separated from executed
+bets).
 \end{itemize}
 
 The remainder of the paper is organized as follows. Section~\ref{sec:related} reviews

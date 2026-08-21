@@ -1,15 +1,15 @@
 """
-消融实验（非 LLM 部分，立即可以跑出真数字）
+Ablation experiments (non-LLM part; runs immediately and produces real numbers)
 ====================
-在无泄漏管道产物上，对 XGBoost 做特征组消融：
-- full          : 全部赛前特征
-- no_odds       : 去掉全部市场信号（隐含概率/赔率变动/离散度）
-- no_referee    : 去掉裁判历史特征
-- no_rank       : 去掉联赛排名（保留滚动状态/赛季积分/市场）
-- structured_only: 只有球队状态+排名（无市场、无裁判）
-- no_form       : 去掉滚动状态与赛季积分（保留市场/裁判；排名同时去掉，因其由积分定义）
+Feature-group ablation for XGBoost on the leak-free pipeline output:
+- full          : all pre-match features
+- no_odds       : all market signals removed (implied probabilities/odds movement/dispersion)
+- no_referee    : referee-history features removed
+- no_rank       : league rank removed (rolling form/season points/market kept)
+- structured_only: only team form + rank (no market, no referee)
+- no_form       : rolling form and season points removed (market/referee kept; rank also removed since it is defined by points)
 
-同一超参、同一 val 早停、同一 test 评估。结果存 results/ablations_summary.json
+Same hyperparameters, same val early stopping, same test evaluation. Results are saved to results/ablations_summary.json
 """
 import os
 import json
@@ -51,7 +51,7 @@ train = feat[feat["Date"] < "2024-08-01"]
 val = feat[(feat["Date"] >= "2024-08-01") & (feat["Date"] < "2025-08-01")]
 test = feat[feat["Date"] >= "2025-08-01"]
 
-# 测试集赔率（财务模拟用）
+# Test-set odds (for financial simulation)
 raw = pd.concat([pd.read_csv(p) for p in glob.glob(r"E:\论文\structured_data\*.csv")], ignore_index=True)
 raw["Date"] = pd.to_datetime(raw["Date"], format="%d/%m/%Y", errors="coerce")
 raw = raw.dropna(subset=["Date", "HomeTeam", "AwayTeam", "FTR"])
@@ -83,7 +83,7 @@ for name, cols in GROUPS.items():
                                    tmeta["B365CA"].values, min_prob=0.4)
     fin2 = financial_metrics(rets2, placed2)
 
-    # bootstrap acc CI
+    # Bootstrap accuracy CI
     from sklearn.metrics import accuracy_score
     rng = np.random.default_rng(42)
     n = len(yte)
@@ -108,4 +108,4 @@ for name, cols in GROUPS.items():
 
 with open(os.path.join(RES, "ablations_summary.json"), "w", encoding="utf-8") as f:
     json.dump(results, f, ensure_ascii=False, indent=2, default=float)
-print("\n已保存:", os.path.join(RES, "ablations_summary.json"))
+print("\nsaved:", os.path.join(RES, "ablations_summary.json"))

@@ -1,19 +1,26 @@
 """
-LLM 预测实验（诚实版）
-====================
-用法：
+LLM prediction experiments
+==========================
+Usage:
   python src/run_llm.py --provider deepseek --n_matches 300 --n_samples 3
   python src/run_llm.py --provider local   --n_matches 200 --n_samples 2
 
-- 从 test 集（2025/26 上半季）按时间序取前 n_matches 场（可选随机种子采样）
-- 每场 n_samples 次推理；解析失败的样本计入 success_rate（如实报告）
-- 多采样平均得到最终概率；consistency 用成对 TV 距离（risk.py）
-- 评估：预测指标 + 财务模拟（同一投注协议）+ 成本估算
-- 输出 results/llm_<provider>_t<temperature>.json + llm_<provider>_t<temperature>_per_match.csv
-  （温度/供应商进文件名，避免不同配置互相覆盖）
+- Take the first n_matches matches of the test set (2025/26 first half) in
+  chronological order (optional seeded random sampling)
+- n_samples inferences per match; samples that fail parsing are counted in
+  success_rate (reported as-is)
+- Final probabilities are the mean over samples; consistency uses pairwise TV
+  distance (risk.py)
+- Evaluation: prediction metrics + financial simulation (same betting protocol)
+  + cost estimate
+- Outputs results/llm_<provider>_t<temperature>.json +
+  llm_<provider>_t<temperature>_per_match.csv
+  (temperature/provider are part of the filename so different configurations
+  do not overwrite each other)
 
-说明：本地 qwen（WSL llama.cpp 8001）免费但慢，建议先用小样本验证流程；
-DeepSeek 全量 1104 场 × 3 采样成本约 $1 量级，可接受。
+Notes: the local qwen (WSL llama.cpp, port 8001) is free but slow; validate the
+pipeline on a small sample first. Full DeepSeek: 1,104 matches x 3 samples costs
+on the order of $1, which is acceptable.
 """
 import argparse
 import json
@@ -66,7 +73,7 @@ def main():
     else:
         test = test.head(args.n_matches)
 
-    # 测试集赔率（财务模拟）
+    # Test-set odds (financial simulation)
     import glob
     raw = pd.concat([pd.read_csv(p) for p in glob.glob(r"E:\论文\structured_data\*.csv")],
                     ignore_index=True)
@@ -75,7 +82,7 @@ def main():
     tmeta = test.merge(raw[["Date", "HomeTeam", "AwayTeam", "B365CH", "B365CD", "B365CA"]],
                        on=["Date", "HomeTeam", "AwayTeam"], how="left")
 
-    # train 用于归一化统计量（与管道一致）
+    # Train is used for normalization statistics (consistent with the pipeline)
     train = feat[feat["Date"] < "2024-08-01"]
     vol_stats = fit_robust(train, "close_vol")
     move_stats = fit_robust(train, "odds_move_H")
@@ -93,7 +100,8 @@ def main():
     t0 = time.time()
     feat_cols_all = [c for c in test.columns if c not in DROP_COLS]
     ckpt_path = os.path.join(RES, f"llm_{args.provider}{model_tag}{fm_tag}_t{args.temperature}_s{args.n_samples}_partial.csv")
-    # 断点续跑：若已有部分结果，加载并跳过已完成场次（只加载 idx 在当前范围内的）
+    # Checkpoint resume: if partial results exist, load them and skip completed matches
+    # (only idx values within the current range are loaded)
     done_idx = set()
     if os.path.exists(ckpt_path):
         try:
@@ -107,14 +115,14 @@ def main():
                 proba_old = np.array(json.loads(p)) if isinstance(p, str) and p else None
                 rows.append({"idx": idx, "ok": int(rr["ok"]), "proba": proba_old,
                              "consistency": rr["consistency"] if "consistency" in rr else None})
-            print(f"  检测到断点，已恢复 {len(rows)} 场（跳过已完成场次）")
+            print(f"  checkpoint detected, resumed {len(rows)} matches (skipping completed ones)")
         except Exception as e:
-            print(f"  断点加载失败（{e}），从头开始")
+            print(f"  checkpoint load failed ({e}), starting from scratch")
     ...
     for i, (_, r) in enumerate(test.iterrows()):
         if i in done_idx:
             continue
-        card = r[feat_cols_all].to_dict()  # 只含赛前特征，不含 y/结果/日期
+        card = r[feat_cols_all].to_dict()  # pre-match features only; no y/result/date
         probs_list, ok, reasons = client.predict_match(card, n_samples=args.n_samples,
                                                        temperature=args.temperature,
                                                        feature_mode=args.feature_mode)
@@ -133,7 +141,7 @@ def main():
         if i % 25 == 0:
             print(f"  [{i}/{len(test)}] ok={n_ok}/{args.n_samples} "
                   f"p={proba.round(3)} cons={consistency:.2f}")
-        # 断点保存：每 50 场写一次部分结果
+        # Checkpoint: write partial results every 50 matches
         if i % 50 == 49:
             tmp = pd.DataFrame([{"idx": rw["idx"], "ok": rw["ok"],
                                  "p": json.dumps(rw["proba"].tolist()) if rw["proba"] is not None else None,
@@ -143,11 +151,11 @@ def main():
 
     done = [r for r in rows if r["ok"] > 0]
     failed = len(rows) - len(done)
-    print(f"\n完成 {len(done)}/{len(rows)} 场，解析失败 {failed} 场 "
+    print(f"\ndone {len(done)}/{len(rows)} matches, {failed} failed to parse "
           f"(success_rate={len(done)/len(rows):.3f})")
 
     if not done:
-        print("无有效预测，退出。")
+        print("no valid predictions, exiting.")
         return
 
     y = test.loc[[r["idx"] for r in done], "y"].values.astype(int)
@@ -161,7 +169,7 @@ def main():
                                  min_prob=0.0)
     fin = financial_metrics(rets, placed)
 
-    # 风控版本：UI 分层 + no-bet
+    # Risk-controlled version: UI tiers + no-bet
     feat_d = test.iloc[[r["idx"] for r in done]].reset_index(drop=True)
     ui = compute_ui(proba, feat_d, vol_stats, move_stats, consistency=consistency)
     scs = compute_scs(feat_d, vol_stats, move_stats)
@@ -207,13 +215,13 @@ def main():
     print(f"\n===== LLM ({args.provider}{model_tag}{fm_tag}) =====")
     print(f"  acc={res['accuracy']:.4f} macroF1={res['macro_f1']:.4f} "
           f"logloss={res['log_loss']:.4f} brier={res['brier']:.4f} ece={res['ece']:.4f}")
-    print(f"  全下注: ROI={fin['roi']*100:.2f}% Sharpe={fin['sharpe']:.3f} "
-          f"MDD={fin['mdd']*100:.1f}% 胜率={fin['win_rate']*100:.1f}% ({fin['n_bets']}注)")
-    print(f"  风控后: ROI={fin_r['roi']*100:.2f}% Sharpe={fin_r['sharpe']:.3f} "
-          f"MDD={fin_r['mdd']*100:.1f}% 胜率={fin_r['win_rate']*100:.1f}% "
-          f"({n_bet}注, no-bet {n_nobet}, 覆盖率={n_bet/len(y):.2f})")
+    print(f"  all bets: ROI={fin['roi']*100:.2f}% Sharpe={fin['sharpe']:.3f} "
+          f"MDD={fin['mdd']*100:.1f}% win rate={fin['win_rate']*100:.1f}% ({fin['n_bets']} bets)")
+    print(f"  after risk control: ROI={fin_r['roi']*100:.2f}% Sharpe={fin_r['sharpe']:.3f} "
+          f"MDD={fin_r['mdd']*100:.1f}% win rate={fin_r['win_rate']*100:.1f}% "
+          f"({n_bet} bets, no-bet {n_nobet}, coverage={n_bet/len(y):.2f})")
     print(f"  cost=${summary['cost_usd']:.2f} elapsed={summary['elapsed_s']}s")
-    print("已保存:", os.path.join(RES, f"llm_{args.provider}{model_tag}{fm_tag}_t{args.temperature}.json"))
+    print("saved:", os.path.join(RES, f"llm_{args.provider}{model_tag}{fm_tag}_t{args.temperature}.json"))
 
 
 if __name__ == "__main__":

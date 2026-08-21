@@ -1,9 +1,11 @@
 """
-特征重要性（置换重要性，可解释性证据）
+Feature importance (permutation importance, interpretability evidence)
 ====================
-证明"市场赔率主导预测"的量化证据（对应消融结论的交叉验证）。
-- 置换重要性：随机打乱单特征，测 test logloss 上升量；n_repeats=5
-- 输出：results/feature_importance.json（top 20 + 分组汇总）
+Quantitative evidence that market odds dominate the predictions (cross-check of
+the ablation conclusions).
+- Permutation importance: shuffle one feature at a time and measure the test
+  log-loss increase; n_repeats=5
+- Output: results/feature_importance.json (top 20 + group summary)
 """
 import os
 import json
@@ -27,7 +29,7 @@ train = feat[feat["Date"] < "2024-08-01"]
 val = feat[(feat["Date"] >= "2024-08-01") & (feat["Date"] < "2025-08-01")]
 test = feat[feat["Date"] >= "2025-08-01"]
 
-print("[1] 训练全局 XGB ...")
+print("[1] training global XGB ...")
 model = XGBClassifier(n_estimators=500, max_depth=6, learning_rate=0.05,
                       subsample=0.8, colsample_bytree=0.8, eval_metric="mlogloss",
                       early_stopping_rounds=30, random_state=42)
@@ -37,7 +39,7 @@ model.fit(train[feature_cols], train["y"].values.astype(int),
 Xte = test[feature_cols].values
 yte = test["y"].values.astype(int)
 
-print("[2] 置换重要性（test, n_repeats=5）...")
+print("[2] permutation importance (test, n_repeats=5)...")
 pi = permutation_importance(model, Xte, yte, scoring="neg_log_loss",
                             n_repeats=5, random_state=42, n_jobs=-1)
 
@@ -47,7 +49,7 @@ imp = pd.DataFrame({
     "std": pi.importances_std,
 }).sort_values("importance", ascending=False)
 
-# 分组汇总
+# Group summary
 def group_of(f):
     if f.startswith("mkt_prob") or f.startswith("odds_move") or f in ("close_vol", "close_avg_h", "open_avg_h", "close_max_h"):
         return "market"
@@ -74,6 +76,6 @@ with open(os.path.join(RES, "feature_importance.json"), "w", encoding="utf-8") a
 
 print("top 10:")
 print(imp.head(10).to_string(index=False))
-print("\n分组重要性（logloss 上升总量）:")
+print("\ngroup importance (total logloss increase):")
 print(group_sum.round(4).to_string())
-print("\n已保存:", os.path.join(RES, "feature_importance.json"))
+print("\nsaved:", os.path.join(RES, "feature_importance.json"))

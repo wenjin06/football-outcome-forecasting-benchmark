@@ -1,4 +1,4 @@
-"""合并 main.tex + sections + tables 为单文件 tex，供 pandoc 转 docx。"""
+"""Merge main.tex + sections + tables into a single tex file for pandoc-to-docx conversion."""
 import re
 import sys
 import os
@@ -22,13 +22,13 @@ def expand(path, depth=0, seen=None):
         p = os.path.join(os.path.dirname(path), inc)
         if os.path.exists(p):
             return expand(p, depth + 1, seen)
-        # 尝试 sections/ tables/ 相对 main 的路径
+        # Try paths under sections/ and tables/ relative to main
         p2 = os.path.join(BASE, inc)
         if os.path.exists(p2):
             return expand(p2, depth + 1, seen)
         return m.group(0)
     text = re.sub(r"\\input\{([^}]+)\}", repl, text)
-    # 移除参考文献命令（pandoc citeproc 接管）
+    # Strip bibliography commands (pandoc citeproc takes over)
     text = re.sub(r"\\bibliographystyle\{[^}]*\}", "", text)
     text = re.sub(r"\\bibliography\{[^}]*\}", "", text)
     return text
@@ -36,7 +36,7 @@ def expand(path, depth=0, seen=None):
 
 def main():
     merged = expand(os.path.join(BASE, "main.tex"))
-    # 文档类与宏包对 pandoc 无用且可能干扰：pandoc 会忽略 preamble，保留即可
+    # The document class and packages are useless to pandoc and may interfere; pandoc ignores the preamble, so keep them
     out = os.path.join(BASE, "_merged_for_docx.tex")
     with open(out, "w", encoding="utf-8") as f:
         f.write(merged)

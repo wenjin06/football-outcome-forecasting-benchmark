@@ -1,4 +1,4 @@
-% Discussion（草稿）
+% Discussion (draft)
 \label{sec:discussion}
 
 \subsection{Why the Market Remains Unbeaten}
@@ -18,7 +18,18 @@ an order of magnitude (predicted draw rates of 2.3\% for XGBoost and
 0.3\% for the market versus an empirical rate of 25.5\%). Draws are
 the least frequent and least distinctive outcome class in football;
 this low signal-to-noise ratio bounds the achievable macro-F1 of any
-outcome classifier on this task, independently of model choice.
+outcome classifier on this task, independently of model choice. The
+mechanism is now precise: the model's draw probability is class-
+calibrated (ECE 0.007) and monotone, but its Brier resolution is
+0.003 versus 0.040 for home wins (Table~\ref{tab:drawdeep})---the
+market prices the draw inside a narrow band around its base rate,
+and a calibrated model inherits that ceiling. Under market
+efficiency this is exactly the expected pattern: no pre-match
+feature moves the draw probability enough to be exploitable, so the
+draw class is where outcome predictability is structurally lowest.
+The draw is therefore not a defect of any single model but a
+boundary condition of the task, and one more reason that difficulty,
+not outcome, is the predictable quantity.
 
 \subsection{Overconfidence, Not Information}
 The value-betting experiment is instructive. Bets selected because
@@ -71,11 +82,13 @@ the lowest de-vig max-probability quintile to 75.3\% in the highest
 (with some noise in the middle quintiles), and the highest quintile
 is dominated by strong favourites (98\% of matches with minimum
 opening odds $\leq$ 1.6). How sure the market is about a match
-predicts how predictable the match is. One caveat is that match
-difficulty has no ground-truth label: both the market's probability
-level and the SCS/UI scores are proxies, validated here against
-held-out accuracy and, for the UI, against the market's own
-probability level via the conditioning analysis below. This is the
+predicts how predictable the match is. One caveat is that forecast
+difficulty (defined in Section~\ref{sec:introduction} as the
+ex-ante probability of an incorrect prediction) has no ground-truth
+label: both the market's probability level and the SCS/UI scores are
+proxies, validated here against held-out accuracy and, for the UI,
+against the market's own probability level via the conditioning
+analysis below. This is the
 same latent-variable status that volatility holds in financial
 forecasting, and the proxies are deliberately triangulated rather
 than treated as observed quantities. This is not a violation of
@@ -182,7 +195,8 @@ or via web access (no retrieval at inference, as in this paper);
 heterogeneous across leagues and matches. Without these controls,
 text features would reintroduce exactly the leakage this paper is
 designed to eliminate.
-\item The test season (2025/26) is incomplete; results may shift
+\item The held-out test period (2025/26 season to date) is
+incomplete; results may shift
 slightly at season end. This limitation is actionable: every number in
 this paper is produced by a script-driven pipeline
 (\texttt{refresh\_all.cmd} reruns feature construction, all
@@ -191,7 +205,22 @@ updated CSV files in a single pass), so the complete result set and
 every table can be regenerated without manual editing once the season
 finishes. The public repository documents the exact refresh procedure.
 \item Financial results are gross of betting taxes and use a single
-bookmaker's closing odds; real-world execution may differ.
+bookmaker's closing odds; real-world execution may differ. ROI is
+reported as a decision-quality proxy under closing-market
+assumptions, not as deployable profitability.
+\item The evidence is single-sport and single-market: men's football
+in the five major European leagues, settled against one bookmaker's
+closing line. Generalization to other sports, lower divisions, or
+different market structures (e.g., Asian-handicap or in-play
+markets) is untested, although the underlying mechanism---market
+efficiency constraining predictive edge while difficulty remains
+identifiable---is not sport-specific in principle.
+\item The analyses are predictive, not causal. Forecast difficulty
+is a latent construct: the market's probability level, the SCS, and
+the UI are proxies validated by triangulation against held-out
+accuracy rather than measured quantities, and the reported
+relationships should not be read as causal claims about how odds are
+formed.
 \item The LLM evaluation uses a proprietary API (DeepSeek-Chat);
 an open-weight model comparison is additionally reported
 (see \S\ref{sec:llm_analysis}).

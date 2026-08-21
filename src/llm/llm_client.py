@@ -1,13 +1,16 @@
 """
-可插拔 LLM 客户端（诚实版）
+Pluggable LLM client
 ====================
-- 供应商：DeepSeek API（deepseek-chat / deepseek-reasoner）、本地 qwen（llama.cpp server，端口 8001）
-- 配置：用户自建 src/llm/llm-config.local.json，代码只读不打印 key
-- 输出解析：要求模型输出 JSON {probs:[pH,pD,pA], reasoning:"..."}，解析失败则标记失败
-  并返回 None（上层决定兜底策略），绝不静默编造概率
-- 成本追踪：记录 token 用量与估算成本
+- Providers: DeepSeek API (deepseek-chat / deepseek-reasoner), local qwen
+  (llama.cpp server, port 8001)
+- Configuration: user-created src/llm/llm-config.local.json; the code only reads
+  it and never prints the key
+- Output parsing: the model is asked to output JSON {probs:[pH,pD,pA], reasoning:"..."};
+  on parse failure the sample is marked as failed and None is returned (the caller
+  decides the fallback policy); probabilities are never silently fabricated
+- Cost tracking: records token usage and estimated cost
 
-llm-config.local.json 格式（用户自建，勿提交 git）：
+llm-config.local.json format (user-created; do not commit to git):
 {
   "default_provider": "deepseek",
   "deepseek": { "api_key": "sk-...", "base_url": "https://api.deepseek.com", "model": "deepseek-chat" },
@@ -34,20 +37,20 @@ class LLMClient:
         self.config = config or load_config()
         if not self.config:
             raise RuntimeError(
-                "缺少 llm-config.local.json（用户自建，含 API key，勿提交 git）")
+                "Missing llm-config.local.json (user-created, contains API key, do not commit to git)")
         self.provider = provider or self.config.get("default_provider", "deepseek")
         self.total_prompt_tokens = 0
         self.total_completion_tokens = 0
 
-    # ---------- 底层调用 ----------
+    # ---------- Low-level calls ----------
     def _call(self, messages, temperature=0.3, max_tokens=1200, n=1):
-        """返回 list[dict]，每个 dict 含 content；失败抛异常。"""
+        """Returns a list of dicts, each with a content field; raises on failure."""
         cfg = self.config[self.provider]
         if self.provider == "local":
             import urllib.request
             model_id = cfg.get("model")
             if not model_id:
-                # 自动解析服务端已加载模型 ID（本地服务，无隐私内容）
+                # Auto-resolve the model ID loaded by the server (local service, no private content)
                 with urllib.request.urlopen(
                         cfg["base_url"].rstrip("/") + "/v1/models", timeout=30) as resp:
                     model_id = json.loads(resp.read().decode("utf-8"))["data"][0]["id"]
@@ -70,7 +73,7 @@ class LLMClient:
             self.total_prompt_tokens += usage.get("prompt_tokens", 0)
             self.total_completion_tokens += usage.get("completion_tokens", 0)
             return out
-        else:  # deepseek (OpenAI 兼容)
+        else:  # deepseek (OpenAI-compatible)
             import urllib.request
             payload = {
                 "model": cfg["model"],
@@ -98,10 +101,10 @@ class LLMClient:
             self.total_completion_tokens += usage.get("completion_tokens", 0)
             return out
 
-    # ---------- 概率解析 ----------
+    # ---------- Probability parsing ----------
     @staticmethod
     def parse_probs(text):
-        """从模型输出中提取 [pH, pD, pA]；失败返回 None（绝不静默编造）。"""
+        """Extract [pH, pD, pA] from the model output; returns None on failure (never silently fabricates)."""
         m = re.search(r"\{[^{}]*\}", text, re.DOTALL)
         if not m:
             return None
@@ -124,16 +127,16 @@ class LLMClient:
             return None
         return [p / s for p in probs]
 
-    # ---------- 领域增强预测 ----------
+    # ---------- Domain-augmented prediction ----------
     def predict_match(self, match_prompt, n_samples=3, temperature=0.3,
                       feature_mode="full"):
         """
-        对一场比赛做 n_samples 次推理，返回:
+        Run n_samples inferences for one match; returns:
         (probs_list, ok_count, reasons)
-        - probs_list: 每次的 [pH,pD,pA]（解析失败的样本为 None）
-        - ok_count: 成功解析的样本数
-        - reasons: 成功样本的 reasoning 文本
-        feature_mode: 见 prompts.build_feature_card（LLM 输入消融）
+        - probs_list: [pH,pD,pA] per sample (None for samples that failed parsing)
+        - ok_count: number of samples parsed successfully
+        - reasons: reasoning text of the successful samples
+        feature_mode: see prompts.build_feature_card (LLM input ablation)
         """
         from llm.prompts import build_messages
         messages = build_messages(match_prompt, mode=feature_mode)
@@ -146,8 +149,8 @@ class LLMClient:
                 content = out[0].get("content") or ""
                 p = self.parse_probs(content)
                 if p is None and out[0].get("reasoning"):
-                    # deepseek-reasoner 把推理放在 reasoning_content，
-                    # 最终回答可能为空或未截断：尝试从推理中解析 JSON
+                    # deepseek-reasoner puts reasoning in reasoning_content;
+                    # the final answer may be empty or truncated: try parsing JSON from the reasoning
                     p = self.parse_probs(out[0]["reasoning"])
                 if p is None:
                     probs_list.append(None)
@@ -157,12 +160,12 @@ class LLMClient:
                 ok += 1
             except Exception as e:
                 probs_list.append(None)
-                print(f"  [llm] 调用失败: {e}")
+                print(f"  [llm] call failed: {e}")
         return probs_list, ok, reasons
 
     def estimate_cost(self):
-        """按模型实际价格估算成本（美元/百万 token）。本地模型返回 0。
-        deepseek-chat: $0.14/M in, $0.28/M out；deepseek-reasoner: $0.55/M in, $2.19/M out。"""
+        """Estimate cost from the actual model prices (USD per million tokens). Local models return 0.
+        deepseek-chat: $0.14/M in, $0.28/M out; deepseek-reasoner: $0.55/M in, $2.19/M out."""
         if self.provider == "local":
             return 0.0
         model = (self.config.get(self.provider, {}) or {}).get("model", "")

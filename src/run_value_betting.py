@@ -1,11 +1,14 @@
 """
-价值投注 + 开盘/收盘赔率检验 + Kelly 仓位
+Value betting + opening/closing odds tests + Kelly staking
 ====================
+Recommended enhancements #3 (Kelly/stake comparison) and #7 (complete betting
+protocol), plus market-efficiency tests.
 
-1. 价值投注：EV = p_model * odds - 1 > threshold 才下注，扫描阈值
-2. 开盘 vs 收盘：用 de-vig 开盘概率做模型、收盘赔率结算 -> 检验开盘信息含量
-3. Kelly：f = (p*odds-1)/(odds-1)，封顶 10% 仓位，与等注对比
-输出：results/value_betting.json
+1. Value betting: bet only when EV = p_model * odds - 1 > threshold; sweep the threshold
+2. Opening vs. closing: use de-vigged opening probabilities as the model and settle
+   at closing odds -> tests the information content of opening prices
+3. Kelly: f = (p*odds-1)/(odds-1), capped at 10% stake, compared with equal stakes
+Output: results/value_betting.json
 """
 import os
 import json
@@ -45,7 +48,7 @@ def devig(h, d, a):
     return (inv.div(s, axis=0)).values
 
 
-print("[1] 训练全局 XGB ...")
+print("[1] training global XGB ...")
 model = XGBClassifier(n_estimators=500, max_depth=6, learning_rate=0.05,
                       subsample=0.8, colsample_bytree=0.8, eval_metric="mlogloss",
                       early_stopping_rounds=30, random_state=42)
@@ -58,8 +61,8 @@ opening_proba = devig(tmeta["B365H"], tmeta["B365D"], tmeta["B365A"])
 
 results = {}
 
-# ============ 1. 价值投注（XGB 概率 vs 收盘赔率） ============
-print("\n[2] 价值投注阈值扫描（EV = p*odds - 1）...")
+# ============ 1. Value betting (XGB probabilities vs. closing odds) ============
+print("\n[2] value-betting threshold scan (EV = p*odds - 1)...")
 ev_scan = []
 for thr in [0.0, 0.02, 0.05, 0.08, 0.10, 0.15]:
     rets = np.zeros(len(yte))
@@ -81,8 +84,8 @@ for thr in [0.0, 0.02, 0.05, 0.08, 0.10, 0.15]:
           f"MDD={fin['mdd']*100:.1f}% n={fin['n_bets']}")
 results["value_ev_scan"] = ev_scan
 
-# ============ 2. 开盘 vs 收盘（市场内部有效性） ============
-print("\n[3] 开盘 de-vig 概率 vs 收盘赔率结算 ...")
+# ============ 2. Opening vs. closing (intra-market efficiency) ============
+print("\n[3] opening de-vig probabilities vs closing-odds settlement ...")
 rets = np.zeros(len(yte))
 placed = np.zeros(len(yte), dtype=bool)
 pred_open = opening_proba.argmax(axis=1)
@@ -96,10 +99,10 @@ fin = financial_metrics(rets, placed)
 results["open_vs_close"] = {"roi": fin["roi"], "sharpe": fin["sharpe"], "mdd": fin["mdd"],
                             "n_bets": int(fin["n_bets"]), "win_rate": fin["win_rate"],
                             "accuracy": float((pred_open == yte).mean())}
-print(f"  开盘概率@收盘结算: ROI={fin['roi']*100:.2f}% acc={(pred_open==yte).mean():.3f}")
+print(f"  opening probs @ closing settlement: ROI={fin['roi']*100:.2f}% acc={(pred_open==yte).mean():.3f}")
 
-# 反向：收盘 de-vig 概率 vs 开盘赔率结算
-print("\n[4] 收盘 de-vig 概率 vs 开盘赔率结算（方向对照）...")
+# Reverse direction: closing de-vig probabilities settled at opening odds
+print("\n[4] closing de-vig probabilities vs opening-odds settlement (direction check)...")
 opening = tmeta[["B365H", "B365D", "B365A"]].values
 closing_proba = devig(tmeta["B365CH"], tmeta["B365CD"], tmeta["B365CA"])
 pred_close = closing_proba.argmax(axis=1)
@@ -114,10 +117,10 @@ for i in range(len(yte)):
 fin = financial_metrics(rets, placed)
 results["close_vs_open"] = {"roi": fin["roi"], "sharpe": fin["sharpe"], "mdd": fin["mdd"],
                             "n_bets": int(fin["n_bets"]), "win_rate": fin["win_rate"]}
-print(f"  收盘概率@开盘结算: ROI={fin['roi']*100:.2f}%")
+print(f"  closing probs @ opening settlement: ROI={fin['roi']*100:.2f}%")
 
-# ============ 3. Kelly 仓位 vs 等注 ============
-print("\n[5] Kelly 仓位（封顶 10%）...")
+# ============ 3. Kelly staking vs. equal stakes ============
+print("\n[5] Kelly staking (capped at 10%)...")
 bankroll = 100.0
 kelly_rets = np.zeros(len(yte))
 kelly_placed = np.zeros(len(yte), dtype=bool)
@@ -143,10 +146,10 @@ results["kelly"] = {"roi": fin["roi"], "sharpe": fin["sharpe"], "mdd": fin["mdd"
                     "n_bets": int(fin["n_bets"]), "win_rate": fin["win_rate"],
                     "final_bankroll": float(bankroll)}
 print(f"  Kelly: ROI={fin['roi']*100:.2f}% Sharpe={fin['sharpe']:.3f} "
-      f"MDD={fin['mdd']*100:.1f}% 终值={bankroll:.1f} ({fin['n_bets']}注)")
+      f"MDD={fin['mdd']*100:.1f}% final bankroll={bankroll:.1f} ({fin['n_bets']} bets)")
 
-# ============ 4. 校准后价值投注（验证过度自信假设） ============
-print("\n[6] 概率校准（isotonic，fit on val）后重做 EV 扫描 ...")
+# ============ 4. Value betting after calibration (test of the overconfidence hypothesis) ============
+print("\n[6] EV scan redone after probability calibration (isotonic, fit on val)...")
 from sklearn.isotonic import IsotonicRegression
 proba_va = model.predict_proba(val[feature_cols])
 yva = val["y"].values.astype(int)
@@ -175,9 +178,9 @@ for thr in [0.0, 0.02, 0.05, 0.08, 0.10]:
                      "mdd": fin["mdd"], "n_bets": int(fin["n_bets"]),
                      "win_rate": fin["win_rate"],
                      "coverage": float(placed.sum() / len(yte))})
-    print(f"  校准后 EV>{thr:.2f}: ROI={fin['roi']*100:.2f}% n={fin['n_bets']}")
+    print(f"  after calibration EV>{thr:.2f}: ROI={fin['roi']*100:.2f}% n={fin['n_bets']}")
 results["value_ev_scan_calibrated"] = cal_scan
 
 with open(os.path.join(RES, "value_betting.json"), "w", encoding="utf-8") as f:
     json.dump(results, f, ensure_ascii=False, indent=2, default=float)
-print("\n已保存:", os.path.join(RES, "value_betting.json"))
+print("\nsaved:", os.path.join(RES, "value_betting.json"))

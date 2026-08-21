@@ -1,19 +1,19 @@
 """
-评估工具：指标 + bootstrap 置信区间
+Evaluation utilities: metrics + bootstrap confidence intervals
 """
 import numpy as np
 import pandas as pd
 from sklearn.metrics import accuracy_score, f1_score, log_loss
 
 def brier_multiclass(y_true, proba):
-    """多分类 Brier score（一维压缩版）"""
+    """Multiclass Brier score (scalar version)"""
     K = proba.shape[1]
     y_onehot = np.zeros((len(y_true), K))
     y_onehot[np.arange(len(y_true)), y_true] = 1.0
     return np.mean(np.sum((proba - y_onehot) ** 2, axis=1))
 
 def ece(y_true, proba, n_bins=10):
-    """Expected Calibration Error（按预测最大概率分箱）"""
+    """Expected Calibration Error (binned by maximum predicted probability)"""
     conf = proba.max(axis=1)
     pred = proba.argmax(axis=1)
     acc = (pred == y_true).astype(float)
@@ -42,8 +42,8 @@ def reliability_table(y_true, proba, n_bins=10):
 
 def bootstrap_ci(values, metric_fn, n_boot=2000, seed=42, alpha=0.05):
     """
-    对样本级数值做 bootstrap 置信区间。
-    metric_fn: 接受 (sample_weights) 或 (values, weights) 返回标量指标。
+    Bootstrap confidence interval over sample-level values.
+    metric_fn: accepts (sample_weights) or (values, weights) and returns a scalar metric.
     """
     rng = np.random.default_rng(seed)
     n = len(values)
@@ -55,12 +55,12 @@ def bootstrap_ci(values, metric_fn, n_boot=2000, seed=42, alpha=0.05):
     lo, hi = np.percentile(stats, [100 * alpha / 2, 100 * (1 - alpha / 2)])
     return lo, hi
 
-# ============ 财务模拟 ============
+# ============ Financial simulation ============
 def simulate_bets(y_true, proba, odds_h, odds_d, odds_a, stake=1.0,
                   min_prob=0.0, no_bet_mask=None):
     """
-    模拟投注：对每个样本，选模型概率最高的结果下注（若超过阈值）。
-    返回逐样本收益序列。
+    Simulate betting: for each sample, bet on the outcome with the highest model
+    probability (if it exceeds the threshold). Returns per-sample returns.
     """
     n = len(y_true)
     returns = np.zeros(n)
@@ -83,7 +83,7 @@ def simulate_bets(y_true, proba, odds_h, odds_d, odds_a, stake=1.0,
     return returns, placed
 
 def financial_metrics(returns, placed=None):
-    """从逐样本收益序列计算 ROI/Sharpe/MDD/胜率。MDD 为最大回撤占峰值资金比例。"""
+    """Compute ROI/Sharpe/MDD/win rate from per-sample returns. MDD is the maximum drawdown relative to peak capital."""
     if placed is not None:
         r = returns[placed]
     else:
@@ -95,7 +95,7 @@ def financial_metrics(returns, placed=None):
     roi = net / total_stake
     sharpe = (r.mean() / r.std()) if r.std() > 0 else np.nan
     cum = np.cumsum(r)
-    # 资金曲线：初始资金=总下注额（等注策略），每注 1 单位
+    # Wealth curve: initial capital = total staked (equal-stakes strategy), 1 unit per bet
     wealth = 1 + cum / total_stake
     peak = np.maximum.accumulate(wealth)
     dd = (wealth - peak) / peak
@@ -104,7 +104,7 @@ def financial_metrics(returns, placed=None):
     return {"n_bets": int(len(r)), "roi": roi, "sharpe": sharpe, "mdd": mdd, "win_rate": win_rate}
 
 def evaluate_predictions(y_true, proba):
-    """预测指标汇总"""
+    """Summary of prediction metrics"""
     return {
         "accuracy": accuracy_score(y_true, proba.argmax(axis=1)),
         "macro_f1": f1_score(y_true, proba.argmax(axis=1), average="macro"),

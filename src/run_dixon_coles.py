@@ -1,9 +1,10 @@
 """
-Dixon-Coles 模型基线（向量化 MLE，快）
+Dixon-Coles model baseline (vectorized MLE, fast)
 ====================
-- 分联赛拟合；λh = exp(μ + home + att_h + def_a), λa = exp(μ + att_a + def_h)
-- τ 修正低比分（ρ）；L-BFGS-B 拟合；预测 test 与市场/XGB 同协议对比
-输出：results/dixon_coles.json
+- Fitted per league; λh = exp(μ + home + att_h + def_a), λa = exp(μ + att_a + def_h)
+- τ correction for low scores (ρ); L-BFGS-B fitting; test predictions compared
+  with market/XGB under the same protocol
+Output: results/dixon_coles.json
 """
 import os
 import json
@@ -39,7 +40,7 @@ def neg_ll_vec(params, team_codes, n_teams, home_idx, rho_idx, mu_idx, X, y, n_m
     la = np.exp(mu + att[ac] + deff[hc])
     x, yg = y[:, 0], y[:, 1]
     ll = poisson.logpmf(x, lh) + poisson.logpmf(yg, la)
-    # tau 修正（只影响 0/1 低比分组合）
+    # tau correction (affects low-score 0/1 combinations only)
     m00 = (x == 0) & (yg == 0)
     m01 = (x == 0) & (yg == 1)
     m10 = (x == 1) & (yg == 0)
@@ -99,12 +100,12 @@ test_raw = raw[raw["Date"] >= "2025-08-01"]
 results = {}
 proba_all = np.zeros((len(test_raw), 3))
 unseen_count = 0
-print("[1] 分联赛向量化拟合 Dixon-Coles ...", flush=True)
+print("[1] fitting Dixon-Coles per league (vectorized) ...", flush=True)
 for div, sub in train_raw.groupby("Div"):
     t0 = pd.Timestamp.now()
     teams, code, params, hi, ri = fit_dc(sub)
     te = test_raw[test_raw["Div"] == div]
-    ref = len(teams) - 1  # 参考队（att=def=0）
+    ref = len(teams) - 1  # reference team (att=def=0)
     probas = []
     for _, r in te.iterrows():
         h = code.get(r["HomeTeam"], ref)
@@ -116,9 +117,9 @@ for div, sub in train_raw.groupby("Div"):
         probas.append(predict_dc(teams, code, params, hi, ri, h, a))
     proba_all[test_raw["Div"] == div] = np.array(probas)
     results[div] = {"teams": len(teams), "n_test": len(te)}
-    print(f"  {div}: {len(teams)} 队 test {len(te)} 场 "
+    print(f"  {div}: {len(teams)} teams, test {len(te)} matches "
           f"({(pd.Timestamp.now()-t0).total_seconds():.0f}s)", flush=True)
-print(f"未在训练集出现过的球队出场次数: {unseen_count}（按中性参数处理）", flush=True)
+print(f"appearances by teams unseen in training: {unseen_count} (handled with neutral parameters)", flush=True)
 
 yte = test_raw["FTR"].map({"H": 0, "D": 1, "A": 2}).values
 acc = accuracy_score(yte, proba_all.argmax(axis=1))
@@ -131,9 +132,9 @@ results["overall"] = {"acc": acc, "logloss": ll, "brier": float(brier_multiclass
                       "ece": float(ece(yte, proba_all)),
                       "roi": fin["roi"], "sharpe": fin["sharpe"], "mdd": fin["mdd"],
                       "n_bets": int(fin["n_bets"]), "win_rate": fin["win_rate"]}
-print(f"\n整体: acc={acc:.4f} logloss={ll:.4f} ROI={fin['roi']*100:.2f}%")
-print("（对照：Poisson 简化版 acc=0.508/logloss=1.003；市场 acc=0.542/logloss=0.967；XGB acc=0.542/logloss=0.971）")
+print(f"\noverall: acc={acc:.4f} logloss={ll:.4f} ROI={fin['roi']*100:.2f}%")
+print("(reference: simplified Poisson acc=0.508/logloss=1.003; market acc=0.542/logloss=0.967; XGB acc=0.542/logloss=0.971)")
 
 with open(os.path.join(RES, "dixon_coles.json"), "w", encoding="utf-8") as f:
     json.dump(results, f, ensure_ascii=False, indent=2, default=float)
-print("已保存:", os.path.join(RES, "dixon_coles.json"))
+print("saved:", os.path.join(RES, "dixon_coles.json"))

@@ -1,11 +1,11 @@
 """
-LLM 对比分析：温度敏感性 + 开源/闭源公平对比
-====================
-1. 温度敏感性：DeepSeek t=0.7 vs t=0.3 在同一批 120 场上
-   - acc/logloss/ECE/一致性分布/一致性-正确性相关
-2. 开源对照：本地 qwen vs DeepSeek 在同一批 200 场上
-   - acc/logloss/ECE/ROI（等注协议）
-输出：results/llm_compare.json
+LLM comparison analysis: temperature sensitivity + open-/closed-source fair comparison
+=======================================================================================
+1. Temperature sensitivity: DeepSeek t=0.7 vs. t=0.3 on the same batch of 120 matches
+   - acc/logloss/ECE/consistency distribution/consistency-correctness correlation
+2. Open-source comparison: local qwen vs. DeepSeek on the same batch of 200 matches
+   - acc/logloss/ECE/ROI (equal-stakes protocol)
+Output: results/llm_compare.json
 """
 import os
 import json
@@ -42,7 +42,7 @@ def metrics(y, proba, odds=None):
 
 
 def consistency_corr(df):
-    """一致性-正确性分析：分箱 + 点二列相关。"""
+    """Consistency-correctness analysis: binning + point-biserial correlation."""
     correct = (df[["p_H", "p_D", "p_A"]].values.argmax(axis=1) == df["y"].values).astype(float)
     cons = df["consistency"].values
     bins = [0, 0.7, 0.8, 0.9, 0.95, 1.0]
@@ -59,7 +59,7 @@ def consistency_corr(df):
 
 out = {}
 
-# ============ 1. 温度敏感性（同批 120 场） ============
+# ============ 1. Temperature sensitivity (same 120 matches) ============
 d03, p03 = load("llm_deepseek_t0.3_per_match.csv")
 d07, p07 = load("llm_deepseek_t0.7_per_match.csv")
 
@@ -74,15 +74,15 @@ out["temperature"] = {
     "t0.3_consistency": consistency_corr(sub03),
     "t0.7_consistency": consistency_corr(d07),
 }
-print("=== 温度敏感性（同批 120 场） ===")
+print("=== temperature sensitivity (same 120 matches) ===")
 for k in ["t0.3", "t0.7"]:
     m = out["temperature"][k]
     c = out["temperature"][f"{k}_consistency"]
     print(f"  {k}: acc={m['acc']:.3f} logloss={m['logloss']:.4f} ece={m['ece']:.4f} "
-          f"cons_mean={c['cons_mean']:.3f} cons>=0.95占比={c['cons_frac_ge095']:.2f} "
+          f"cons_mean={c['cons_mean']:.3f} cons>=0.95 frac={c['cons_frac_ge095']:.2f} "
           f"cons-correct r={c['point_biserial']:.3f}")
 
-# ============ 2. 开源/模型对照（同批场次） ============
+# ============ 2. Open-/closed-source model comparison (same matches) ============
 dl, pl = load("llm_local_per_match.csv")
 sub03_200 = d03.head(200).reset_index(drop=True)
 p03_200 = sub03_200[["p_H", "p_D", "p_A"]].values
@@ -95,13 +95,13 @@ out["open_vs_closed"] = {
     "deepseek_t0.3": metrics(y200, p03_200, odds200),
     "qwen_local": metrics(yl, pl, oddsl),
 }
-print("\n=== 模型对照（deepseek-chat 200 场 / qwen 200 场） ===")
+print("\n=== model comparison (deepseek-chat 200 matches / qwen 200 matches) ===")
 for k in ["deepseek_t0.3", "qwen_local"]:
     m = out["open_vs_closed"][k]
     print(f"  {k}: acc={m['acc']:.3f} logloss={m['logloss']:.4f} ece={m['ece']:.4f} "
           f"roi={m['roi']*100:.2f}% win={m['win_rate']:.3f}")
 
-# reasoner（推理模型）对照：同批前 120 场（n_samples=1，耗时限制）
+# Reasoning-model comparison: same first 120 matches (n_samples=1, time constraints)
 import os as _os
 reasoner_path = _os.path.join(RES, "llm_deepseek_deepseek-reasoner_t0.3_per_match.csv")
 if _os.path.exists(reasoner_path):
@@ -124,14 +124,14 @@ if _os.path.exists(reasoner_path):
         "deepseek_t0.3_same_120": metrics(y120b, p03_120b, odds120b),
         "qwen_local_same_120": metrics(yq_120, pq_120, oddsq_120),
     }
-    print("\n=== 推理模型对照（同批前 120 场，三模型） ===")
+    print("\n=== reasoning model comparison (same first 120 matches, three models) ===")
     for k in ["deepseek_t0.3_same_120", "deepseek_reasoner", "qwen_local_same_120"]:
         m = out["reasoner_notes"][k] if k.endswith("_same_120") else out["open_vs_closed"][k]
         print(f"  {k}: acc={m['acc']:.3f} logloss={m['logloss']:.4f} ece={m['ece']:.4f} "
               f"roi={m['roi']*100:.2f}% win={m['win_rate']:.3f}")
 else:
-    print("\n[skip] reasoner 对照未运行（缺少 llm_deepseek_deepseek-reasoner_t0.3_per_match.csv）")
+    print("\n[skip] reasoner comparison not run (missing llm_deepseek_deepseek-reasoner_t0.3_per_match.csv)")
 
 with open(os.path.join(RES, "llm_compare.json"), "w", encoding="utf-8") as f:
     json.dump(out, f, ensure_ascii=False, indent=2, default=float)
-print("\n已保存:", os.path.join(RES, "llm_compare.json"))
+print("\nsaved:", os.path.join(RES, "llm_compare.json"))

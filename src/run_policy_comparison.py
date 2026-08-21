@@ -1,14 +1,18 @@
 """
-策略级对比：UI vs market-confidence vs SCS vs model-confidence vs random
-======================================================================
-回答审稿人核心质疑："为什么不直接用 market max probability 分层后 no-bet？"
+Policy-level comparison: UI vs. market-confidence vs. SCS vs. model-confidence vs. random
+=========================================================================================
+Addresses the core question: why not simply stratify by market max probability
+and no-bet accordingly?
 
-统一协议（test 2025/26，XGB 概率，B365 收盘赔率，等注）：
-- 每个策略有一个"风险分数"，按分数从高到低剔除（no-bet），扫描覆盖率
-- 同一覆盖下比较 ROI/Sharpe/MDD/acc，画出 coverage-ROI 与 coverage-acc 曲线
-- 若 UI 曲线在 market-conf-only 之上 => UI 提供增量风险分层
+Unified protocol (test 2025/26, XGB probabilities, B365 closing odds, equal stakes):
+- Each policy has a risk score; matches are removed (no-bet) from highest score
+  downward, sweeping coverage
+- ROI/Sharpe/MDD/acc are compared at the same coverage; coverage-ROI and
+  coverage-acc curves are plotted
+- If the UI curve lies above market-conf-only, the UI provides incremental
+  risk stratification
 
-输出：results/policy_comparison.json
+Output: results/policy_comparison.json
 """
 import os
 import json
@@ -48,7 +52,7 @@ proba = model.predict_proba(test[feature_cols])
 pred = proba.argmax(axis=1)
 odds = tmeta[["B365CH", "B365CD", "B365CA"]].values
 
-# 逐场收益（全下注基准）
+# Per-match returns (all-bets baseline)
 rets = np.zeros(len(yte))
 for i in range(len(yte)):
     o = odds[i]
@@ -59,40 +63,48 @@ for i in range(len(yte)):
         rets[i] = np.nan
 valid = ~np.isnan(rets)
 
-# ---- 风险分数 ----
+# ---- Risk scores ----
 inv = 1.0 / tmeta[["B365CH", "B365CD", "B365CA"]].replace(0, np.nan)
 s = inv.sum(axis=1)
 mkt_proba = (inv.div(s, axis=0)).values
-mkt_max = np.nanmax(mkt_proba, axis=1)          # market confidence（越大越确定）
+mkt_max = np.nanmax(mkt_proba, axis=1)          # market confidence (higher = more certain)
 model_max = proba.max(axis=1)                    # model confidence
+eps = 1e-12
+entropy = -np.sum(proba * np.log(np.clip(proba, eps, 1.0)), axis=1) / np.log(3.0)
+exp_brier = 1.0 - np.sum(proba ** 2, axis=1)     # expected Brier contribution (proper-score motivation)
 
 vol_stats = fit_robust(train, "close_vol")
 move_stats = fit_robust(train, "odds_move_H")
-ui = compute_ui(proba, test, vol_stats, move_stats)   # 越大越不确定
-scs = compute_scs(test, vol_stats, move_stats)        # 越大越不确定
+ui = compute_ui(proba, test, vol_stats, move_stats)   # higher = more uncertain
+scs = compute_scs(test, vol_stats, move_stats)        # higher = more uncertain
 rng = np.random.default_rng(0)
 rand = rng.random(len(yte))
 
-# 统一为"风险分数"：越大越不确定 -> 优先 no-bet
+# Unified risk score: higher = more uncertain -> no-bet first
 scores = {
     "UI": ui,
     "SCS": scs,
-    "market_conf": -mkt_max,     # 取负：市场确定度反转
-    "model_conf": -model_max,    # 模型置信度反转
+    "entropy": entropy,          # standard predictive-uncertainty measure (reference)
+    "exp_brier": exp_brier,      # standard predictive-uncertainty measure (reference)
+    "market_conf": -mkt_max,     # negated: invert market certainty
+    "model_conf": -model_max,    # negated model confidence
     "random": rand,
 }
 
 
 def evaluate_at_coverage(risk, cov_frac):
-    """剔除风险最高 (1-cov_frac) 比例的场次，评估剩余注单。"""
-    thr = np.nanquantile(risk[valid], 1 - cov_frac)
-    mask = (risk <= thr) & valid
+    """Drop the highest-risk (1-cov_frac) fraction of matches and evaluate the remaining bets. cov=1.0 means no filtering."""
+    if cov_frac >= 1.0:
+        mask = valid
+    else:
+        thr = np.nanquantile(risk[valid], 1 - cov_frac)
+        mask = (risk <= thr) & valid
     if mask.sum() < 20:
         return None
     r = rets[mask]
     fin = financial_metrics(r)
     acc = (pred[mask] == yte[mask]).mean()
-    # bootstrap CI（ROI 与 acc）
+    # Bootstrap CIs (ROI and acc)
     rngb = np.random.default_rng(42)
     n = len(r)
     roi_boot, acc_boot = [], []
@@ -111,7 +123,7 @@ def evaluate_at_coverage(risk, cov_frac):
             "avg_odds": float(np.nanmean(odds[mask][np.arange(mask.sum()), pred[mask]]))}
 
 
-coverages = [1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4]
+coverages = [1.0, 0.95, 0.9, 0.85, 0.8, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5, 0.45, 0.4]
 results = {"coverages": coverages, "strategies": {}}
 for name, sc in scores.items():
     curve = []
@@ -128,4 +140,4 @@ for name, sc in scores.items():
 
 with open(os.path.join(RES, "policy_comparison.json"), "w", encoding="utf-8") as f:
     json.dump(results, f, ensure_ascii=False, indent=2, default=float)
-print("\n已保存:", os.path.join(RES, "policy_comparison.json"))
+print("\nsaved:", os.path.join(RES, "policy_comparison.json"))

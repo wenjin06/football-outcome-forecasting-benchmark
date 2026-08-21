@@ -1,13 +1,17 @@
 """
-LLM 提示词模板（诚实版）
+LLM prompt templates
 ====================
-设计原则：
-1. 输入只包含赛前可得特征（与数据管道一致），显式声明信息截止时间，禁止事后信息
-2. 系统提示注入真实领域知识：收盘赔率 de-vig 概率是极强的基线（市场有效性），
-   模型必须给出超越市场的可论证理由，而不是默认自己比市场聪明
-3. 输出固定 JSON：{"probs": [pH, pD, pA], "reasoning": "..."}
-   推理必须可验证（引用给定特征数值），禁止编造新闻/伤病/阵容信息
-4. 不联网、无检索：这就是"领域增强 + CoT"的真实边界，论文中如实描述
+Design principles:
+1. Inputs contain only pre-match features (consistent with the data pipeline);
+   the information cutoff is stated explicitly and no post-match information is used
+2. The system prompt injects verified domain knowledge: de-vigged closing-odds
+   probabilities are a very strong baseline (market efficiency); the model must
+   give defensible reasons for beating the market rather than assuming it is smarter
+3. Output is fixed JSON: {"probs": [pH, pD, pA], "reasoning": "..."}
+   Reasoning must be verifiable (citing the given feature values); inventing
+   news/injuries/lineups is forbidden
+4. No web access, no retrieval: this is the exact boundary of "domain augmentation
+   + CoT", described as-is in the paper
 """
 import json
 
@@ -44,12 +48,12 @@ RULES:
 
 
 def build_feature_card(feat_row, mode="full"):
-    """把一行赛前特征整理成文本卡片（只含赛前可得项）。
+    """Format one row of pre-match features into a text card (pre-match items only).
     mode: full | market | stats | market_stats
-      - full: HOME/AWAY + MARKET + REFEREE（默认，论文主实验）
-      - market: 仅市场信号（de-vig 概率/赔率变动/离散度）
-      - stats: 仅球队状态/排名（无市场、无裁判）
-      - market_stats: 市场 + 球队状态（无裁判）
+      - full: HOME/AWAY + MARKET + REFEREE (default; main experiment in the paper)
+      - market: market signals only (de-vig probabilities/odds movement/dispersion)
+      - stats: team form/rank only (no market, no referee)
+      - market_stats: market + team form (no referee)
     """
     def g(key):
         v = feat_row.get(key)
@@ -87,8 +91,8 @@ def build_feature_card(feat_row, mode="full"):
 
 
 def build_messages(feat_row, mode="full"):
-    """feat_row: dict（一行特征，赛前可得）。mode 见 build_feature_card。
-    返回 messages 列表。"""
+    """feat_row: dict (one row of pre-match features). mode: see build_feature_card.
+    Returns a messages list."""
     card = build_feature_card(feat_row, mode=mode)
     user = (
         "Pre-match feature card for the match (information cutoff = kickoff time, "

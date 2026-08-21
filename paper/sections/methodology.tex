@@ -1,4 +1,4 @@
-% Methodology（草稿：数据/特征/模型/SCS/UI/风控/评估协议）
+% Methodology (draft: data / features / models / SCS / UI / risk control / evaluation protocol)
 \label{sec:method}
 
 \subsection{Data}
@@ -91,22 +91,73 @@ indicates a more uncertain match.
 
 \subsection{Uncertainty Index and Risk Control}
 \label{sec:ui}
-The uncertainty index is conceptually distinct from the SCS: SCS is a
-\emph{purely market-side} measure of scenario complexity (rank gap,
-odds dispersion, odds drift), whereas the UI \emph{fuses model output
-with market signals}---predictive confidence and multi-sample
-consistency from the model, plus the same normalized market-volatility
-and odds-movement terms. The shared market terms are intentional: the
-UI inherits market uncertainty and adds the model's own confidence
-signal. The index combines these components as
+Two distinct kinds of uncertainty are relevant at decision time.
+\emph{Forecast (predictive) uncertainty} asks whether the model's own
+probability estimate is trustworthy; the standard measures are
+confidence ($1 - p_{\max}$), entropy $H(p) = -\sum_i p_i \log p_i$,
+and proper-scoring-rule expectations such as $1 - \sum_i p_i^2$.
+\emph{Decision (market) uncertainty} asks whether the betting
+opportunity itself is stable: cross-bookmaker dispersion and
+opening-to-closing odds movement measure how much the market
+disagrees and how late information arrives. The objective is not to
+estimate pure predictive uncertainty in a theoretically complete
+sense. Instead, a \emph{decision-oriented} uncertainty indicator is
+constructed that combines predictive ambiguity with market
+instability:
 \[
 \mathrm{UI} = w_1(1 - p_{\max}) + w_2(1 - C)
 + w_3\,\mathrm{vol}_{norm} + w_4\,\mathrm{move}_{norm},
 \]
 \noindent with default weights $(0.4, 0.3, 0.15, 0.15)$; $p_{\max}$ is the
 model's maximum predicted probability and $C$ the multi-sample
-consistency (1 for deterministic models). The consistency term is
-retained even though Section~\ref{sec:llm_analysis} shows it carries
+consistency (1 for deterministic models). The purpose is not to
+recover a theoretically complete uncertainty distribution but to
+construct an operational risk indicator for selective decision
+making under market constraints. The shared market terms are
+intentional: the UI inherits market uncertainty and adds the model's
+own confidence signal. Table~\ref{tab:uicomponents} maps each
+component to the quantity it is intended to measure.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Components of the uncertainty index and the quantity each is
+intended to measure. The first two terms quantify forecast
+uncertainty, the last two decision uncertainty.}
+\label{tab:uicomponents}
+\resizebox{\linewidth}{!}{
+\begin{tabular}{ll}
+\toprule
+Component & Interpretation \\
+\midrule
+$1 - p_{\max}$ & aleatoric outcome ambiguity (model confidence) \\
+$1 - C$ & sampling instability across repeated draws \\
+$\mathrm{vol}_{norm}$ & market disagreement (cross-bookmaker dispersion) \\
+$\mathrm{move}_{norm}$ & information instability (opening-to-closing drift) \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+Why this formulation rather than a generic uncertainty estimator?
+Entropy and $1 - \sum_i p_i^2$ are pure functions of the predicted
+distribution: they re-encode confidence and, as
+Section~\ref{sec:experiments} shows
+(Table~\ref{tab:uncbaselines}), inherit its financial failure mode
+when used for abstention. Predictive variance from sampling is
+degenerate in this setting (multi-sample consistency is $\approx 1$,
+Section~\ref{sec:llm_analysis}), and Bayesian posterior sampling is
+not available for the tree ensembles used here. Conformal prediction
+would provide coverage guarantees on a calibration set, but in
+three-class problems it produces trivially large prediction sets at
+any useful coverage, and the goal here is ranking-based abstention
+rather than guaranteed coverage. The UI is therefore deliberately a
+decision-oriented composite: it is not claimed to be a better
+estimator of predictive uncertainty than entropy, but it is
+designed---and shown in Section~\ref{sec:experiments}---to be a
+better abstention score.
+
+The consistency term is retained even though Section~\ref{sec:llm_analysis} shows it carries
 no information in this setting: it is the mechanism proposed by
 earlier LLM-forecasting work, and including it lets this study test
 and falsify that mechanism rather than silently dropping it; the
@@ -127,7 +178,12 @@ unit (or fractional Kelly capped at 10\% of bankroll where stated),
 the model's maximum-probability outcome, Bet365 closing odds for
 settlement, sequential bankroll updating, and no-bet decisions
 excluded from executed-bet statistics but reported separately with
-coverage. Predictive metrics are accuracy, macro-F1, log loss,
-Brier score, and expected calibration error (ECE). Financial metrics
-are ROI, Sharpe ratio, maximum drawdown, and win rate. All main
-quantities are reported with bootstrap 95\% confidence intervals.
+coverage. ROI is evaluated as a \emph{decision-quality proxy} under
+closing-market assumptions: bets are settled at Bet365 closing odds,
+and no claim of deployable arbitrage is made---real-world execution
+would add taxes, withdrawal fees, and slippage
+(Section~\ref{sec:discussion}). Predictive metrics are accuracy,
+macro-F1, log loss, Brier score, and expected calibration error
+(ECE). Financial metrics are ROI, Sharpe ratio, maximum drawdown,
+and win rate. All main quantities are reported with bootstrap 95\%
+confidence intervals.

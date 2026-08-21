@@ -1,14 +1,17 @@
 """
-无泄漏数据管道 v2（SCI 重做版）
-====================
-原则：
-1. 只用赛前可得信息构造特征（历史滚动状态、赛前积分排名、裁判历史、初盘/收盘赔率）
-2. 严格时序划分：train < 2024-08-01 <= val < 2025-08-01 <= test
-3. 任何统计量（scaler/填充）只 fit train
-4. 明确排除：当前场统计、当前场结果、任何未来信息
+Leak-free data pipeline v2 (SCI redo)
+=====================================
+Principles:
+1. Features are built only from pre-match information (historical rolling form,
+   pre-match points and standings, referee history, opening/closing odds)
+2. Strict temporal split: train < 2024-08-01 <= val < 2025-08-01 <= test
+3. Any statistics (scaler/imputation) are fitted on train only
+4. Explicitly excluded: current-match statistics, current-match results, and any
+   future information
 
-v2 修复：球队特征基于"该队全部比赛"（主+客）统一构建，不再按主/客场分表。
-输出：data/processed/{train,val,test}_dataset.pkl + all_matches_featurized.csv
+v2 fix: team features are built from all matches of a team (home + away) in one
+unified table, no longer split into separate home/away tables.
+Output: data/processed/{train,val,test}_dataset.pkl + all_matches_featurized.csv
 """
 import os
 import glob
@@ -21,7 +24,7 @@ warnings.filterwarnings('ignore')
 
 DATA_FOLDER = r"E:\论文\structured_data"
 OUT_FOLDER = r"E:\论文\sci_redo\data\processed"
-ROLL_WIN = 5  # 滚动窗口场次
+ROLL_WIN = 5  # rolling window size in matches
 
 SEASON_START = {2019: "2019-08-01", 2020: "2020-08-01", 2021: "2021-08-01",
                 2022: "2022-08-01", 2023: "2023-08-01", 2024: "2024-08-01",
@@ -29,7 +32,7 @@ SEASON_START = {2019: "2019-08-01", 2020: "2020-08-01", 2021: "2021-08-01",
 VAL_START = "2024-08-01"
 TEST_START = "2025-08-01"
 
-# ============ 1. 读取全部 CSV ============
+# ============ 1. Load all CSVs ============
 def load_all_csv(folder):
     paths = sorted(glob.glob(os.path.join(folder, "*.csv")))
     dfs = []
@@ -43,7 +46,7 @@ def load_all_csv(folder):
     df = df.sort_values("Date").reset_index(drop=True)
     return df
 
-# ============ 2. 赛季标签 ============
+# ============ 2. Season labels ============
 def add_season(df):
     def season_of(d):
         for y in sorted(SEASON_START, reverse=True):
@@ -55,14 +58,16 @@ def add_season(df):
     df["Season"] = df["Season"].astype(int)
     return df
 
-# ============ 3. 球队状态特征（统一出场表：主+客全部比赛） ============
+# ============ 3. Team form features (unified appearance table: all home+away matches) ============
 def team_features(df):
     """
-    构建"队-出场"长表（每场比赛两条：主队一条、客队一条），按 (队, 时间) 排序后：
-    - 近 ROLL_WIN 场进球/失球/积分/胜/射门/射正/角球/犯规均值（shift 排除当前场）
-    - 赛季累计积分/净胜球/场次（赛前，按 队+赛季 分组）
-    - 联赛排名（赛前，按积分+净胜球排序）
-    返回 (home_feat, away_feat)，索引为 match_idx。
+    Build a team-appearance long table (two rows per match: one home, one away),
+    sorted by (team, time):
+    - Rolling means over the last ROLL_WIN matches of goals for/against, points,
+      wins, shots, shots on target, corners, fouls (shift excludes the current match)
+    - Season cumulative points/goal difference/games (pre-match, grouped by team + season)
+    - League rank (pre-match, ordered by points + goal difference)
+    Returns (home_feat, away_feat) indexed by match_idx.
     """
     rows = []
     for _, r in df.iterrows():
@@ -90,7 +95,7 @@ def team_features(df):
     roll = t.groupby("team")[[f"{c}_prev" for c in roll_cols]].transform(
         lambda x: x.rolling(ROLL_WIN, min_periods=1).mean())
 
-    # 赛季累计（赛前）：队+赛季 分组
+    # Season cumulative (pre-match): grouped by team + season
     g2 = t.groupby(["team", "Season"])
     t["cum_pts"] = g2["Pts"].cumsum() - t["Pts"]
     t["cum_gf"] = g2["GF"].cumsum() - t["GF"]
@@ -99,7 +104,8 @@ def team_features(df):
     t["cum_gd"] = t["cum_gf"] - t["cum_ga"]
     t["ppg"] = (t["cum_pts"] / t["cum_games"].replace(0, np.nan)).values
 
-    # 联赛排名（赛前）：同 (Div, Season) 内，该日期之前各队最后记录按积分+净胜球排序
+    # League rank (pre-match): within each (Div, Season), rank each team by its last
+    # record before the match date, ordered by points + goal difference
     rank_map = []
     for (div, season), sub in t.groupby(["Div", "Season"]):
         dates = np.sort(sub["Date"].unique())
@@ -111,7 +117,7 @@ def team_features(df):
             last = before.groupby("team").tail(1).sort_values(["cum_pts", "cum_gd"], ascending=False)
             last = last.reset_index(drop=True)
             last["rank"] = np.arange(1, len(last) + 1)
-            # 关键：Date 用目标比赛日 dt，而不是该队最后一场的日期
+            # Key: use the target match date dt, not the date of the team's last match
             rank_map.append(pd.DataFrame({
                 "Div": div, "Season": season, "Date": dt,
                 "team": last["team"].values, "rank": last["rank"].values,
@@ -148,13 +154,13 @@ def team_features(df):
     away.columns = ["A_" + c for c in away.columns]
     return home, away
 
-# ============ 4. 裁判历史特征 ============
+# ============ 4. Referee history features ============
 def referee_features(df):
-    """裁判历史：仅用该裁判过去执法场次。仅 E0(英超) 有 Referee 列，其余联赛为 NaN。"""
+    """Referee history: only matches previously officiated by the same referee are used. Only E0 (Premier League) has a Referee column; other leagues are NaN."""
     if "Referee" not in df.columns or df["Referee"].isna().all():
         return pd.DataFrame(index=df.index)
     ref = df[["Date", "Referee", "HY", "AY", "HR", "AR", "HF", "AF"]].copy()
-    # 保持 df 原始索引；mergesort 保证同 Date 行顺序稳定，索引不错位
+    # Preserve the original df index; mergesort keeps row order stable within the same Date so indices do not shift
     ref = ref.sort_values("Date", kind="mergesort")
     ref["cards"] = ref["HY"] + ref["AY"] + ref["HR"] + ref["AR"]
     ref["reds"] = ref["HR"] + ref["AR"]
@@ -168,7 +174,7 @@ def referee_features(df):
     }, index=ref.index)
     return out
 
-# ============ 5. 赔率/市场特征 ============
+# ============ 5. Odds/market features ============
 def odds_features(df):
     close_h = [c for c in df.columns if c.endswith("CH") and c not in ("B365CH",)
                and df[c].notna().sum() > 1000]
@@ -192,18 +198,18 @@ def odds_features(df):
     out["close_max_h"] = df[close_h].max(axis=1).values if close_h else np.nan
     return out
 
-# ============ 6. 主流程 ============
+# ============ 6. Main pipeline ============
 def main():
     os.makedirs(OUT_FOLDER, exist_ok=True)
-    print("[1/5] 读取全部 CSV...")
+    print("[1/5] loading all CSVs...")
     df = load_all_csv(DATA_FOLDER)
-    print(f"    合并后总场次: {len(df)}, 日期 {df['Date'].min().date()} ~ {df['Date'].max().date()}")
+    print(f"    total matches after merge: {len(df)}, dates {df['Date'].min().date()} ~ {df['Date'].max().date()}")
 
-    print("[2/5] 打赛季标签...")
+    print("[2/5] adding season labels...")
     df = add_season(df)
-    print(f"    赛季分布: {df['Season'].value_counts().sort_index().to_dict()}")
+    print(f"    season distribution: {df['Season'].value_counts().sort_index().to_dict()}")
 
-    print("[3/5] 构造特征（严格赛前）...")
+    print("[3/5] building features (strictly pre-match)...")
     home_feat, away_feat = team_features(df)
     ref_feat = referee_features(df)
     odds_feat = odds_features(df)
@@ -215,7 +221,7 @@ def main():
     drop_cols = ["Div", "Date", "Season", "HomeTeam", "AwayTeam", "FTR", "y"]
     feature_cols = [c for c in feats.columns if c not in drop_cols]
     feature_cols = [c for c in feature_cols if feats[c].notna().sum() > 0]
-    print(f"    特征数: {len(feature_cols)}")
+    print(f"    feature count: {len(feature_cols)}")
 
     train = feats[feats["Date"] < VAL_START]
     val = feats[(feats["Date"] >= VAL_START) & (feats["Date"] < TEST_START)]
@@ -244,8 +250,8 @@ def main():
     joblib.dump(scaler, os.path.join(OUT_FOLDER, "scaler.pkl"))
     joblib.dump(feature_cols, os.path.join(OUT_FOLDER, "feature_cols.pkl"))
     feats.to_csv(os.path.join(OUT_FOLDER, "all_matches_featurized.csv"), index=False)
-    print(f"[4/5] 已保存至 {OUT_FOLDER}")
-    print("[5/5] 完成。")
+    print(f"[4/5] saved to {OUT_FOLDER}")
+    print("[5/5] done.")
 
 if __name__ == "__main__":
     main()

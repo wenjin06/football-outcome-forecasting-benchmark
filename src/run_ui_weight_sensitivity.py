@@ -1,8 +1,12 @@
 """
+UI weight sensitivity (revision comment 2a: the weights are fixed presets and
+must be shown to be insensitive to small parameter changes)
 ====================
-在验证集上测试多组 UI 权重，报告各权重下的分层效果（低档 acc/ROI、no-bet 数量）。
-若各权重下分层模式一致（低档最优、高档最差），则说明结论稳健、非参数过拟合。
-输出：results/ui_weight_sensitivity.json
+Test several UI weight sets on the validation set and report the tiering
+behavior under each (low-tier acc/ROI, number of no-bet matches).
+If the tiering pattern is consistent across weight sets (low tier best, high
+tier worst), the conclusion is robust and not an artifact of parameter fitting.
+Output: results/ui_weight_sensitivity.json
 """
 import os
 import json
@@ -82,4 +86,4 @@ for name, w in WEIGHTS.items():
 
 with open(os.path.join(RES, "ui_weight_sensitivity.json"), "w", encoding="utf-8") as f:
     json.dump(results, f, ensure_ascii=False, indent=2, default=float)
-print("已保存:", os.path.join(RES, "ui_weight_sensitivity.json"))
+print("saved:", os.path.join(RES, "ui_weight_sensitivity.json"))

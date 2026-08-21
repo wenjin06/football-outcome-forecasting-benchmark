@@ -1,14 +1,14 @@
 """
-平局深度分析：为什么模型几乎不预测平局？
-========================================
-分析 test 2025/26：
-1. 模型 p_draw 分布（分桶） vs 每桶实际平局率
-2. 市场 de-vig p_draw 分布 vs 模型 p_draw
-3. 按类校准（H/D/A 各自的 ECE）
-4. 多分类 log-loss 按类分解
-5. 类先验（train/val/test）
+Deep draw analysis: why does the model almost never predict a draw?
+==================================================================
+Analyzing test 2025/26:
+1. Model p_draw distribution (binned) vs. actual draw rate per bin
+2. Market de-vig p_draw distribution vs. model p_draw
+3. Class-wise calibration (per-class ECE for H/D/A)
+4. Multiclass log-loss decomposed by class
+5. Class priors (train/val/test)
 
-输出：results/draw_deep.json
+Output: results/draw_deep.json
 """
 import os
 import json
@@ -52,14 +52,14 @@ valid = ~np.isnan(mkt_proba).any(axis=1)
 
 results = {}
 
-# 类先验
+# Class priors
 for name, part in [("train", train), ("val", val), ("test", test)]:
     y = part["y"].values.astype(int)
     results[f"prior_{name}"] = {"H": float((y == 0).mean()), "D": float((y == 1).mean()),
                                 "A": float((y == 2).mean())}
 print("priors:", {k: {kk: round(v, 3) for kk, v in vv.items()} for k, vv in results.items() if k.startswith("prior")})
 
-# 1. 模型 p_draw 分布
+# 1. Model p_draw distribution
 pd_model = proba[:, 1]
 bins = [0, 0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 1.0]
 rows = []
@@ -71,11 +71,11 @@ for i in range(len(bins) - 1):
                  "mean_p": float(pd_model[mask].mean()),
                  "actual_draw_rate": float((yte[mask] == 1).mean())})
 results["model_pdraw_bins"] = rows
-print("\n模型 p_draw 分桶:")
+print("\nmodel p_draw bins:")
 for r in rows:
     print(f"  {r['bin']}: n={r['n']} mean_p={r['mean_p']:.3f} actual={r['actual_draw_rate']*100:.1f}%")
 
-# 2. 市场 p_draw 分布
+# 2. Market p_draw distribution
 pd_mkt = mkt_proba[:, 1]
 rows2 = []
 for i in range(len(bins) - 1):
@@ -86,11 +86,11 @@ for i in range(len(bins) - 1):
                   "mean_p": float(pd_mkt[mask].mean()),
                   "actual_draw_rate": float((yte[mask] == 1).mean())})
 results["market_pdraw_bins"] = rows2
-print("\n市场 de-vig p_draw 分桶:")
+print("\nmarket de-vig p_draw bins:")
 for r in rows2:
     print(f"  {r['bin']}: n={r['n']} mean_p={r['mean_p']:.3f} actual={r['actual_draw_rate']*100:.1f}%")
 
-# 3. 按类校准 ECE（每类独立）
+# 3. Class-wise calibration ECE (each class independently)
 def class_ece(y, p_class, cls, n_bins=10):
     conf = p_class
     acc = (y == cls).astype(float)
@@ -112,9 +112,9 @@ results["class_ece"] = {
     "market_D": float(class_ece(yte[maskv], mkt_proba[maskv, 1], 1)),
     "market_A": float(class_ece(yte[maskv], mkt_proba[maskv, 2], 2)),
 }
-print("\n按类 ECE:", {k: round(v, 4) for k, v in results["class_ece"].items()})
+print("\nper-class ECE:", {k: round(v, 4) for k, v in results["class_ece"].items()})
 
-# 4. 多分类 log-loss 按类分解：每类的 -log p(真实类) 均值
+# 4. Multiclass log-loss by class: mean -log p(true class) per class
 pm = proba[maskv][np.arange(maskv.sum()), yte[maskv]]
 ll_by_class = {}
 for c in range(3):
@@ -122,14 +122,53 @@ for c in range(3):
     if m.sum() > 0:
         ll_by_class[str(c)] = float(-np.log(pm[m]).mean())
 results["logloss_by_class"] = ll_by_class
-print("\n按类 log-loss:", {k: round(v, 4) for k, v in ll_by_class.items()})
+print("\nper-class log-loss:", {k: round(v, 4) for k, v in ll_by_class.items()})
 
-# 5. 相关：p_draw 与实际平局
+# 5. Correlations: p_draw vs. actual draw
 results["corr_pdraw_draw"] = float(np.corrcoef(pd_model[maskv], (yte[maskv] == 1).astype(float))[0, 1])
 results["corr_mktpdraw_draw"] = float(np.corrcoef(pd_mkt[maskv], (yte[maskv] == 1).astype(float))[0, 1])
 print("\ncorr(model p_draw, draw):", round(results["corr_pdraw_draw"], 3))
 print("corr(market p_draw, draw):", round(results["corr_mktpdraw_draw"], 3))
 
+# 6. Brier decomposition (per-class binary Murphy decomposition): BS = Uncertainty - Resolution + Reliability
+#    applied separately to each class (class probability vs. class occurrence), model and market side by side
+print("\n[6] Brier decomposition (per class)...")
+
+def brier_decomp_binary(y_bin, f, n_bins=10):
+    """f: predicted probability array; y_bin: 0/1 labels. Returns Murphy decomposition components."""
+    n = len(y_bin)
+    o_bar = y_bin.mean()
+    bs = float(np.mean((f - y_bin) ** 2))
+    unc = float(o_bar * (1 - o_bar))
+    bins = np.linspace(0, 1, n_bins + 1)
+    rel = 0.0
+    res = 0.0
+    for i in range(n_bins):
+        m = (f > bins[i]) & (f <= bins[i + 1])
+        if m.sum() == 0:
+            continue
+        fm = f[m].mean()
+        om = y_bin[m].mean()
+        rel += (m.sum() / n) * (fm - om) ** 2
+        res += (m.sum() / n) * (om - o_bar) ** 2
+    return {"brier": bs, "uncertainty": unc, "reliability": float(rel),
+            "resolution": float(res)}
+
+brier_decomp = {}
+for c, cls in [(0, "H"), (1, "D"), (2, "A")]:
+    yb = (yte[maskv] == c).astype(float)
+    brier_decomp[cls] = {
+        "model": brier_decomp_binary(yb, proba[maskv, c]),
+        "market": brier_decomp_binary(yb, mkt_proba[maskv, c]),
+    }
+    print(f"  {cls}: model BS={brier_decomp[cls]['model']['brier']:.4f} "
+          f"U={brier_decomp[cls]['model']['uncertainty']:.4f} "
+          f"Rel={brier_decomp[cls]['model']['reliability']:.4f} "
+          f"Res={brier_decomp[cls]['model']['resolution']:.4f} | "
+          f"market BS={brier_decomp[cls]['market']['brier']:.4f} "
+          f"Res={brier_decomp[cls]['market']['resolution']:.4f}")
+results["brier_decomp"] = brier_decomp
+
 with open(os.path.join(RES, "draw_deep.json"), "w", encoding="utf-8") as f:
     json.dump(results, f, ensure_ascii=False, indent=2, default=float)
-print("\n已保存:", os.path.join(RES, "draw_deep.json"))
+print("\nsaved:", os.path.join(RES, "draw_deep.json"))

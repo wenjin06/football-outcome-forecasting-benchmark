@@ -1,7 +1,7 @@
 \begin{table}[htbp]
 \centering
 \small
-\caption{Draw diagnostics (test set). First five rows: bins of the model's predicted draw probability with the empirical draw rate in each bin. The model's draw probabilities are calibrated (class-level ECE 0.007) and monotone, but weakly discriminative (r = 0.12 vs the market's 0.14) and never the argmax at typical values near the base rate, which explains the near-empty draw column in \ref{fig:confusion}.}
+\caption{Draw diagnostics (test set). First five rows: bins of the model's predicted draw probability with the empirical draw rate in each bin. The model's draw probabilities are calibrated (class-level ECE 0.007) and monotone, but weakly discriminative (r = 0.12 vs the market's 0.14) and never the argmax at typical values near the base rate, which explains the near-empty draw column in \ref{fig:confusion}. Last rows: per-class binary Brier decomposition for the draw class (BS = uncertainty - resolution + reliability); the draw's uncertainty term is fixed by the base rate, and the model's resolution barely exceeds the market's.}
 \label{tab:drawdeep}
 \resizebox{\linewidth}{!}{
 \begin{tabular}{lccc}
@@ -17,6 +17,8 @@ Class ECE: H / D / A & --- & 0.037 / 0.007 / 0.020 & --- \\
 Class log loss: H / D / A & --- & 0.733 / 1.350 / 1.001 & --- \\
 corr(p(draw), draw) & --- & 0.124 & --- \\
 corr(market p(draw), draw) & --- & 0.137 & --- \\
+Brier decomp. (draw) model & --- & BS 0.187 / U 0.190 / Rel 0.000 / Res 0.003 & --- \\
+Brier decomp. (draw) market & --- & BS 0.186 / U 0.190 / Rel 0.000 / Res 0.002 & --- \\
 \bottomrule
 \end{tabular}
 }

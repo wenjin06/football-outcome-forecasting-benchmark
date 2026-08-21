@@ -1,10 +1,9 @@
-# Football Outcome Forecasting: Leakage-Controlled Benchmark and Uncertainty-Driven Risk Control
+# Football Outcome Forecasting: Predicting Difficulty Rather Than Edge
 
 Code and data pipelines for the paper:
 
-> **Multi-Source Pre-Match Signal Fusion and Uncertainty-Driven Risk Control for
-> Football Outcome Forecasting: A Leakage-Controlled Evaluation of Machine
-> Learning and Large Language Models**
+> **Predicting Difficulty Rather Than Edge: Uncertainty-Aware Football
+> Forecasting under Efficient Betting Markets**
 
 This repository reproduces every number in the paper. All figures are computed
 by the scripts below from the raw data; no result in the paper is hand-written.
@@ -40,9 +39,14 @@ src/
   run_draw_cost_sensitive.py# cost-sensitive draw training
   run_value_betting.py      # EV-threshold betting, opening-vs-closing, Kelly
   run_risk.py               # SCS/UI tiers, strategy comparison, threshold sensitivity
+  run_ui_vs_market_difficulty.py  # UI vs market-probability difficulty conditioning
   run_ui_weight_sensitivity.py  # UI weight robustness (val)
   run_stop_loss_sensitivity.py  # stop-loss parameter robustness (test)
+  run_policy_comparison.py   # coverage-accuracy/ROI curves across no-bet policies
+  run_uncertainty_baselines.py  # entropy / 1-Sum p^2 vs UI comparison (Table 22)
+  run_draw_deep.py           # draw diagnostics incl. per-class Brier decomposition
   run_llm.py                # LLM forecasting (DeepSeek / local Qwen), resumable
+  run_llm_transcription.py  # LLM vs market-transcription baseline
   analyze_llm.py            # LLM post-analysis (UI tiers, consistency)
   analyze_llm_compare.py    # temperature sensitivity + open-vs-closed LLM
   risk.py                   # SCS/UI/risk simulation implementations
@@ -124,16 +128,18 @@ python src/make_figures.py
 
 | Paper content | Result file | Produced by |
 |---|---|---|
-| Table 1 (main comparison) | `results/baselines_summary.json`, `results/dixon_coles.json`, `results/llm_analysis.json` | `run_baselines.py` etc. |
-| Table 2 (ablations) | `results/ablations_summary.json` | `run_ablations.py` |
-| Table 3 (feature importance) | `results/feature_importance.json` | `run_shap.py` |
-| Tables 4–5 (leagues, LOLO) | `results/by_league.json` | `run_by_league.py` |
-| Table 6 (walk-forward) | `results/walkforward.json` | `run_walkforward.py` |
-| Tables 7–8 (draws) | `results/draw_analysis.json`, `results/draw_cost_sensitive.json` | `run_draw_analysis.py` |
-| Tables 9–10 (value betting) | `results/value_betting.json` | `run_value_betting.py` |
-| Tables 11–14 (SCS/UI/strategies) | `results/risk_analysis.json` | `run_risk.py` |
-| Tables 15–16 (LLM) | `results/llm_compare.json`, `results/llm_analysis.json` | `run_llm.py`, `analyze_llm*.py` |
-| Figures 1–5 | `paper/figures/fig*.png` | `make_figures.py` |
+| Main comparison | `results/baselines_summary.json`, `results/dixon_coles.json`, `results/llm_analysis.json` | `run_baselines.py` etc. |
+| Ablations | `results/ablations_summary.json` | `run_ablations.py` |
+| Feature importance | `results/feature_importance.json` | `run_shap.py` |
+| Leagues, LOLO | `results/by_league.json` | `run_by_league.py` |
+| Walk-forward | `results/walkforward.json` | `run_walkforward.py` |
+| Draws | `results/draw_analysis.json`, `results/draw_cost_sensitive.json`, `results/draw_deep.json` | `run_draw_analysis.py`, `run_draw_cost_sensitive.py`, `run_draw_deep.py` |
+| Value betting | `results/value_betting.json` | `run_value_betting.py` |
+| SCS/UI/strategies | `results/risk_analysis.json` | `run_risk.py` |
+| Policy curves (Fig. 6) | `results/policy_comparison.json` | `run_policy_comparison.py` |
+| Uncertainty measures (Table 22) | `results/uncertainty_baselines.json` | `run_uncertainty_baselines.py` |
+| LLM + transcription baseline | `results/llm_analysis.json`, `results/llm_compare.json`, `results/llm_ablation.json`, `results/llm_transcription.json` | `run_llm.py`, `analyze_llm*.py`, `run_llm_transcription.py` |
+| Figures | `paper/figures/fig*.png` | `make_figures.py` |
 
 ## LLM configuration
 

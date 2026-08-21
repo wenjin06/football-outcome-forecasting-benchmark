@@ -1,10 +1,10 @@
 """
-论文表格生成器：从 results/*.json 自动生成 LaTeX 表格
+Paper table generator: automatically produces LaTeX tables from results/*.json
 ====================
-所有论文数字必须经由此脚本产出，禁止手写。
-输出：paper/tables/tableN.tex（experiments.tex 用 \\input 引用）
+All numbers in the paper must be produced by this script; nothing is hand-written.
+Output: paper/tables/tableN.tex (referenced from experiments.tex via \\input)
 
-用法：python src/make_tables.py
+Usage: python src/make_tables.py
 """
 import os
 import json
@@ -24,7 +24,7 @@ def pct(x, digits=1):
 
 
 def sanitize_label(s):
-    """把表格文本中的 < > 等字符转成 LaTeX 数学模式，避免 T1 编码渲染成 ¡/¿。"""
+    """Convert characters such as < > in table text into LaTeX math mode to avoid T1 encoding rendering them as ¡/¿."""
     return (s.replace("<=", "$\\leq$").replace(">=", "$\\geq$")
              .replace("<", "$<$").replace(">", "$>$"))
 
@@ -60,9 +60,9 @@ def save(name, content):
     print(f"  {name}")
 
 
-print("生成表格 -> paper/tables/")
+print("generating tables -> paper/tables/")
 
-# ============ 表1：主对比 ============
+# ============ Table 1: main comparison ============
 bs = load("baselines_summary.json")
 dc = load("dixon_coles.json")
 la = load("llm_analysis.json")
@@ -85,13 +85,13 @@ for key, name in order:
         rows.append([name, pct(d["accuracy"]), num(d["log_loss"]), num(d["brier"]),
                      num(d["ece"]), pct(d["roi_all"]), pct(d["mdd_all"]), num(d["sharpe_all"])])
 save("table1_main.tex", table_wrap(
-    "Overall performance on the held-out test season (1,104 matches). "
+    "Overall performance on the held-out test period (1,104 matches; 2025/26 season to date). "
     "The LLM parsed 100\\% of matches at a cost of \\$0.55. Bootstrap 95\\% "
     "confidence intervals are reported in the text.", "tab:main",
     ["Model", "Acc", "LogLoss", "Brier", "ECE", "ROI", "MDD", "Sharpe"], rows,
     span=True))
 
-# ============ 表2：消融 ============
+# ============ Table 2: ablation ============
 ab = load("ablations_summary.json")
 order2 = [("full", "Full (60 features)"), ("no_odds", "w/o market odds"),
           ("no_referee", "w/o referee"), ("no_rank", "w/o rank"),
@@ -109,7 +109,7 @@ save("table2_ablation.tex", table_wrap(
     ["Configuration", "\\#Feat", "Acc", "LogLoss", "ECE", "ROI(all)", "ROI(t$\\geq$0.4)"], rows,
     span=True))
 
-# ============ 表3：特征重要性分组 ============
+# ============ Table 3: feature importance by group ============
 fi = load("feature_importance.json")
 g = fi["group_importance"]
 tot = sum(g.values())
@@ -124,7 +124,7 @@ save("table3_importance.tex", table_wrap(
     "over 5 permutations, test set).", "tab:importance",
     ["Group", "Importance", "Share"], rows))
 
-# ============ 表4：分联赛 ============
+# ============ Table 4: by league ============
 bl = load("by_league.json")
 rows = []
 for div, d in bl["by_league_test"].items():
@@ -134,7 +134,7 @@ save("table4_byleague.tex", table_wrap(
     "Per-league performance of the global XGBoost model on the test set.",
     "tab:byleague", ["League", "N", "Acc", "LogLoss", "ROI", "MDD"], rows))
 
-# ============ 表5：LOLO ============
+# ============ Table 5: LOLO ============
 rows = []
 for div, d in bl["leave_one_league_out"].items():
     rows.append([div, str(d["n"]), pct(d["accuracy"]), num(d["log_loss"]),
@@ -144,7 +144,7 @@ save("table5_lolo.tex", table_wrap(
     "leagues, evaluated on the held-out league (test set).", "tab:lolo",
     ["Held-out league", "N", "Acc", "LogLoss", "ROI"], rows))
 
-# ============ 表6：walk-forward ============
+# ============ Table 6: walk-forward ============
 wf = load("walkforward.json")
 rows = []
 for season, d in wf.items():
@@ -159,7 +159,7 @@ save("table6_walkforward.tex", table_wrap(
     "seasons only.", "tab:walkforward",
     ["Season", "N", "Market", "XGB-exp", "LL(exp)", "XGB-roll2"], rows))
 
-# ============ 表7：平局类别 ============
+# ============ Table 7: draw classes ============
 da = load("draw_analysis.json")
 x = da["xgb"]
 rows = []
@@ -173,7 +173,7 @@ save("table7_draw_class.tex", table_wrap(
     "but the model predicts a draw in only 2.3\\% of matches.",
     "tab:drawclass", ["Class", "Prec", "Recall", "F1", "ECE"], rows))
 
-# ============ 表8：平局重加权 ============
+# ============ Table 8: draw re-weighting ============
 dcs = load("draw_cost_sensitive.json")
 rows = []
 for w in ["1.0", "1.5", "2.0", "2.5", "3.0"]:
@@ -185,7 +185,7 @@ save("table8_draw_weight.tex", table_wrap(
     "Weight 1.0 is the baseline.", "tab:drawweight",
     ["w(draw)", "Acc", "Macro-F1", "Draw R", "Draw P", "LogLoss"], rows))
 
-# ============ 表9：价值投注 ============
+# ============ Table 9: value betting ============
 vb = load("value_betting.json")
 rows = []
 for e in vb["value_ev_scan"]:
@@ -197,7 +197,7 @@ save("table9_value.tex", table_wrap(
     "increasingly confident bets and lose more money.",
     "tab:value", ["EV thresh.", "ROI", "Sharpe", "MDD", "N bets", "Coverage"], rows))
 
-# ============ 表10：校准后价值投注 ============
+# ============ Table 10: value betting after calibration ============
 rows = []
 for e in vb["value_ev_scan_calibrated"]:
     rows.append([num(e["threshold"], 2), pct(e["roi"]), str(e["n_bets"]),
@@ -208,7 +208,7 @@ save("table10_value_cal.tex", table_wrap(
     "information the model does not have.", "tab:valuecal",
     ["EV thresh.", "ROI", "N bets", "Coverage"], rows))
 
-# ============ 表11：SCS 分层 ============
+# ============ Table 11: SCS tiers ============
 ra = load("risk_analysis.json")
 rows = []
 for label, d in ra["scs_tiers"].items():
@@ -218,7 +218,7 @@ save("table11_scs.tex", table_wrap(
     "Higher SCS indicates harder matches.", "tab:scs",
     ["SCS tier", "N", "Acc", "ROI"], rows))
 
-# ============ 表12：UI 分层 XGB ============
+# ============ Table 12: UI tiers (XGB) ============
 rows = []
 for label, d in ra["ui_tiers"].items():
     if d.get("n", 0) == 0:
@@ -231,7 +231,7 @@ save("table12_ui_xgb.tex", table_wrap(
     "predictive accuracy is reported separately.", "tab:uixgb",
     ["UI tier", "N", "Acc", "ROI", "MDD"], rows))
 
-# ============ 表13：UI 分层 LLM ============
+# ============ Table 13: UI tiers (LLM) ============
 rows = []
 for label, d in la["ui_tiers"].items():
     if d.get("n", 0) == 0:
@@ -243,7 +243,7 @@ save("table13_ui_llm.tex", table_wrap(
     "pattern replicates across model families.", "tab:uillm",
     ["UI tier", "N", "Acc", "ROI", "MDD"], rows))
 
-# ============ 表14：策略对比 ============
+# ============ Table 14: strategy comparison ============
 rows = []
 for key, name in [("naive", "Naive (all bets)"), ("t04", "Conf. threshold 0.4"),
                   ("ui_tier", "UI tiers + no-bet"), ("ui_tier_sl", "UI tiers + stop-loss")]:
@@ -258,7 +258,7 @@ save("table14_strategy.tex", table_wrap(
     ["Strategy", "ROI", "Sharpe", "MDD", "N bets", "ROI 95\\% CI"], rows,
     span=True))
 
-# ============ 表15：LLM 温度与开源对照 ============
+# ============ Table 15: LLM temperature and open-source comparison ============
 lc = load("llm_compare.json")
 rows = []
 for k, name in [("t0.3", "DeepSeek t=0.3"), ("t0.7", "DeepSeek t=0.7")]:
@@ -275,7 +275,7 @@ save("table15_temp.tex", table_wrap(
 rows = []
 rn = lc.get("reasoner_notes", {})
 if rn:
-    # 同批前 120 场三模型对比（reasoner 为单采样，其余为 3 采样平均）
+    # Same first 120 matches, three models (reasoner uses a single sample; the others average 3 samples)
     items = [("deepseek_t0.3_same_120", "DeepSeek-Chat (API)"),
              ("deepseek_reasoner", "DeepSeek-Reasoner (API)"),
              ("qwen_local_same_120", "Qwen2.5-Coder-7B (local)")]
@@ -308,7 +308,7 @@ else:
         "any model.",
         "tab:open", ["Model", "Acc", "LogLoss", "ECE", "ROI", "Win rate"], rows))
 
-# ============ 表17：错误分析（失败与异动/分歧关联） ============
+# ============ Table 17: error analysis (failures vs. odds movement / disagreement) ============
 ea = load("error_analysis.json")
 mvm = ea["market_vs_model"]
 rows = [
@@ -358,7 +358,7 @@ for r in rows:
 lines += ["\\bottomrule", "\\end{tabular}", "}", "\\end{table*}"]
 save("table17_error.tex", "\n".join(lines) + "\n")
 
-# ============ 表18：难度信号分层（市场概率 vs UI） ============
+# ============ Table 18: difficulty-signal tiers (market probability vs UI) ============
 dm = load("ui_vs_market_difficulty.json")
 rows = []
 for b, d in enumerate(dm["mkt_max_quintiles"]):
@@ -376,10 +376,10 @@ save("table18_difficulty.tex", table_wrap(
     "text).", "tab:difficulty",
     ["Group", "N", "Acc", "Fav. share"], rows))
 
-# 交叉增量（文字引用数字，脚本产出）
+# Cross increments (numbers quoted in the text are produced by this script)
 cross = {f"{c['mkt_q']}_{c['ui_q']}": c for c in dm["mkt_x_ui_cross"]}
 
-# ============ 表19：策略级对比（UI vs market-conf vs SCS vs model-conf vs random） ============
+# ============ Table 19: policy-level comparison (UI vs market-conf vs SCS vs model-conf vs random) ============
 pc = load("policy_comparison.json")
 rows = []
 for name in ["UI", "SCS", "market_conf", "model_conf", "random"]:
@@ -403,7 +403,7 @@ save("table19_policy.tex", table_wrap(
     "tab:policy", ["Policy", "Cov", "Acc", "ROI", "ROI 95\\% CI", "Sharpe", "Avg odds"],
     rows))
 
-# ============ 表20：平局深度分析 ============
+# ============ Table 20: draw deep analysis ============
 dd = load("draw_deep.json")
 rows = []
 for r in dd["model_pdraw_bins"]:
@@ -416,16 +416,28 @@ rows.append(["Class log loss: H / D / A", "---",
              "---"])
 rows.append(["corr(p(draw), draw)", "---", num(dd["corr_pdraw_draw"], 3), "---"])
 rows.append(["corr(market p(draw), draw)", "---", num(dd["corr_mktpdraw_draw"], 3), "---"])
+bd = dd.get("brier_decomp", {})
+if bd:
+    for src, label in [("model", "Brier decomp. (draw) model"), ("market", "Brier decomp. (draw) market")]:
+        b = bd["D"][src]
+        rows.append([label, "---",
+                     "BS " + num(b["brier"], 3) + " / U " + num(b["uncertainty"], 3)
+                     + " / Rel " + num(b["reliability"], 3) + " / Res " + num(b["resolution"], 3),
+                     "---"])
 save("table20_drawdeep.tex", table_wrap(
     "Draw diagnostics (test set). First five rows: bins of the model's "
     "predicted draw probability with the empirical draw rate in each bin. "
     "The model's draw probabilities are calibrated (class-level ECE 0.007) "
     "and monotone, but weakly discriminative (r = 0.12 vs the market's "
     "0.14) and never the argmax at typical values near the base rate, "
-    "which explains the near-empty draw column in \\ref{fig:confusion}.",
+    "which explains the near-empty draw column in \\ref{fig:confusion}. "
+    "Last rows: per-class binary Brier decomposition for the draw class "
+    "(BS = uncertainty - resolution + reliability); the draw's uncertainty "
+    "term is fixed by the base rate, and the model's resolution barely "
+    "exceeds the market's.",
     "tab:drawdeep", ["Model p(draw) bin", "N", "Mean p", "Empirical draw rate"], rows))
 
-# ============ 表21：LLM 输入消融 ============
+# ============ Table 21: LLM input ablation ============
 la2 = load("llm_ablation.json")
 rows = []
 for k, name in [("market_only", "Market only"), ("stats_only", "Team statistics only"),
@@ -435,14 +447,57 @@ for k, name in [("market_only", "Market only"), ("stats_only", "Team statistics 
     d = la2[k]
     rows.append([name, pct(d["acc"]), num(d["logloss"]), num(d["ece"]),
                  pct(d["roi"])])
+lt = load("llm_transcription.json")
+ts = lt.get("transcription_120")
+if ts:
+    rows.append(["Market transcription (no LLM)", pct(ts["acc"]), num(ts["logloss"]),
+                 num(ts["ece"]), pct(ts["roi"])])
 save("table21_llm_ablation.tex", table_wrap(
     "LLM input ablation on the same first 120 test-set matches. Removing "
     "all market information degrades accuracy and log loss substantially "
     "(49.2\\%, 1.028); adding team statistics and referee context to the "
     "market signal changes nothing (54.2--55.0\\%, log loss 0.922--0.927). "
-    "The LLM's market-level calibration is therefore driven by the market "
-    "signal in the prompt, not by independent reasoning over non-market "
-    "features---consistent with the feature-importance result.",
+    "The final row is a no-LLM baseline that directly outputs the de-vigged "
+    "market probabilities: the LLM is statistically indistinguishable from "
+    "this transcription baseline, confirming that its market-level "
+    "calibration is inherited from the market signal in the prompt rather "
+    "than produced by independent reasoning.",
     "tab:llmablation", ["Input", "Acc", "LogLoss", "ECE", "ROI"], rows))
 
-print("\n全部表格已生成:", len(os.listdir(OUT)), "个文件")
+# ============ Table 22: uncertainty-measure comparison (1-pmax / entropy / 1-Sum p^2 / UI) ============
+ub = load("uncertainty_baselines.json")
+rows = []
+order22 = [("1-pmax", "1 $-\\,p_{max}$"), ("entropy", "Entropy $H(p)$"),
+           ("1-Sum p^2", "1 $-\\,\\sum p^2$"), ("UI", "UI")]
+for key, disp in order22:
+    for r in ub["policies"][key]:
+        rows.append([disp, f"{r['coverage']:.1f}", pct(r["acc"]), pct(r["roi"]),
+                     f"[{r['roi_ci'][0]*100:.1f},{r['roi_ci'][1]*100:.1f}]",
+                     num(r["sharpe"]), num(r["avg_odds"], 2)])
+pc = load("policy_comparison.json")
+for r in pc["strategies"]["market_conf"]:
+    if r["coverage"] not in (0.7, 0.5):
+        continue
+    rows.append(["Market conf.", f"{r['coverage']:.1f}", pct(r["acc"]), pct(r["roi"]),
+                 f"[{r['roi_ci'][0]*100:.1f},{r['roi_ci'][1]*100:.1f}]",
+                 num(r["sharpe"]), num(r["avg_odds"], 2)])
+corr_ui_pmax = ub["correlations"].get("1-pmax vs UI")
+corr_ui_ent = ub["correlations"].get("UI vs entropy")
+corr_str = ""
+if corr_ui_pmax is not None and corr_ui_ent is not None:
+    corr_str = (f"Correlations on the test set: UI vs $1-p_{{max}}$ "
+                f"{corr_ui_pmax:.2f}, UI vs entropy {corr_ui_ent:.2f} (see text).")
+save("table22_uncertainty_baselines.tex", table_wrap(
+    "Standard predictive-uncertainty measures vs the uncertainty index "
+    "(test set, XGBoost probabilities, equal-stake betting, same protocol "
+    "as Table~\\ref{tab:policy}). Entropy $H(p)$ and the expected-Brier "
+    "term $1-\\sum p^2$ are pure functions of the predicted distribution; "
+    "they stratify accuracy about as well as $1-p_{max}$ but inherit its "
+    "financial failure mode (selecting low-odds favourites whose ROI is "
+    "essentially zero at coverage 0.5). The UI adds market-volatility terms "
+    "and keeps positive ROI at both coverage levels. Bootstrap 95\\% CIs "
+    "for ROI all cross "
+    "zero. " + corr_str, "tab:uncbaselines",
+    ["Score", "Cov", "Acc", "ROI", "ROI 95\\% CI", "Sharpe", "Avg odds"], rows))
+
+print("\nall tables generated:", len(os.listdir(OUT)), "files")

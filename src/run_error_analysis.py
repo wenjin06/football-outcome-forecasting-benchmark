@@ -1,19 +1,23 @@
 """
-错误分析：失败预测与赔率异动 / 市场分歧的关联
-============================================
-EXPERIMENT_PLAN 第 10 节待建项：
-  错误分析（失败与赔率异动/分歧的关联）→ run_error_analysis.py
+Error analysis: failed predictions vs. odds movement / market disagreement
+==========================================================================
+All questions are answered on the same protocol as the main experiments
+(test 2025/26 first half, 1,104 matches):
 
-回答的问题（全部在 test 2025/26 上半季 1104 场上，与主实验同协议）：
-1. 模型-市场分歧：XGB argmax 与市场 de-vig argmax 不一致的场次，谁更常对？
-   （直接证据：分歧大时模型能否赢过市场 —— RQ1 市场有效性）
-2. 赔率异动（收盘-初盘变动幅度）分桶下的模型错误率：异动大的场次是否更难预测？
-3. 市场分歧（多家博彩报价离散度）分桶下的错误率：各家分歧大的场次是否更难预测？
-4. 高置信错误：模型高置信（max prob>=0.6）但预测错误的占比 vs 市场同口径
-   （过度自信证据，呼应 value_betting 的结论）
-5. 平局专项：被误分类的平局场次 vs 正确分类的平局场次，在异动/分歧/置信上是否有差异
+1. Model-market disagreement: when the XGB argmax differs from the de-vigged
+   market argmax, which side is right more often? (direct evidence on whether
+   the model can beat the market where they disagree - RQ1 market efficiency)
+2. Model error rate by odds-movement (closing-opening) buckets: are matches
+   with large movement harder to predict?
+3. Error rate by market-disagreement (dispersion across bookmakers) buckets:
+   are matches with high bookmaker disagreement harder to predict?
+4. High-confidence errors: share of wrong predictions among high-confidence
+   (max prob >= 0.6) predictions, vs. the market under the same criterion
+   (overconfidence evidence, consistent with the value-betting findings)
+5. Draw focus: whether misclassified draws differ from correctly classified
+   draws in odds movement / dispersion / confidence
 
-输出：results/error_analysis.json
+Output: results/error_analysis.json
 """
 import os
 import json
@@ -27,7 +31,7 @@ RES = r"E:\论文\sci_redo\results"
 RAW_GLOB = r"E:\论文\structured_data\*.csv"
 os.makedirs(RES, exist_ok=True)
 
-# ---------------- 数据加载（与 run_value_betting.py 完全同协议） ----------------
+# ---------------- Data loading (same protocol as run_value_betting.py) ----------------
 feat = pd.read_csv(os.path.join(OUT, "all_matches_featurized.csv"), parse_dates=["Date"])
 drop_cols = ["Div", "Date", "Season", "HomeTeam", "AwayTeam", "FTR", "y"]
 feature_cols = [c for c in feat.columns if c not in drop_cols and feat[c].notna().sum() > 0]
@@ -55,8 +59,8 @@ def devig(h, d, a):
     return (inv.div(s, axis=0)).values
 
 
-# ---------------- 模型（与主实验同参数） ----------------
-print("[1] 训练全局 XGB ...")
+# ---------------- Model (same parameters as the main experiments) ----------------
+print("[1] training global XGB ...")
 model = XGBClassifier(n_estimators=500, max_depth=6, learning_rate=0.05,
                       subsample=0.8, colsample_bytree=0.8, eval_metric="mlogloss",
                       early_stopping_rounds=30, random_state=42)
@@ -75,8 +79,8 @@ n = len(yte)
 results = {"meta": {"n_test": int(n), "model": "XGBoost(v3, xG)",
                     "test_window": "2025/26 through 2026-02-12"}}
 
-# ---------------- 1. 模型-市场分歧：分歧场次谁更常对 ----------------
-print("\n[2] 模型 vs 市场：分歧场次 ...")
+# ---------------- 1. Model-market disagreement: who is right more often ----------------
+print("\n[2] model vs market: disagreement matches ...")
 valid = mkt_valid
 agree = (pred == mkt_pred) & valid
 disagree = (pred != mkt_pred) & valid
@@ -89,17 +93,17 @@ results["market_vs_model"] = {
     "acc_model_on_disagree": acc(err[disagree]), "acc_market_on_disagree": acc(mkt_err[disagree]),
     "model_win_disagree": float(acc(err[disagree]) - acc(mkt_err[disagree])),
 }
-print(f"  总体 acc: 模型 {acc(err[valid]):.3f} / 市场 {acc(mkt_err[valid]):.3f}")
-print(f"  分歧 {int(disagree.sum())} 场: 模型 {acc(err[disagree]):.3f} / 市场 {acc(mkt_err[disagree]):.3f}")
-print(f"  一致 {int(agree.sum())} 场: 模型 {acc(err[agree]):.3f} / 市场 {acc(mkt_err[agree]):.3f}")
+print(f"  overall acc: model {acc(err[valid]):.3f} / market {acc(mkt_err[valid]):.3f}")
+print(f"  disagreement {int(disagree.sum())} matches: model {acc(err[disagree]):.3f} / market {acc(mkt_err[disagree]):.3f}")
+print(f"  agreement {int(agree.sum())} matches: model {acc(err[agree]):.3f} / market {acc(mkt_err[agree]):.3f}")
 
-# ---------------- 2. 赔率异动分桶（收盘-初盘，B365） ----------------
-print("\n[3] 赔率异动分桶 ...")
+# ---------------- 2. Odds-movement buckets (closing-opening, B365) ----------------
+print("\n[3] odds-movement buckets ...")
 move_h = tmeta["B365CH"] - tmeta["B365H"]
 move_d = tmeta["B365CD"] - tmeta["B365D"]
 move_a = tmeta["B365CA"] - tmeta["B365A"]
 move = (move_h.abs() + move_d.abs() + move_a.abs()) / 3.0
-# 混杂诊断：大热占比（初始最低赔率<=1.6）与市场 max de-vig 概率
+# Confounding diagnostics: favorite share (min opening odds <= 1.6) and market max de-vig probability
 init_odds = tmeta[["B365H", "B365D", "B365A"]]
 fav_share = (init_odds.min(axis=1) <= 1.6).astype(float)
 mkt_max_prob = np.nanmax(market_proba, axis=1)
@@ -125,11 +129,11 @@ for b in range(int(move_bins.max()) + 1):
                       "market_max_prob": float(mkt_max_prob[mask].mean())})
 results["odds_movement_bins"] = move_rows
 for r in move_rows:
-    print(f"  异动桶{r['bin']} {r['move_range']}: n={r['n']} 错误率={r['error_rate']*100:.1f}% "
-          f"大热占比={r['fav_share']*100:.0f}% 市场maxP={r['market_max_prob']:.2f}")
+    print(f"  movement bucket{r['bin']} {r['move_range']}: n={r['n']} error rate={r['error_rate']*100:.1f}% "
+          f"fav share={r['fav_share']*100:.0f}% market maxP={r['market_max_prob']:.2f}")
 
-# ---------------- 3. 市场分歧分桶（多家报价离散度，收盘） ----------------
-print("\n[4] 市场分歧分桶 ...")
+# ---------------- 3. Market-disagreement buckets (bookmaker dispersion, closing) ----------------
+print("\n[4] market-dispersion buckets ...")
 disp = ((tmeta["MaxCH"] - tmeta["AvgCH"]) / tmeta["AvgCH"].replace(0, np.nan) +
         (tmeta["MaxCD"] - tmeta["AvgCD"]) / tmeta["AvgCD"].replace(0, np.nan) +
         (tmeta["MaxCA"] - tmeta["AvgCA"]) / tmeta["AvgCA"].replace(0, np.nan)) / 3.0
@@ -147,11 +151,11 @@ for b in range(int(disp_bins.max()) + 1):
                       "market_max_prob": float(mkt_max_prob[mask].mean())})
 results["market_dispersion_bins"] = disp_rows
 for r in disp_rows:
-    print(f"  分歧桶{r['bin']} {r['disp_range']}: n={r['n']} 错误率={r['error_rate']*100:.1f}% "
-          f"大热占比={r['fav_share']*100:.0f}% 市场maxP={r['market_max_prob']:.2f}")
+    print(f"  dispersion bucket{r['bin']} {r['disp_range']}: n={r['n']} error rate={r['error_rate']*100:.1f}% "
+          f"fav share={r['fav_share']*100:.0f}% market maxP={r['market_max_prob']:.2f}")
 
-# ---------------- 4. 高置信错误（过度自信证据） ----------------
-print("\n[5] 高置信错误 ...")
+# ---------------- 4. High-confidence errors (overconfidence evidence) ----------------
+print("\n[5] high-confidence errors ...")
 conf = proba.max(axis=1)
 mkt_conf = market_proba.max(axis=1)
 for thr in [0.5, 0.6, 0.7]:
@@ -161,11 +165,11 @@ for thr in [0.5, 0.6, 0.7]:
         "model_n": int(hm.sum()), "model_error_rate": float(err[hm].mean()),
         "market_n": int(mm.sum()), "market_error_rate": float(mkt_err[mm].mean()),
     }
-    print(f"  conf>={thr}: 模型 n={int(hm.sum())} 错误率={err[hm].mean()*100:.1f}% "
-          f"| 市场 n={int(mm.sum())} 错误率={mkt_err[mm].mean()*100:.1f}%")
+    print(f"  conf>={thr}: model n={int(hm.sum())} error rate={err[hm].mean()*100:.1f}% "
+          f"| market n={int(mm.sum())} error rate={mkt_err[mm].mean()*100:.1f}%")
 
-# ---------------- 5. 平局专项错误 ----------------
-print("\n[6] 平局误分类分析 ...")
+# ---------------- 5. Draw-specific errors ----------------
+print("\n[6] draw misclassification analysis ...")
 draw_true = yte == 1
 draw_correct = draw_true & (pred == 1)
 draw_wrong = draw_true & (pred != 1)
@@ -178,11 +182,11 @@ if draw_wrong.sum() > 0 and draw_correct.sum() > 0:
     results["draw_errors"] = {"draw_true_n": int(draw_true.sum()),
                               "correctly_predicted": agg(draw_correct),
                               "misclassified": agg(draw_wrong)}
-    print(f"  平局真实 {int(draw_true.sum())} 场: 正确 {int(draw_correct.sum())} / 误分 {int(draw_wrong.sum())}")
-    print(f"  误分: 异动 {move[draw_wrong].mean():.3f} 分歧 {disp[draw_wrong].mean():.4f} 置信 {conf[draw_wrong].mean():.3f}")
-    print(f"  正确: 异动 {move[draw_correct].mean():.3f} 分歧 {disp[draw_correct].mean():.4f} 置信 {conf[draw_correct].mean():.3f}")
+    print(f"  true draws {int(draw_true.sum())}: correct {int(draw_correct.sum())} / misclassified {int(draw_wrong.sum())}")
+    print(f"  misclassified: movement {move[draw_wrong].mean():.3f} dispersion {disp[draw_wrong].mean():.4f} confidence {conf[draw_wrong].mean():.3f}")
+    print(f"  correct: movement {move[draw_correct].mean():.3f} dispersion {disp[draw_correct].mean():.4f} confidence {conf[draw_correct].mean():.3f}")
 
-# ---------------- 保存 ----------------
+# ---------------- Save ----------------
 with open(os.path.join(RES, "error_analysis.json"), "w", encoding="utf-8") as f:
     json.dump(results, f, ensure_ascii=False, indent=2, default=float)
-print("\n已保存:", os.path.join(RES, "error_analysis.json"))
+print("\nsaved:", os.path.join(RES, "error_analysis.json"))

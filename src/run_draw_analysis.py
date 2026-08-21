@@ -1,10 +1,11 @@
 """
+Focused draw analysis (recommended enhancement #1)
 ====================
-1. 混淆矩阵（全局 XGB vs 市场基线）
-2. 经验平局率 vs 模型预测平局率
-3. 平局类 P/R/F1 + 类别校准（分箱 acc vs conf）
-4. 决策阈值扫描：调平局阈值能否提升 macro-F1 / 平局 recall
-输出：results/draw_analysis.json
+1. Confusion matrix (global XGB vs. market baseline)
+2. Empirical draw rate vs. model-predicted draw rate
+3. Draw-class P/R/F1 + class-wise calibration (binned acc vs. conf)
+4. Decision-threshold scan: whether adjusting the draw threshold improves macro-F1 / draw recall
+Output: results/draw_analysis.json
 """
 import os
 import json
@@ -37,8 +38,8 @@ raw = raw.dropna(subset=["Date", "HomeTeam", "AwayTeam", "FTR"])
 tmeta = test.merge(raw[["Date", "HomeTeam", "AwayTeam", "B365CH", "B365CD", "B365CA"]],
                    on=["Date", "HomeTeam", "AwayTeam"], how="left")
 
-# 全局 XGB
-print("[1] 训练全局 XGB ...")
+# Global XGB
+print("[1] training global XGB ...")
 model = XGBClassifier(n_estimators=500, max_depth=6, learning_rate=0.05,
                       subsample=0.8, colsample_bytree=0.8, eval_metric="mlogloss",
                       early_stopping_rounds=30, random_state=42)
@@ -46,7 +47,7 @@ model.fit(train[feature_cols], train["y"].values.astype(int),
           eval_set=[(val[feature_cols], val["y"].values.astype(int))], verbose=False)
 proba_xgb = model.predict_proba(test[feature_cols])
 
-# 市场基线概率
+# Market baseline probabilities
 inv = 1.0 / tmeta[["B365CH", "B365CD", "B365CA"]].replace(0, np.nan)
 s = inv.sum(axis=1)
 proba_mkt = (inv.div(s, axis=0)).values
@@ -58,7 +59,7 @@ for name, proba in [("xgb", proba_xgb), ("market", proba_mkt)]:
     pred = proba.argmax(axis=1)
     cm = confusion_matrix(yte, pred, labels=[0, 1, 2])
     p, r, f, _ = precision_recall_fscore_support(yte, pred, labels=[0, 1, 2])
-    # 类别校准：按各类别预测概率分箱
+    # Class-wise calibration: binned by each class's predicted probability
     class_ece = {}
     for cls in [0, 1, 2]:
         conf = proba[:, cls]
@@ -77,12 +78,12 @@ for name, proba in [("xgb", proba_xgb), ("market", proba_mkt)]:
         "class_precision": p.tolist(), "class_recall": r.tolist(), "class_f1": f.tolist(),
         "class_ece": class_ece,
     }
-    print(f"  {name}: 预测平局率={results[name]['pred_draw_rate']:.3f} "
-          f"(经验 {results['empirical_draw_rate']:.3f})")
+    print(f"  {name}: predicted draw rate={results[name]['pred_draw_rate']:.3f} "
+          f"(empirical {results['empirical_draw_rate']:.3f})")
     print(f"    P={p.round(3)} R={r.round(3)} F1={f.round(3)} classECE={[round(v,3) for v in class_ece.values()]}")
 
-# 阈值扫描：提高平局决策阈值（重加权），看 macro-F1 与平局 recall
-print("\n[2] 平局阈值扫描 (XGB) ...")
+# Threshold scan: boost the draw decision (re-weighting) and check macro-F1 and draw recall
+print("\n[2] draw threshold scan (XGB) ...")
 scan = []
 for w_draw in [1.0, 1.5, 2.0, 2.5, 3.0, 4.0]:
     weighted = proba_xgb.copy()
@@ -99,4 +100,4 @@ results["threshold_scan"] = scan
 
 with open(os.path.join(RES, "draw_analysis.json"), "w", encoding="utf-8") as f:
     json.dump(results, f, ensure_ascii=False, indent=2, default=float)
-print("\n已保存:", os.path.join(RES, "draw_analysis.json"))
+print("\nsaved:", os.path.join(RES, "draw_analysis.json"))

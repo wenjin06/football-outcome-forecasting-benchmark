@@ -1,7 +1,7 @@
 """
-tex -> docx 完整转换（合并 + 预处理 + pandoc + 排版美化）
-用法: python src/tex_to_docx.py
-输出: paper_overleaf.docx（单栏工作稿）+ paper_overleaf_twocolumn.docx（双栏）
+Full tex -> docx conversion (merge + preprocess + pandoc + typesetting polish)
+Usage: python src/tex_to_docx.py
+Output: paper_overleaf.docx (single-column working draft) + paper_overleaf_twocolumn.docx (two-column)
 """
 import os
 import re
@@ -22,7 +22,7 @@ CSL = r"E:\论文\sci_redo\ieee.csl"
 
 
 def preprocess(t):
-    """pandoc 友好化：table*->table，去 resizebox/booktabs，caption 保持。"""
+    """Pandoc-friendly cleanup: table* -> table, remove resizebox/booktabs, keep captions."""
     t = t.replace(r"\begin{table*}", r"\begin{table}")
     t = t.replace(r"\end{table*}", r"\end{table}")
     t = re.sub(r"\\resizebox\{[^}]*\}\{[^}]*\}\{", "", t)
@@ -46,7 +46,7 @@ def main():
                     "--resource-path=" + BASE])
     print("docx OK")
 
-    # ---- 排版美化：Times New Roman + 标题颜色去蓝 + 双栏副本 ----
+    # ---- Typesetting polish: Times New Roman + remove blue heading color + two-column copy ----
     from docx import Document
     from docx.oxml.ns import qn
     from docx.shared import Pt
@@ -57,13 +57,13 @@ def main():
             doc = Document(DOCX2)
         else:
             doc = Document(DOCX)
-        # 正文字体
+        # Body font
         for p in doc.paragraphs:
             for r in p.runs:
                 r.font.name = "Times New Roman"
                 if r.font.size is None:
                     r.font.size = Pt(10)
-        # 表格字体
+        # Table font
         for tb in doc.tables:
             for row in tb.rows:
                 for cell in row.cells:

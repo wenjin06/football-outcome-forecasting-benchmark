@@ -1,7 +1,10 @@
 """
+Stop-loss parameter sensitivity (revision comment 4b: 5 consecutive losses and
+10% drawdown are arbitrary settings and need a sensitivity analysis)
 ====================
-在测试集上遍历 (stop_loss_n, stop_loss_dd) 组合，报告 ROI/Sharpe/MDD。
-输出：results/stop_loss_sensitivity.json
+Sweep (stop_loss_n, stop_loss_dd) combinations on the test set and report
+ROI/Sharpe/MDD.
+Output: results/stop_loss_sensitivity.json
 """
 import os
 import json
@@ -65,8 +68,8 @@ for name, n, dd in CONFIGS:
     results[name] = {"roi": fin["roi"], "sharpe": fin["sharpe"], "mdd": fin["mdd"],
                      "win_rate": fin["win_rate"], "n_bets": int(fin["n_bets"])}
     print(f"{name}: ROI={fin['roi']*100:.2f}% Sharpe={fin['sharpe']:.3f} "
-          f"MDD={fin['mdd']*100:.1f}% ({fin['n_bets']}注)")
+          f"MDD={fin['mdd']*100:.1f}% ({fin['n_bets']} bets)")
 
 with open(os.path.join(RES, "stop_loss_sensitivity.json"), "w", encoding="utf-8") as f:
     json.dump(results, f, ensure_ascii=False, indent=2, default=float)
-print("已保存:", os.path.join(RES, "stop_loss_sensitivity.json"))
+print("saved:", os.path.join(RES, "stop_loss_sensitivity.json"))

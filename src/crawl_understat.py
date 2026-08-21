@@ -1,12 +1,13 @@
 """
-understat xG 重爬 v2（2019/20 - 2025/26，五大联赛）
+understat xG re-crawl v2 (2019/20 - 2025/26, top five leagues)
 ====================
-- 端点：https://understat.com/getLeagueData/{league}/{year}
-  （页面 league.min.js 实际调用的接口；需先取页面会话 cookie，带 XHR 头，gzip 响应）
-- 输出：sci_redo/data/raw_understat/understat_{league}_{year}.csv
-  （逐队逐场，与旧 understat_per_game.csv 同构）
-- 代理：通过 HTTP(S)_PROXY 环境变量（用户开代理后执行）
-- 礼貌抓取：每页间隔 1.5s，失败重试 3 次
+- Endpoint: https://understat.com/getLeagueData/{league}/{year}
+  (the API actually called by the page's league.min.js; requires the page session
+  cookie first, XHR headers, and gzip response handling)
+- Output: sci_redo/data/raw_understat/understat_{league}_{year}.csv
+  (one row per team per match, same schema as the legacy understat_per_game.csv)
+- Proxy: via the HTTP(S)_PROXY environment variable (run with a proxy enabled)
+- Polite crawling: 1.5s between pages, up to 3 retries on failure
 """
 import gzip
 import json
@@ -19,7 +20,7 @@ OUT = r"E:\论文\sci_redo\data\raw_understat"
 os.makedirs(OUT, exist_ok=True)
 
 LEAGUES = ["EPL", "La_liga", "Bundesliga", "Serie_A", "Ligue_1"]
-YEARS = list(range(2019, 2026))  # 2019/20 ~ 2025/26
+YEARS = list(range(2019, 2026))  # seasons 2019/20 ~ 2025/26
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -51,7 +52,7 @@ def fetch(opener, url, headers, retries=3):
 
 
 def rowify_teams(teams, league, year):
-    """从 teams[].history 展开为逐队行（与旧文件同构）。"""
+    """Expand teams[].history into one row per team per match (same schema as the legacy file)."""
     rows = []
     for tid, team in teams.items():
         name = team.get("title")
@@ -79,7 +80,7 @@ def rowify_teams(teams, league, year):
 
 
 def add_diff_cols(df):
-    """与旧文件一致：xG_diff = xG - 该队赛季均值；xpts_diff = xpts - 实际得分。"""
+    """Consistent with the legacy file: xG_diff = xG - team season mean; xpts_diff = xpts - actual points."""
     if df.empty:
         return df
     g = df.groupby(["league", "year", "team"])
@@ -98,13 +99,13 @@ def main():
         for year in YEARS:
             out_csv = os.path.join(OUT, f"understat_{league}_{year}.csv")
             if os.path.exists(out_csv):
-                print(f"skip {league} {year} (已存在)")
+                print(f"skip {league} {year} (already exists)")
                 continue
             page_url = f"https://understat.com/league/{league}/{year}"
             data_url = f"https://understat.com/getLeagueData/{league}/{year}"
             headers = {**HEADERS, "Referer": page_url}
             print(f"fetch {league} {year} ...", flush=True)
-            # 先取页面（种 cookie）
+            # Fetch the page first (to seed cookies)
             fetch(opener, page_url, headers)
             body = fetch(opener, data_url, headers)
             if not body:
@@ -124,7 +125,7 @@ def main():
             print(f"  {len(df)} rows -> {os.path.basename(out_csv)}")
             total += len(df)
             time.sleep(1.5)
-    print(f"\n完成，共 {total} 行。输出目录: {OUT}")
+    print(f"\ndone, {total} rows in total. Output dir: {OUT}")
 
 
 if __name__ == "__main__":

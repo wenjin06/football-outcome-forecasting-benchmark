@@ -1,10 +1,10 @@
 """
-LLM 输入消融分析：market vs stats vs market_stats vs full（同批前 120 场）
-=========================================================================
-回答审稿人："LLM 达到 market-level calibration 是因为 prompt 里有 closing odds，
-还是真的对非市场信息做了有效推理？"
+LLM input ablation analysis: market vs. stats vs. market_stats vs. full (same first 120 matches)
+================================================================================================
+Determines whether the LLM's market-level calibration stems from the closing odds
+included in the prompt or from genuine reasoning over non-market information.
 
-输出：results/llm_ablation.json
+Output: results/llm_ablation.json
 """
 import os
 import json
@@ -57,4 +57,4 @@ for label, fn in files.items():
 
 with open(os.path.join(RES, "llm_ablation.json"), "w", encoding="utf-8") as f:
     json.dump(out, f, ensure_ascii=False, indent=2, default=float)
-print("\n已保存:", os.path.join(RES, "llm_ablation.json"))
+print("\nsaved:", os.path.join(RES, "llm_ablation.json"))

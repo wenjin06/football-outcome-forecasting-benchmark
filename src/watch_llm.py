@@ -1,7 +1,7 @@
 """
-LLM 实验终端进度条（只读，不干扰运行）
-用法：在 E:\论文\sci_redo 下执行  python src\watch_llm.py
-每 5 秒刷新一次，Ctrl+C 退出。进度来源：results/llm_run_full.log + 断点文件。
+LLM experiment terminal progress bar (read-only, does not interfere with the run)
+Usage: run  python src\watch_llm.py  from E:\论文\sci_redo
+Refreshes every 5 seconds; Ctrl+C to exit. Progress source: results/llm_run_full.log + checkpoint file.
 """
 import os
 import re
@@ -21,11 +21,11 @@ def read_progress():
     t0 = None
     if os.path.exists(LOG):
         st = os.stat(LOG)
-        t0 = st.st_ctime  # 文件创建时间（约等于实验开始）
+        t0 = st.st_ctime  # file creation time (approximately the experiment start)
         with open(LOG, "r", encoding="utf-8", errors="replace") as f:
             for m in PAT.finditer(f.read()):
                 done = max(done, int(m.group(1)))
-    # 断点文件行数补充（每 50 场一存）
+    # Supplement with checkpoint-file rows (saved every 50 matches)
     ckpt = 0
     if os.path.exists(CKPT):
         with open(CKPT, "r", encoding="utf-8", errors="replace") as f:
@@ -42,8 +42,8 @@ def fmt(sec):
 
 def main():
     width = 40
-    print("LLM 全量实验进度（1104 场 x 3 采样，DeepSeek）")
-    print("按 Ctrl+C 退出\n")
+    print("LLM full experiment progress (1104 matches x 3 samples, DeepSeek)")
+    print("press Ctrl+C to exit\n")
     while True:
         done, t0 = read_progress()
         pct = done / TOTAL
@@ -52,13 +52,13 @@ def main():
         if t0 and done > 50:
             rate = done / max(time.time() - t0, 1)
             eta = (TOTAL - done) / rate
-            line += f"  速率 {rate:.2f} 场/分  预计剩余 {fmt(eta)}"
+            line += f"  rate {rate:.2f} matches/min, ETA {fmt(eta)}"
         elif done == 0:
-            line += "  等待启动..."
+            line += "  waiting to start..."
         sys.stdout.write("\r" + line + " " * 10)
         sys.stdout.flush()
         if done >= TOTAL:
-            print("\n\n实验已完成！最终结果见 results/llm_deepseek.json")
+            print("\n\nexperiment complete! Final results in results/llm_deepseek.json")
             break
         time.sleep(5)
 
@@ -67,4 +67,4 @@ if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print("\n退出。")
+        print("\nexiting.")
