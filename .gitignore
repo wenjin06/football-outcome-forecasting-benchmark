@@ -15,6 +15,8 @@ paper_overleaf.docx
 paper_overleaf_twocolumn.docx
 paper/*.pdf
 paper/*.docx
+*.pdf
+*.docx
 paper/_merged_for_docx.tex
 results/*.log
 data/processed/*_v2_noxg.csv
