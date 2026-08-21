@@ -6,7 +6,7 @@ Shows the progress of all running background tasks:
   2. Local qwen GPU build (WSL llama-cpp-python + RTX 5090)
   3. Local qwen comparison experiment (appears automatically once the build is done)
 
-Usage: cd E:\论文\sci_redo && python src\watch_tasks.py
+Usage: cd <repo root> && python src\watch_tasks.py
 Refreshes every 5 seconds; Ctrl+C to exit. Read-only, does not interfere with the tasks.
 """
 import os
@@ -14,6 +14,7 @@ import re
 import subprocess
 import sys
 import time
+import paths
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 RES = os.path.join(BASE, "..", "results")

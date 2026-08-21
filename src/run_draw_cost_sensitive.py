@@ -14,8 +14,9 @@ import pandas as pd
 from xgboost import XGBClassifier
 from sklearn.metrics import accuracy_score, f1_score, precision_recall_fscore_support, log_loss
 
-OUT = r"E:\论文\sci_redo\data\processed"
-RES = r"E:\论文\sci_redo\results"
+import paths
+OUT = paths.PROCESSED
+RES = paths.RES
 os.makedirs(RES, exist_ok=True)
 
 feat = pd.read_csv(os.path.join(OUT, "all_matches_featurized.csv"), parse_dates=["Date"])

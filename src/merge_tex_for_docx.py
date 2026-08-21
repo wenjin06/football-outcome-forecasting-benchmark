@@ -3,7 +3,8 @@ import re
 import sys
 import os
 
-BASE = r"E:\论文\sci_redo\paper"
+import paths
+BASE = paths.PAPER
 
 
 def expand(path, depth=0, seen=None):

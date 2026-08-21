@@ -1,10 +1,11 @@
 """Leak-free verification (manual recomputation against the raw data)"""
 import pandas as pd, glob
 
-raw = pd.concat([pd.read_csv(p) for p in sorted(glob.glob(r"E:\论文\structured_data\*.csv"))], ignore_index=True)
+import paths
+raw = pd.concat([pd.read_csv(p) for p in sorted(glob.glob(os.path.join(paths.raw_data_dir(), "*.csv")))], ignore_index=True)
 raw["Date"] = pd.to_datetime(raw["Date"], format="%d/%m/%Y", errors="coerce")
 raw = raw.dropna(subset=["Date", "HomeTeam", "AwayTeam", "FTR"]).sort_values("Date").reset_index(drop=True)
-feat = pd.read_csv(r"E:\论文\sci_redo\data\processed\all_matches_featurized.csv", parse_dates=["Date"])
+feat = pd.read_csv(os.path.join(paths.PROCESSED, "all_matches_featurized.csv"), parse_dates=["Date"])
 
 def team_prior_matches(team, date, n=None):
     m = raw[(raw["Date"] < date) & ((raw["HomeTeam"] == team) | (raw["AwayTeam"] == team))]

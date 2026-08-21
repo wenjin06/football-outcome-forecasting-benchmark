@@ -68,6 +68,19 @@ Python 3.13 (3.10+ should work). Dependencies in `requirements.txt`:
 pip install -r requirements.txt
 ```
 
+All scripts resolve their input/output directories relative to the repository
+root via `src/paths.py`; no path editing is required. If you use a specific
+Python environment or a non-default raw-data location, create a git-ignored
+`setenv_local.cmd` in the repository root (see the example below) or set the
+`PY` / `FOOTBALL_DATA_DIR` environment variables before running
+`refresh_all.cmd`:
+
+```bat
+rem setenv_local.cmd (local, not committed)
+set "PY=C:\path\to\venv\Scripts\python.exe"
+set "FOOTBALL_DATA_DIR=C:\path\to\raw-csvs"
+```
+
 Optional LLM experiments need an API key. Copy the template and fill it in
 (the file is never read into the repository):
 
@@ -78,9 +91,9 @@ cp src/llm/llm-config.local.json.example src/llm/llm-config.local.json
 ## Data
 
 1. **Structured match data** (football-data.co.uk format, leagues E0/D1/F1/I1/SP1,
-   seasons 2019/20–2025/26): download the CSV files into `data/raw/` (paths are
-   configured at the top of `src/data_pipeline.py`). The files are freely
-   available from football-data.co.uk.
+   seasons 2019/20–2025/26): download the CSV files into the directory given
+   by the `FOOTBALL_DATA_DIR` environment variable (default `data/raw/`).
+   The files are freely available from football-data.co.uk.
 2. **xG data** (optional but used in the paper): fetch from Understat:
 
 ```bash

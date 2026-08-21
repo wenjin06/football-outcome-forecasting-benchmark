@@ -26,9 +26,10 @@ import numpy as np
 import pandas as pd
 from xgboost import XGBClassifier
 
-OUT = r"E:\论文\sci_redo\data\processed"
-RES = r"E:\论文\sci_redo\results"
-RAW_GLOB = r"E:\论文\structured_data\*.csv"
+import paths
+OUT = paths.PROCESSED
+RES = paths.RES
+RAW_GLOB = os.path.join(paths.raw_data_dir(), "*.csv")
 os.makedirs(RES, exist_ok=True)
 
 # ---------------- Data loading (same protocol as run_value_betting.py) ----------------

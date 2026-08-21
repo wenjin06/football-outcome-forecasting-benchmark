@@ -23,8 +23,9 @@ from sklearn.metrics import accuracy_score, log_loss
 
 from evaluate import financial_metrics, simulate_bets
 
-OUT = r"E:\论文\sci_redo\data\processed"
-RES = r"E:\论文\sci_redo\results"
+import paths
+OUT = paths.PROCESSED
+RES = paths.RES
 os.makedirs(RES, exist_ok=True)
 
 feat = pd.read_csv(os.path.join(OUT, "all_matches_featurized.csv"), parse_dates=["Date"])
@@ -35,7 +36,7 @@ feature_cols = [c for c in feat.columns if c not in drop_cols and feat[c].notna(
 medians = feat[feat["Date"] < "2024-08-01"][feature_cols].median()
 feat[feature_cols] = feat[feature_cols].fillna(medians)
 
-raw = pd.concat([pd.read_csv(p) for p in glob.glob(r"E:\论文\structured_data\*.csv")], ignore_index=True)
+raw = pd.concat([pd.read_csv(p) for p in glob.glob(os.path.join(paths.raw_data_dir(), "*.csv"))], ignore_index=True)
 raw["Date"] = pd.to_datetime(raw["Date"], format="%d/%m/%Y", errors="coerce")
 raw = raw.dropna(subset=["Date", "HomeTeam", "AwayTeam", "FTR"])
 

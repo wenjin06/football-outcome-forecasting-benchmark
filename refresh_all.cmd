@@ -1,14 +1,20 @@
 @echo off
 REM ============================================================
-REM refresh_all.cmd - One-shot pipeline refresh for the sci_redo paper
+REM refresh_all.cmd - One-shot pipeline refresh
 REM ============================================================
 REM WHEN TO USE:
-REM   1. The 2025/26 test season has completed on football-data.co.uk
-REM   2. Download updated CSVs into E:\论文\structured_data\
+REM   1. The 2025/26 test period has completed on football-data.co.uk
+REM   2. Download updated CSVs into the raw-data directory
+REM      (default: <repo>\data\raw; override with the FOOTBALL_DATA_DIR
+REM      environment variable, e.g. via a local setenv_local.cmd)
 REM   3. (Optional) re-crawl Understat xG if new season data is available:
 REM        python src\crawl_understat.py
 REM   4. Run this script. It rebuilds features, reruns every experiment,
 REM      and regenerates all paper tables and figures.
+REM
+REM Python: uses %PY% if defined, otherwise `python` on PATH. To use a
+REM specific environment, create a local setenv_local.cmd (git-ignored,
+REM see README) or set PY before running.
 REM
 REM NOTE: LLM experiments (run_llm.py) are NOT run here because they
 REM       cost API credits. Run them manually if needed after refresh:
@@ -16,13 +22,15 @@ REM        python src\run_llm.py
 REM       Then rerun: python src\make_tables.py
 REM ============================================================
 
-set PY=E:\论文\期刊升级\.venv\Scripts\python.exe
-set SRC=E:\论文\sci_redo\src
-cd /d E:\论文\sci_redo
+set SRC=%~dp0src
+cd /d %~dp0
 
-echo [1/17] data_pipeline (v2, no-xG) ...
+if exist setenv_local.cmd call setenv_local.cmd
+if not defined PY set PY=python
+
+echo [1/17] data_pipeline ...
 %PY% %SRC%\data_pipeline.py || goto :err
-echo [2/17] augment_xg (v3, with xG) ...
+echo [2/17] augment_xg ...
 %PY% %SRC%\augment_xg.py || goto :err
 
 echo [3/17] baselines (market/XGB/RF/Elo/Poisson) ...

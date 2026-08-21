@@ -21,8 +21,9 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
-OUT = r"E:\论文\sci_redo\data\processed"
-RAW_XG = r"E:\论文\sci_redo\data\raw_understat"
+import paths
+OUT = paths.PROCESSED
+RAW_XG = paths.RAW_UNDERSTAT
 ROLL_WIN = 5
 
 # ---------------- Team name mapping: FD abbreviations -> understat full names ----------------

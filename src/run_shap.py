@@ -15,8 +15,9 @@ from xgboost import XGBClassifier
 from sklearn.metrics import log_loss
 from sklearn.inspection import permutation_importance
 
-OUT = r"E:\论文\sci_redo\data\processed"
-RES = r"E:\论文\sci_redo\results"
+import paths
+OUT = paths.PROCESSED
+RES = paths.RES
 os.makedirs(RES, exist_ok=True)
 
 feat = pd.read_csv(os.path.join(OUT, "all_matches_featurized.csv"), parse_dates=["Date"])

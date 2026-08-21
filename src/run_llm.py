@@ -36,8 +36,9 @@ sys.path.insert(0, os.path.dirname(__file__))
 from evaluate import evaluate_predictions, financial_metrics, simulate_bets
 from risk import consistency_from_samples, compute_ui, fit_robust, compute_scs, risk_tiers, simulate_bets_with_risk
 
-OUT = r"E:\论文\sci_redo\data\processed"
-RES = r"E:\论文\sci_redo\results"
+import paths
+OUT = paths.PROCESSED
+RES = paths.RES
 os.makedirs(RES, exist_ok=True)
 
 DROP_COLS = ["Div", "Date", "Season", "HomeTeam", "AwayTeam", "FTR", "y"]
@@ -75,7 +76,7 @@ def main():
 
     # Test-set odds (financial simulation)
     import glob
-    raw = pd.concat([pd.read_csv(p) for p in glob.glob(r"E:\论文\structured_data\*.csv")],
+    raw = pd.concat([pd.read_csv(p) for p in glob.glob(os.path.join(paths.raw_data_dir(), "*.csv"))],
                     ignore_index=True)
     raw["Date"] = pd.to_datetime(raw["Date"], format="%d/%m/%Y", errors="coerce")
     raw = raw.dropna(subset=["Date", "HomeTeam", "AwayTeam", "FTR"])

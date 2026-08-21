@@ -15,7 +15,8 @@ from sklearn.metrics import accuracy_score, log_loss
 
 from evaluate import brier_multiclass, ece, financial_metrics, simulate_bets
 
-RES = r"E:\论文\sci_redo\results"
+import paths
+RES = paths.RES
 
 
 def load(name):

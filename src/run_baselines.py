@@ -15,8 +15,9 @@ from xgboost import XGBClassifier
 from evaluate import (evaluate_predictions, financial_metrics, simulate_bets,
                       class_metrics, bootstrap_ci)
 
-OUT = r"E:\论文\sci_redo\data\processed"
-RES = r"E:\论文\sci_redo\results"
+import paths
+OUT = paths.PROCESSED
+RES = paths.RES
 os.makedirs(RES, exist_ok=True)
 
 train = joblib.load(os.path.join(OUT, "train_dataset.pkl"))
@@ -24,10 +25,10 @@ val = joblib.load(os.path.join(OUT, "val_dataset.pkl"))
 test = joblib.load(os.path.join(OUT, "test_dataset.pkl"))
 
 # Raw data (for odds)
-raw = pd.concat([pd.read_csv(p) for p in glob.glob(r"E:\论文\structured_data\*.csv")], ignore_index=True)
+raw = pd.concat([pd.read_csv(p) for p in glob.glob(os.path.join(paths.raw_data_dir(), "*.csv"))], ignore_index=True)
 raw["Date"] = pd.to_datetime(raw["Date"], format="%d/%m/%Y", errors="coerce")
 raw = raw.dropna(subset=["Date", "HomeTeam", "AwayTeam", "FTR"])
-feat = pd.read_csv(r"E:\论文\sci_redo\data\processed\all_matches_featurized.csv", parse_dates=["Date"])
+feat = pd.read_csv(os.path.join(paths.PROCESSED, "all_matches_featurized.csv"), parse_dates=["Date"])
 # Align test-set odds by Date+HomeTeam+AwayTeam (closing odds from the raw data)
 tmeta = test["meta"].copy()
 tmeta = tmeta.merge(raw[["Date", "HomeTeam", "AwayTeam", "B365CH", "B365CD", "B365CA"]],

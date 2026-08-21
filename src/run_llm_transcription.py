@@ -26,7 +26,8 @@ from sklearn.metrics import accuracy_score, log_loss
 
 from evaluate import ece, brier_multiclass, financial_metrics
 
-RES = r"E:\论文\sci_redo\results"
+import paths
+RES = paths.RES
 
 
 def devig(odds):

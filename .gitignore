@@ -19,6 +19,8 @@ paper/*.docx
 *.docx
 paper/_merged_for_docx.tex
 results/*.log
+data/raw/
+setenv_local.cmd
 data/processed/*_v2_noxg.csv
 src/debug*.py
 src/_inspect_news.py

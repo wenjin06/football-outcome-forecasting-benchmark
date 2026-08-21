@@ -19,7 +19,8 @@ from sklearn.metrics import accuracy_score
 from evaluate import financial_metrics, simulate_bets
 from risk import risk_tiers
 
-RES = r"E:\论文\sci_redo\results"
+import paths
+RES = paths.RES
 
 pm = pd.read_csv(os.path.join(RES, "llm_deepseek_t0.3_per_match.csv"))
 pm = pm.dropna(subset=["p_H"]).reset_index(drop=True)

@@ -16,7 +16,8 @@ import time
 import urllib.request
 import http.cookiejar
 
-OUT = r"E:\论文\sci_redo\data\raw_understat"
+import paths
+OUT = paths.RAW_UNDERSTAT
 os.makedirs(OUT, exist_ok=True)
 
 LEAGUES = ["EPL", "La_liga", "Bundesliga", "Serie_A", "Ligue_1"]

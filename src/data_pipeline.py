@@ -22,8 +22,9 @@ from sklearn.preprocessing import StandardScaler
 import warnings
 warnings.filterwarnings('ignore')
 
-DATA_FOLDER = r"E:\论文\structured_data"
-OUT_FOLDER = r"E:\论文\sci_redo\data\processed"
+import paths
+DATA_FOLDER = paths.raw_data_dir()
+OUT_FOLDER = paths.PROCESSED
 ROLL_WIN = 5  # rolling window size in matches
 
 SEASON_START = {2019: "2019-08-01", 2020: "2020-08-01", 2021: "2021-08-01",

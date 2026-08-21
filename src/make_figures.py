@@ -15,9 +15,10 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch, FancyArrowPatch
 from xgboost import XGBClassifier
 
-RES = r"E:\论文\sci_redo\results"
-OUT = r"E:\论文\sci_redo\paper\figures"
-DATA = r"E:\论文\sci_redo\data\processed"
+import paths
+RES = paths.RES
+OUT = paths.FIGURES
+DATA = paths.PROCESSED
 os.makedirs(OUT, exist_ok=True)
 
 plt.rcParams.update({"font.size": 9, "axes.grid": True, "grid.alpha": 0.3,
@@ -143,7 +144,7 @@ plt.close()
 # ============ Fig 4: cumulative ROI curves ============
 print("[5/5] cumulative ROI curves ...")
 import glob
-raw = pd.concat([pd.read_csv(p) for p in glob.glob(r"E:\论文\structured_data\*.csv")], ignore_index=True)
+raw = pd.concat([pd.read_csv(p) for p in glob.glob(os.path.join(paths.raw_data_dir(), "*.csv"))], ignore_index=True)
 raw["Date"] = pd.to_datetime(raw["Date"], format="%d/%m/%Y", errors="coerce")
 raw = raw.dropna(subset=["Date", "HomeTeam", "AwayTeam", "FTR"])
 tmeta = test.merge(raw[["Date", "HomeTeam", "AwayTeam", "B365CH", "B365CD", "B365CA"]],

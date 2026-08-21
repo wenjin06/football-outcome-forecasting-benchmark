@@ -26,8 +26,9 @@ from evaluate import evaluate_predictions, financial_metrics, simulate_bets, boo
 from risk import (compute_scs, compute_ui, fit_robust, risk_tiers,
                   simulate_bets_with_risk)
 
-OUT = r"E:\论文\sci_redo\data\processed"
-RES = r"E:\论文\sci_redo\results"
+import paths
+OUT = paths.PROCESSED
+RES = paths.RES
 os.makedirs(RES, exist_ok=True)
 
 feat = pd.read_csv(os.path.join(OUT, "all_matches_featurized.csv"), parse_dates=["Date"])
@@ -40,7 +41,7 @@ train = feat[feat["Date"] < "2024-08-01"]
 val = feat[(feat["Date"] >= "2024-08-01") & (feat["Date"] < "2025-08-01")]
 test = feat[feat["Date"] >= "2025-08-01"]
 
-raw = pd.concat([pd.read_csv(p) for p in glob.glob(r"E:\论文\structured_data\*.csv")], ignore_index=True)
+raw = pd.concat([pd.read_csv(p) for p in glob.glob(os.path.join(paths.raw_data_dir(), "*.csv"))], ignore_index=True)
 raw["Date"] = pd.to_datetime(raw["Date"], format="%d/%m/%Y", errors="coerce")
 raw = raw.dropna(subset=["Date", "HomeTeam", "AwayTeam", "FTR"])
 

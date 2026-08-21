@@ -12,13 +12,13 @@ import sys
 sys.path.insert(0, os.path.dirname(__file__))
 from merge_tex_for_docx import expand
 
-BASE = r"E:\论文\sci_redo\paper"
-PY = r"E:\论文\期刊升级\.venv\Scripts\python.exe"
+import paths
+BASE = paths.PAPER
 MERGED = os.path.join(BASE, "_merged_for_docx.tex")
-DOCX = r"E:\论文\sci_redo\paper_overleaf.docx"
-DOCX2 = r"E:\论文\sci_redo\paper_overleaf_twocolumn.docx"
+DOCX = os.path.join(paths.BASE, "paper_overleaf.docx")
+DOCX2 = os.path.join(paths.BASE, "paper_overleaf_twocolumn.docx")
 BIB = os.path.join(BASE, "references.bib")
-CSL = r"E:\论文\sci_redo\ieee.csl"
+CSL = os.path.join(paths.BASE, "ieee.csl")
 
 
 def preprocess(t):

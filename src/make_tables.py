@@ -9,8 +9,9 @@ Usage: python src/make_tables.py
 import os
 import json
 
-RES = r"E:\论文\sci_redo\results"
-OUT = r"E:\论文\sci_redo\paper\tables"
+import paths
+RES = paths.RES
+OUT = paths.TABLES
 os.makedirs(OUT, exist_ok=True)
 
 

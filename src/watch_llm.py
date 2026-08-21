@@ -1,12 +1,13 @@
 """
 LLM experiment terminal progress bar (read-only, does not interfere with the run)
-Usage: run  python src\watch_llm.py  from E:\论文\sci_redo
+Usage: run  python src\watch_llm.py  from the repository root
 Refreshes every 5 seconds; Ctrl+C to exit. Progress source: results/llm_run_full.log + checkpoint file.
 """
 import os
 import re
 import sys
 import time
+import paths
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 LOG = os.path.join(BASE, "..", "results", "llm_run_full.log")
