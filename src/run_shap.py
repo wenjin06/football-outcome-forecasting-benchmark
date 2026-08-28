@@ -54,7 +54,7 @@ imp = pd.DataFrame({
 def group_of(f):
     if f.startswith("mkt_prob") or f.startswith("odds_move") or f in ("close_vol", "close_avg_h", "open_avg_h", "close_max_h"):
         return "market"
-    if f.startswith(("H_x", "A_x", "H_deep", "A_deep", "H_xpts", "A_xpts", "H_ppda", "A_ppda")) or f == "xg_diff_roll":
+    if f.startswith(("H_x", "A_x", "H_deep", "A_deep", "H_xpts", "A_xpts", "H_ppda", "A_ppda")) or f.endswith("_y") or f == "xg_diff_roll":
         return "xg"
     if f.startswith("ref_"):
         return "referee"

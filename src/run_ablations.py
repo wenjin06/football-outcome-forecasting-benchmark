@@ -1,4 +1,4 @@
-"""
+﻿"""
 Ablation experiments (non-LLM part; runs immediately and produces real numbers)
 ====================
 Feature-group ablation for XGBoost on the leak-free pipeline output:
@@ -36,7 +36,7 @@ REF_COLS = [c for c in all_cols if c.startswith("ref_")]
 RANK_COLS = [c for c in all_cols if c.endswith("_rank")]
 ROLL_COLS = [c for c in all_cols if c.startswith(("H_roll", "A_roll"))]
 SEASON_COLS = [c for c in all_cols if c.startswith(("H_season", "A_season"))]
-XG_COLS = [c for c in all_cols if c.startswith(("H_x", "A_x")) or c == "xg_diff_roll"]
+XG_COLS = [c for c in all_cols if c.startswith(("H_x", "A_x")) or c.endswith("_y") or c == "xg_diff_roll"]
 
 GROUPS = {
     "full": all_cols,
