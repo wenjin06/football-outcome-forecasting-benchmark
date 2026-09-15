@@ -1,0 +1,17 @@
+\begin{table}[tbp]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{5pt}
+\caption{Rolling evaluation over the 2022/23--2025/26 target seasons at 90\% target coverage (mean across season--seed runs). Target error is $|\widehat{C}-0.90|$; class gap is the maximum minus minimum H/D/A coverage.}
+\label{tab:conformal-rolling}
+\begin{tabular}{lcccccc}
+\toprule
+Set method & Coverage & Target error & Class gap & Mean size & Automated & Auto. acc. \\
+\midrule
+Marginal LAC & 91.8\% & 1.83\% & 9.73\% & 2.399 & 19.0\% & 75.0\% \\
+Fixed Mondrian-LAC & 90.5\% & 0.95\% & 4.40\% & 2.374 & 13.4\% & 77.5\% \\
+Expanding Mondrian ($\gamma=0$) & 90.3\% & 0.61\% & 3.41\% & 2.354 & 14.9\% & 76.9\% \\
+Adaptive Mondrian ($\gamma=0.02$) & 89.9\% & 0.14\% & 0.67\% & 2.334 & 15.9\% & 75.7\% \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -10,8 +10,10 @@ inside the repository.
 import os
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-RES = os.path.join(BASE, "results")
-PROCESSED = os.path.join(BASE, "data", "processed")
+RES = os.environ.get("FOOTBALL_RESULTS_DIR", os.path.join(BASE, "results"))
+PROCESSED = os.environ.get(
+    "FOOTBALL_PROCESSED_DIR", os.path.join(BASE, "data", "processed")
+)
 RAW = os.path.join(BASE, "data", "raw")
 RAW_UNDERSTAT = os.path.join(BASE, "data", "raw_understat")
 FIGURES = os.path.join(BASE, "paper", "figures")

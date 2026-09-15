@@ -1,21 +1,20 @@
-\begin{table*}[tbp]
+\begin{table}[tbp]
 \centering
 \small
-\caption{Ablation study (XGBoost, test set). ROI-all: all bets; ROI-t0.4: bets with model probability at least 0.4.}
+\setlength{\tabcolsep}{5pt}
+\caption{Feature-group ablation on the complete 2025/26 season. ROI is descriptive and uses the common closing-line settlement protocol.}
 \label{tab:ablation}
-\resizebox{\textwidth}{!}{
-\begin{tabular}{lcccccc}
+\begin{tabular}{lcccc}
 \toprule
-Configuration & \#Feat & Acc & LogLoss & ECE & ROI(all) & ROI(t$\geq$0.4) \\
+Configuration & Features & Accuracy & Log loss & ROI \\
 \midrule
-Full (60 features) & 60 & 54.2\% & 0.971 & 0.022 & 0.5\% & 1.5\% \\
-w/o market odds & 49 & 51.1\% & 1.000 & 0.027 & -3.7\% & -3.5\% \\
-w/o referee & 56 & 54.2\% & 0.973 & 0.026 & 0.7\% & 0.1\% \\
-w/o rank & 58 & 54.1\% & 0.972 & 0.016 & 0.9\% & 1.6\% \\
-w/o xG & 45 & 53.9\% & 0.973 & 0.025 & -0.5\% & 0.4\% \\
-Structured only & 45 & 51.1\% & 1.000 & 0.013 & -3.4\% & -4.3\% \\
-w/o form & 30 & 53.4\% & 0.971 & 0.008 & -0.9\% & -1.3\% \\
+Full (60 features) & 60 & 52.9\% & 0.983 & -1.9\% \\
+Without market odds & 49 & 51.4\% & 1.004 & -2.3\% \\
+Without xG & 53 & 52.5\% & 0.983 & -3.3\% \\
+Without referee & 56 & 52.8\% & 0.983 & -2.5\% \\
+Without rank & 58 & 52.3\% & 0.985 & -3.8\% \\
+Without form & 30 & 52.7\% & 0.983 & -2.6\% \\
+Structured non-market only & 45 & 51.1\% & 1.006 & -2.9\% \\
 \bottomrule
 \end{tabular}
-}
-\end{table*}
+\end{table}

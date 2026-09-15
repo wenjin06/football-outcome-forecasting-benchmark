@@ -1,0 +1,18 @@
+\begin{table}[tbp]
+\centering
+\small
+\setlength{\tabcolsep}{5pt}
+\caption{Predictive performance on the complete 2025/26 test season (1,752 matches). Confidence intervals are league-by-week block-bootstrap intervals for the accuracy difference relative to the market; McNemar tests use paired classifications.}
+\label{tab:predictive}
+\begin{tabular}{lcccc}
+\toprule
+Method & Accuracy & Log loss & $\Delta$ accuracy 95\% CI & McNemar $p$ \\
+\midrule
+Market (de-vigged closing odds) & 53.3\% & 0.978 & reference & --- \\
+XGBoost, five-seed ensemble & 53.4\% & 0.981 & [-0.90, 1.04] pp & 1.000 \\
+Random forest, five-seed ensemble & 53.4\% & 0.980 & [-1.01, 1.26] pp & 0.920 \\
+Elo & 50.9\% & 1.007 & --- & --- \\
+Poisson & 49.5\% & 1.014 & --- & --- \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -1,0 +1,2417 @@
+{
+  "status": "prototype",
+  "protocol": {
+    "outcome_train_through": 2022,
+    "early_stopping_season": 2023,
+    "blend_tuning": "first chronological half of 2024/25",
+    "conformal_calibration": "second chronological half of 2024/25",
+    "test": "complete 2025/26"
+  },
+  "sample_sizes": {
+    "outcome_train": 7203,
+    "early_stop": 1752,
+    "blend_tune": 876,
+    "conformal_calibration": 876,
+    "test": 1752
+  },
+  "blend_grid": [
+    {
+      "model_weight": 0.0,
+      "log_loss": 0.962107513422625
+    },
+    {
+      "model_weight": 0.05,
+      "log_loss": 0.9621637564729716
+    },
+    {
+      "model_weight": 0.1,
+      "log_loss": 0.9622794059573003
+    },
+    {
+      "model_weight": 0.15000000000000002,
+      "log_loss": 0.9624539679649453
+    },
+    {
+      "model_weight": 0.2,
+      "log_loss": 0.962687065995707
+    },
+    {
+      "model_weight": 0.25,
+      "log_loss": 0.9629784353036566
+    },
+    {
+      "model_weight": 0.30000000000000004,
+      "log_loss": 0.9633279186015572
+    },
+    {
+      "model_weight": 0.35000000000000003,
+      "log_loss": 0.9637354629947393
+    },
+    {
+      "model_weight": 0.4,
+      "log_loss": 0.9642011180519635
+    },
+    {
+      "model_weight": 0.45,
+      "log_loss": 0.9647250349544333
+    },
+    {
+      "model_weight": 0.5,
+      "log_loss": 0.9653074666945827
+    },
+    {
+      "model_weight": 0.55,
+      "log_loss": 0.9659487693252998
+    },
+    {
+      "model_weight": 0.6000000000000001,
+      "log_loss": 0.9666494042893955
+    },
+    {
+      "model_weight": 0.65,
+      "log_loss": 0.9674099418899709
+    },
+    {
+      "model_weight": 0.7000000000000001,
+      "log_loss": 0.9682310659966616
+    },
+    {
+      "model_weight": 0.75,
+      "log_loss": 0.9691135801226026
+    },
+    {
+      "model_weight": 0.8,
+      "log_loss": 0.9700584150550304
+    },
+    {
+      "model_weight": 0.8500000000000001,
+      "log_loss": 0.9710666382822095
+    },
+    {
+      "model_weight": 0.9,
+      "log_loss": 0.9721394655356479
+    },
+    {
+      "model_weight": 0.9500000000000001,
+      "log_loss": 0.9732782748660902
+    },
+    {
+      "model_weight": 1.0,
+      "log_loss": 0.9744846238043215
+    }
+  ],
+  "selected_model_weight": 0.0,
+  "methods": {
+    "model": {
+      "point_accuracy": 0.526255707762557,
+      "point_log_loss": 0.9916316868921006,
+      "sets": {
+        "alpha_0.05": {
+          "target_coverage": 0.95,
+          "marginal_lac": {
+            "qhat": 0.849369930485339,
+            "marginal_coverage": 0.9509132420091324,
+            "mean_set_size": 2.644977168949772,
+            "singleton_rate": 0.0976027397260274,
+            "singleton_n": 171,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9857328145265889,
+                "mean_set_size": 2.53177691309987
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.92152466367713,
+                "mean_set_size": 2.7600896860986546
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.9252336448598131,
+                "mean_set_size": 2.7121495327102805
+              }
+            },
+            "singleton_accuracy": 0.7543859649122807,
+            "singleton_financial": {
+              "n_bets": 171,
+              "roi": -0.019824561403508786,
+              "sharpe": -0.03484346001859606,
+              "mdd": -0.04900119515110137,
+              "win_rate": 0.7543859649122807
+            }
+          },
+          "mondrian_lac": {
+            "qhat_by_class": [
+              0.7944045097469612,
+              0.874769277856903,
+              0.8609503635905738
+            ],
+            "marginal_coverage": 0.9594748858447488,
+            "mean_set_size": 2.685502283105023,
+            "singleton_rate": 0.04052511415525114,
+            "singleton_n": 71,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9623865110246433,
+                "mean_set_size": 2.6381322957198443
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.9753363228699552,
+                "mean_set_size": 2.7713004484304933
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.9420560747663551,
+                "mean_set_size": 2.682242990654206
+              }
+            },
+            "singleton_accuracy": 0.7605633802816901,
+            "singleton_financial": {
+              "n_bets": 71,
+              "roi": -0.05718309859154932,
+              "sharpe": -0.10635374152365622,
+              "mdd": -0.08304498269896204,
+              "win_rate": 0.7605633802816901
+            }
+          },
+          "aps": {
+            "qhat": 1.0,
+            "marginal_coverage": 1.0,
+            "mean_set_size": 2.999429223744292,
+            "singleton_rate": 0.0,
+            "singleton_n": 0,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 1.0,
+                "mean_set_size": 3.0
+              },
+              "D": {
+                "n": 446,
+                "coverage": 1.0,
+                "mean_set_size": 3.0
+              },
+              "A": {
+                "n": 535,
+                "coverage": 1.0,
+                "mean_set_size": 2.9981308411214953
+              }
+            }
+          },
+          "mondrian_aps": {
+            "qhat_by_class": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "marginal_coverage": 1.0,
+            "mean_set_size": 2.999429223744292,
+            "singleton_rate": 0.0,
+            "singleton_n": 0,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 1.0,
+                "mean_set_size": 3.0
+              },
+              "D": {
+                "n": 446,
+                "coverage": 1.0,
+                "mean_set_size": 3.0
+              },
+              "A": {
+                "n": 535,
+                "coverage": 1.0,
+                "mean_set_size": 2.9981308411214953
+              }
+            }
+          },
+          "raps": {
+            "qhat": 1.1,
+            "marginal_coverage": 1.0,
+            "mean_set_size": 2.999429223744292,
+            "singleton_rate": 0.0,
+            "singleton_n": 0,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 1.0,
+                "mean_set_size": 3.0
+              },
+              "D": {
+                "n": 446,
+                "coverage": 1.0,
+                "mean_set_size": 3.0
+              },
+              "A": {
+                "n": 535,
+                "coverage": 1.0,
+                "mean_set_size": 2.9981308411214953
+              }
+            }
+          },
+          "mondrian_raps": {
+            "qhat_by_class": [
+              1.1,
+              1.1,
+              1.1
+            ],
+            "marginal_coverage": 1.0,
+            "mean_set_size": 2.999429223744292,
+            "singleton_rate": 0.0,
+            "singleton_n": 0,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 1.0,
+                "mean_set_size": 3.0
+              },
+              "D": {
+                "n": 446,
+                "coverage": 1.0,
+                "mean_set_size": 3.0
+              },
+              "A": {
+                "n": 535,
+                "coverage": 1.0,
+                "mean_set_size": 2.9981308411214953
+              }
+            }
+          }
+        },
+        "alpha_0.10": {
+          "target_coverage": 0.9,
+          "marginal_lac": {
+            "qhat": 0.8168143481016159,
+            "marginal_coverage": 0.922945205479452,
+            "mean_set_size": 2.464041095890411,
+            "singleton_rate": 0.17636986301369864,
+            "singleton_n": 309,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9714656290531777,
+                "mean_set_size": 2.3333333333333335
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.8632286995515696,
+                "mean_set_size": 2.6053811659192827
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.902803738317757,
+                "mean_set_size": 2.5345794392523366
+              }
+            },
+            "singleton_accuracy": 0.7184466019417476,
+            "singleton_financial": {
+              "n_bets": 309,
+              "roi": -0.03472491909385114,
+              "sharpe": -0.056421062896263356,
+              "mdd": -0.06615529117094554,
+              "win_rate": 0.7184466019417476
+            }
+          },
+          "mondrian_lac": {
+            "qhat_by_class": [
+              0.6962698788562454,
+              0.849369930485339,
+              0.8258617047348873
+            ],
+            "marginal_coverage": 0.898972602739726,
+            "mean_set_size": 2.4103881278538815,
+            "singleton_rate": 0.1095890410958904,
+            "singleton_n": 192,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.8793774319066148,
+                "mean_set_size": 2.376134889753567
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.92152466367713,
+                "mean_set_size": 2.5112107623318387
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.908411214953271,
+                "mean_set_size": 2.3757009345794393
+              }
+            },
+            "singleton_accuracy": 0.734375,
+            "singleton_financial": {
+              "n_bets": 192,
+              "roi": -0.03843750000000001,
+              "sharpe": -0.06528141029476732,
+              "mdd": -0.06685250886974153,
+              "win_rate": 0.734375
+            }
+          },
+          "aps": {
+            "qhat": 1.0,
+            "marginal_coverage": 1.0,
+            "mean_set_size": 2.999429223744292,
+            "singleton_rate": 0.0,
+            "singleton_n": 0,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 1.0,
+                "mean_set_size": 3.0
+              },
+              "D": {
+                "n": 446,
+                "coverage": 1.0,
+                "mean_set_size": 3.0
+              },
+              "A": {
+                "n": 535,
+                "coverage": 1.0,
+                "mean_set_size": 2.9981308411214953
+              }
+            }
+          },
+          "mondrian_aps": {
+            "qhat_by_class": [
+              0.8416298690559705,
+              1.0,
+              1.0
+            ],
+            "marginal_coverage": 0.9611872146118722,
+            "mean_set_size": 2.800228310502283,
+            "singleton_rate": 0.0005707762557077625,
+            "singleton_n": 1,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9118028534370947,
+                "mean_set_size": 2.9118028534370946
+              },
+              "D": {
+                "n": 446,
+                "coverage": 1.0,
+                "mean_set_size": 2.7690582959641254
+              },
+              "A": {
+                "n": 535,
+                "coverage": 1.0,
+                "mean_set_size": 2.6654205607476635
+              }
+            },
+            "singleton_accuracy": 1.0,
+            "singleton_financial": {
+              "n_bets": 1,
+              "roi": 0.5700000000000001,
+              "sharpe": null,
+              "mdd": 0.0,
+              "win_rate": 1.0
+            }
+          },
+          "raps": {
+            "qhat": 1.1,
+            "marginal_coverage": 1.0,
+            "mean_set_size": 2.999429223744292,
+            "singleton_rate": 0.0,
+            "singleton_n": 0,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 1.0,
+                "mean_set_size": 3.0
+              },
+              "D": {
+                "n": 446,
+                "coverage": 1.0,
+                "mean_set_size": 3.0
+              },
+              "A": {
+                "n": 535,
+                "coverage": 1.0,
+                "mean_set_size": 2.9981308411214953
+              }
+            }
+          },
+          "mondrian_raps": {
+            "qhat_by_class": [
+              0.8501104369792473,
+              1.1,
+              1.1
+            ],
+            "marginal_coverage": 0.9531963470319634,
+            "mean_set_size": 2.7745433789954337,
+            "singleton_rate": 0.0005707762557077625,
+            "singleton_n": 1,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.893644617380026,
+                "mean_set_size": 2.893644617380026
+              },
+              "D": {
+                "n": 446,
+                "coverage": 1.0,
+                "mean_set_size": 2.7533632286995515
+              },
+              "A": {
+                "n": 535,
+                "coverage": 1.0,
+                "mean_set_size": 2.6205607476635513
+              }
+            },
+            "singleton_accuracy": 1.0,
+            "singleton_financial": {
+              "n_bets": 1,
+              "roi": 0.5700000000000001,
+              "sharpe": null,
+              "mdd": 0.0,
+              "win_rate": 1.0
+            }
+          }
+        },
+        "alpha_0.20": {
+          "target_coverage": 0.8,
+          "marginal_lac": {
+            "qhat": 0.7627018533526746,
+            "marginal_coverage": 0.8224885844748858,
+            "mean_set_size": 2.0593607305936072,
+            "singleton_rate": 0.3247716894977169,
+            "singleton_n": 569,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9390402075226978,
+                "mean_set_size": 1.9455252918287937
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.6367713004484304,
+                "mean_set_size": 2.1591928251121075
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.8093457943925234,
+                "mean_set_size": 2.1401869158878504
+              }
+            },
+            "singleton_accuracy": 0.6572934973637962,
+            "singleton_financial": {
+              "n_bets": 569,
+              "roi": -0.040738137082601045,
+              "sharpe": -0.05694763787426842,
+              "mdd": -0.060437574234417216,
+              "win_rate": 0.6572934973637962
+            }
+          },
+          "mondrian_lac": {
+            "qhat_by_class": [
+              0.6046113967895508,
+              0.8151504640326042,
+              0.7751971185207367
+            ],
+            "marginal_coverage": 0.7962328767123288,
+            "mean_set_size": 1.9994292237442923,
+            "singleton_rate": 0.20947488584474885,
+            "singleton_n": 367,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.7302204928664072,
+                "mean_set_size": 1.9571984435797665
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.8632286995515696,
+                "mean_set_size": 2.091928251121076
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.8355140186915888,
+                "mean_set_size": 1.983177570093458
+              }
+            },
+            "singleton_accuracy": 0.7029972752043597,
+            "singleton_financial": {
+              "n_bets": 367,
+              "roi": -0.02512261580381471,
+              "sharpe": -0.03852403920027471,
+              "mdd": -0.05593962742097205,
+              "win_rate": 0.7029972752043597
+            }
+          },
+          "aps": {
+            "qhat": 1.0,
+            "marginal_coverage": 1.0,
+            "mean_set_size": 2.999429223744292,
+            "singleton_rate": 0.0,
+            "singleton_n": 0,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 1.0,
+                "mean_set_size": 3.0
+              },
+              "D": {
+                "n": 446,
+                "coverage": 1.0,
+                "mean_set_size": 3.0
+              },
+              "A": {
+                "n": 535,
+                "coverage": 1.0,
+                "mean_set_size": 2.9981308411214953
+              }
+            }
+          },
+          "mondrian_aps": {
+            "qhat_by_class": [
+              0.7709044699236085,
+              1.0,
+              1.0
+            ],
+            "marginal_coverage": 0.944634703196347,
+            "mean_set_size": 2.7482876712328768,
+            "singleton_rate": 0.0005707762557077625,
+            "singleton_n": 1,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.874189364461738,
+                "mean_set_size": 2.874189364461738
+              },
+              "D": {
+                "n": 446,
+                "coverage": 1.0,
+                "mean_set_size": 2.7219730941704037
+              },
+              "A": {
+                "n": 535,
+                "coverage": 1.0,
+                "mean_set_size": 2.588785046728972
+              }
+            },
+            "singleton_accuracy": 1.0,
+            "singleton_financial": {
+              "n_bets": 1,
+              "roi": 0.5700000000000001,
+              "sharpe": null,
+              "mdd": 0.0,
+              "win_rate": 1.0
+            }
+          },
+          "raps": {
+            "qhat": 1.1,
+            "marginal_coverage": 1.0,
+            "mean_set_size": 2.999429223744292,
+            "singleton_rate": 0.0,
+            "singleton_n": 0,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 1.0,
+                "mean_set_size": 3.0
+              },
+              "D": {
+                "n": 446,
+                "coverage": 1.0,
+                "mean_set_size": 3.0
+              },
+              "A": {
+                "n": 535,
+                "coverage": 1.0,
+                "mean_set_size": 2.9981308411214953
+              }
+            }
+          },
+          "mondrian_raps": {
+            "qhat_by_class": [
+              0.7822017172635114,
+              1.1,
+              1.1
+            ],
+            "marginal_coverage": 0.9320776255707762,
+            "mean_set_size": 2.7083333333333335,
+            "singleton_rate": 0.0005707762557077625,
+            "singleton_n": 1,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.8456549935149157,
+                "mean_set_size": 2.845654993514916
+              },
+              "D": {
+                "n": 446,
+                "coverage": 1.0,
+                "mean_set_size": 2.695067264573991
+              },
+              "A": {
+                "n": 535,
+                "coverage": 1.0,
+                "mean_set_size": 2.5214953271028038
+              }
+            },
+            "singleton_accuracy": 1.0,
+            "singleton_financial": {
+              "n_bets": 1,
+              "roi": 0.5700000000000001,
+              "sharpe": null,
+              "mdd": 0.0,
+              "win_rate": 1.0
+            }
+          }
+        },
+        "alpha_0.30": {
+          "target_coverage": 0.7,
+          "marginal_lac": {
+            "qhat": 0.7177023589611053,
+            "marginal_coverage": 0.7049086757990868,
+            "mean_set_size": 1.6215753424657535,
+            "singleton_rate": 0.5165525114155252,
+            "singleton_n": 905,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9014267185473411,
+                "mean_set_size": 1.542153047989624
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.3609865470852018,
+                "mean_set_size": 1.6995515695067265
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.708411214953271,
+                "mean_set_size": 1.6710280373831776
+              }
+            },
+            "singleton_accuracy": 0.6099447513812155,
+            "singleton_financial": {
+              "n_bets": 905,
+              "roi": -0.03296132596685083,
+              "sharpe": -0.04087266713870685,
+              "mdd": -0.03746163070863547,
+              "win_rate": 0.6099447513812155
+            }
+          },
+          "mondrian_lac": {
+            "qhat_by_class": [
+              0.5460110672412654,
+              0.7807907294755739,
+              0.7160015319586257
+            ],
+            "marginal_coverage": 0.6649543378995434,
+            "mean_set_size": 1.6124429223744292,
+            "singleton_rate": 0.398972602739726,
+            "singleton_n": 699,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.6057068741893644,
+                "mean_set_size": 1.5797665369649805
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.7219730941704036,
+                "mean_set_size": 1.6659192825112108
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.702803738317757,
+                "mean_set_size": 1.6149532710280374
+              }
+            },
+            "singleton_accuracy": 0.5965665236051502,
+            "singleton_financial": {
+              "n_bets": 699,
+              "roi": -0.06580829756795423,
+              "sharpe": -0.08065478219730284,
+              "mdd": -0.0839716073282271,
+              "win_rate": 0.5965665236051502
+            }
+          },
+          "aps": {
+            "qhat": 0.8217153479882174,
+            "marginal_coverage": 0.7146118721461188,
+            "mean_set_size": 1.654109589041096,
+            "singleton_rate": 0.3458904109589041,
+            "singleton_n": 606,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9001297016861219,
+                "mean_set_size": 1.5797665369649805
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.40358744394618834,
+                "mean_set_size": 1.7443946188340806
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.7065420560747664,
+                "mean_set_size": 1.685981308411215
+              }
+            },
+            "singleton_accuracy": 0.6567656765676567,
+            "singleton_financial": {
+              "n_bets": 606,
+              "roi": -0.045132013201320126,
+              "sharpe": -0.06366339041952497,
+              "mdd": -0.05103563638749037,
+              "win_rate": 0.6567656765676567
+            }
+          },
+          "mondrian_aps": {
+            "qhat_by_class": [
+              0.7442508339881897,
+              1.0,
+              0.8563393034985557
+            ],
+            "marginal_coverage": 0.8521689497716894,
+            "mean_set_size": 2.2465753424657535,
+            "singleton_rate": 0.0017123287671232876,
+            "singleton_n": 3,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.85473411154345,
+                "mean_set_size": 2.21011673151751
+              },
+              "D": {
+                "n": 446,
+                "coverage": 1.0,
+                "mean_set_size": 2.286995515695067
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.7252336448598131,
+                "mean_set_size": 2.2654205607476636
+              }
+            },
+            "singleton_accuracy": 0.3333333333333333,
+            "singleton_financial": {
+              "n_bets": 3,
+              "roi": -0.4766666666666666,
+              "sharpe": -0.64405267331004,
+              "mdd": -0.38910505836575865,
+              "win_rate": 0.3333333333333333
+            }
+          },
+          "raps": {
+            "qhat": 0.8580586550218269,
+            "marginal_coverage": 0.6940639269406392,
+            "mean_set_size": 1.6033105022831051,
+            "singleton_rate": 0.396689497716895,
+            "singleton_n": 695,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.8962386511024644,
+                "mean_set_size": 1.5395590142671856
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.336322869955157,
+                "mean_set_size": 1.6681614349775784
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.7009345794392523,
+                "mean_set_size": 1.6411214953271027
+              }
+            },
+            "singleton_accuracy": 0.6345323741007194,
+            "singleton_financial": {
+              "n_bets": 695,
+              "roi": -0.05623021582733813,
+              "sharpe": -0.07624709565772719,
+              "mdd": -0.06064989187563553,
+              "win_rate": 0.6345323741007194
+            }
+          },
+          "mondrian_raps": {
+            "qhat_by_class": [
+              0.7490876466579648,
+              1.1,
+              0.9063393034985557
+            ],
+            "marginal_coverage": 0.8384703196347032,
+            "mean_set_size": 2.192922374429224,
+            "singleton_rate": 0.005707762557077625,
+            "singleton_n": 10,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.8236057068741893,
+                "mean_set_size": 2.178988326848249
+              },
+              "D": {
+                "n": 446,
+                "coverage": 1.0,
+                "mean_set_size": 2.2354260089686098
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.7252336448598131,
+                "mean_set_size": 2.177570093457944
+              }
+            },
+            "singleton_accuracy": 0.2,
+            "singleton_financial": {
+              "n_bets": 10,
+              "roi": -0.5029999999999999,
+              "sharpe": -0.4679361319209236,
+              "mdd": -0.5640350877192982,
+              "win_rate": 0.2
+            }
+          }
+        }
+      }
+    },
+    "market": {
+      "point_accuracy": 0.5331050228310502,
+      "point_log_loss": 0.9779159347666466,
+      "sets": {
+        "alpha_0.05": {
+          "target_coverage": 0.95,
+          "marginal_lac": {
+            "qhat": 0.8201126934381242,
+            "marginal_coverage": 0.9560502283105022,
+            "mean_set_size": 2.6489726027397262,
+            "singleton_rate": 0.0884703196347032,
+            "singleton_n": 155,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9857328145265889,
+                "mean_set_size": 2.5421530479896237
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.9484304932735426,
+                "mean_set_size": 2.757847533632287
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.9196261682242991,
+                "mean_set_size": 2.7121495327102805
+              }
+            },
+            "singleton_accuracy": 0.7870967741935484,
+            "singleton_financial": {
+              "n_bets": 155,
+              "roi": -0.026516129032258067,
+              "sharpe": -0.051919172424318344,
+              "mdd": -0.05673359604678796,
+              "win_rate": 0.7870967741935484
+            }
+          },
+          "mondrian_lac": {
+            "qhat_by_class": [
+              0.7807124409141855,
+              0.8267264573991031,
+              0.8433996383363471
+            ],
+            "marginal_coverage": 0.9560502283105022,
+            "mean_set_size": 2.6472602739726026,
+            "singleton_rate": 0.08162100456621005,
+            "singleton_n": 143,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9610894941634242,
+                "mean_set_size": 2.582360570687419
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.952914798206278,
+                "mean_set_size": 2.757847533632287
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.9514018691588785,
+                "mean_set_size": 2.6485981308411213
+              }
+            },
+            "singleton_accuracy": 0.7902097902097902,
+            "singleton_financial": {
+              "n_bets": 143,
+              "roi": -0.028531468531468537,
+              "sharpe": -0.05652429982692965,
+              "mdd": -0.04969539325073576,
+              "win_rate": 0.7902097902097902
+            }
+          },
+          "aps": {
+            "qhat": 1.0,
+            "marginal_coverage": 0.9885844748858448,
+            "mean_set_size": 2.9583333333333335,
+            "singleton_rate": 0.0,
+            "singleton_n": 0,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9948119325551232,
+                "mean_set_size": 2.9571984435797667
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.984304932735426,
+                "mean_set_size": 2.9573991031390134
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.983177570093458,
+                "mean_set_size": 2.960747663551402
+              }
+            }
+          },
+          "mondrian_aps": {
+            "qhat_by_class": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "marginal_coverage": 0.9885844748858448,
+            "mean_set_size": 2.9583333333333335,
+            "singleton_rate": 0.0,
+            "singleton_n": 0,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9948119325551232,
+                "mean_set_size": 2.9571984435797667
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.984304932735426,
+                "mean_set_size": 2.9573991031390134
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.983177570093458,
+                "mean_set_size": 2.960747663551402
+              }
+            }
+          },
+          "raps": {
+            "qhat": 1.1,
+            "marginal_coverage": 0.9885844748858448,
+            "mean_set_size": 2.9583333333333335,
+            "singleton_rate": 0.0,
+            "singleton_n": 0,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9948119325551232,
+                "mean_set_size": 2.9571984435797667
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.984304932735426,
+                "mean_set_size": 2.9573991031390134
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.983177570093458,
+                "mean_set_size": 2.960747663551402
+              }
+            }
+          },
+          "mondrian_raps": {
+            "qhat_by_class": [
+              1.1,
+              1.1,
+              1.1
+            ],
+            "marginal_coverage": 0.9885844748858448,
+            "mean_set_size": 2.9583333333333335,
+            "singleton_rate": 0.0,
+            "singleton_n": 0,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9948119325551232,
+                "mean_set_size": 2.9571984435797667
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.984304932735426,
+                "mean_set_size": 2.9573991031390134
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.983177570093458,
+                "mean_set_size": 2.960747663551402
+              }
+            }
+          }
+        },
+        "alpha_0.10": {
+          "target_coverage": 0.9,
+          "marginal_lac": {
+            "qhat": 0.7898852971845673,
+            "marginal_coverage": 0.9240867579908676,
+            "mean_set_size": 2.4531963470319633,
+            "singleton_rate": 0.1695205479452055,
+            "singleton_n": 297,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9701686121919585,
+                "mean_set_size": 2.304798962386511
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.8901345291479821,
+                "mean_set_size": 2.598654708520179
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.8859813084112149,
+                "mean_set_size": 2.5457943925233644
+              }
+            },
+            "singleton_accuracy": 0.7542087542087542,
+            "singleton_financial": {
+              "n_bets": 297,
+              "roi": -0.0017171717171717193,
+              "sharpe": -0.002961954140622523,
+              "mdd": -0.04361149640334172,
+              "win_rate": 0.7542087542087542
+            }
+          },
+          "mondrian_lac": {
+            "qhat_by_class": [
+              0.6969192339716903,
+              0.8014242673240208,
+              0.8123028391167193
+            ],
+            "marginal_coverage": 0.906392694063927,
+            "mean_set_size": 2.4149543378995433,
+            "singleton_rate": 0.12899543378995434,
+            "singleton_n": 226,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.8923476005188068,
+                "mean_set_size": 2.3605706874189365
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.9237668161434978,
+                "mean_set_size": 2.515695067264574
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.9121495327102803,
+                "mean_set_size": 2.4093457943925234
+              }
+            },
+            "singleton_accuracy": 0.7699115044247787,
+            "singleton_financial": {
+              "n_bets": 226,
+              "roi": -0.01495575221238938,
+              "sharpe": -0.027443096406861472,
+              "mdd": -0.050903819918144466,
+              "win_rate": 0.7699115044247787
+            }
+          },
+          "aps": {
+            "qhat": 1.0,
+            "marginal_coverage": 0.9885844748858448,
+            "mean_set_size": 2.9583333333333335,
+            "singleton_rate": 0.0,
+            "singleton_n": 0,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9948119325551232,
+                "mean_set_size": 2.9571984435797667
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.984304932735426,
+                "mean_set_size": 2.9573991031390134
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.983177570093458,
+                "mean_set_size": 2.960747663551402
+              }
+            }
+          },
+          "mondrian_aps": {
+            "qhat_by_class": [
+              0.8603031544448997,
+              1.0,
+              1.0
+            ],
+            "marginal_coverage": 0.954337899543379,
+            "mean_set_size": 2.77796803652968,
+            "singleton_rate": 0.0,
+            "singleton_n": 0,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9169909208819714,
+                "mean_set_size": 2.8793774319066148
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.984304932735426,
+                "mean_set_size": 2.7600896860986546
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.983177570093458,
+                "mean_set_size": 2.646728971962617
+              }
+            }
+          },
+          "raps": {
+            "qhat": 1.1,
+            "marginal_coverage": 0.9885844748858448,
+            "mean_set_size": 2.9583333333333335,
+            "singleton_rate": 0.0,
+            "singleton_n": 0,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9948119325551232,
+                "mean_set_size": 2.9571984435797667
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.984304932735426,
+                "mean_set_size": 2.9573991031390134
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.983177570093458,
+                "mean_set_size": 2.960747663551402
+              }
+            }
+          },
+          "mondrian_raps": {
+            "qhat_by_class": [
+              0.8603031544448997,
+              1.1,
+              1.1
+            ],
+            "marginal_coverage": 0.954337899543379,
+            "mean_set_size": 2.7773972602739727,
+            "singleton_rate": 0.0,
+            "singleton_n": 0,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9169909208819714,
+                "mean_set_size": 2.8793774319066148
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.984304932735426,
+                "mean_set_size": 2.7600896860986546
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.983177570093458,
+                "mean_set_size": 2.6448598130841123
+              }
+            }
+          }
+        },
+        "alpha_0.20": {
+          "target_coverage": 0.8,
+          "marginal_lac": {
+            "qhat": 0.7455049242538325,
+            "marginal_coverage": 0.8156392694063926,
+            "mean_set_size": 1.9788812785388128,
+            "singleton_rate": 0.3915525114155251,
+            "singleton_n": 686,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9312581063553826,
+                "mean_set_size": 1.846952010376135
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.6367713004484304,
+                "mean_set_size": 2.1143497757847536
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.7981308411214953,
+                "mean_set_size": 2.05607476635514
+              }
+            },
+            "singleton_accuracy": 0.6632653061224489,
+            "singleton_financial": {
+              "n_bets": 686,
+              "roi": -0.018367346938775512,
+              "sharpe": -0.025591001120186148,
+              "mdd": -0.041498033403636836,
+              "win_rate": 0.6632653061224489
+            }
+          },
+          "mondrian_lac": {
+            "qhat_by_class": [
+              0.6052842273819055,
+              0.7747136632836755,
+              0.767897776999825
+            ],
+            "marginal_coverage": 0.7945205479452054,
+            "mean_set_size": 1.9777397260273972,
+            "singleton_rate": 0.2482876712328767,
+            "singleton_n": 435,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.7470817120622568,
+                "mean_set_size": 1.9286640726329443
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.8318385650224215,
+                "mean_set_size": 2.071748878923767
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.8317757009345794,
+                "mean_set_size": 1.9700934579439253
+              }
+            },
+            "singleton_accuracy": 0.7195402298850575,
+            "singleton_financial": {
+              "n_bets": 435,
+              "roi": -0.0014022988505747113,
+              "sharpe": -0.0022010960357051624,
+              "mdd": -0.04102722635634944,
+              "win_rate": 0.7195402298850575
+            }
+          },
+          "aps": {
+            "qhat": 0.9999999999999999,
+            "marginal_coverage": 0.8082191780821918,
+            "mean_set_size": 2.0702054794520546,
+            "singleton_rate": 0.0,
+            "singleton_n": 0,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9273670557717251,
+                "mean_set_size": 2.0583657587548636
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.6928251121076233,
+                "mean_set_size": 2.0605381165919283
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.7327102803738318,
+                "mean_set_size": 2.095327102803738
+              }
+            }
+          },
+          "mondrian_aps": {
+            "qhat_by_class": [
+              0.7632711621233861,
+              1.0,
+              1.0
+            ],
+            "marginal_coverage": 0.9526255707762558,
+            "mean_set_size": 2.7636986301369864,
+            "singleton_rate": 0.001141552511415525,
+            "singleton_n": 2,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9130998702983139,
+                "mean_set_size": 2.875486381322957
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.984304932735426,
+                "mean_set_size": 2.7466367713004485
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.983177570093458,
+                "mean_set_size": 2.616822429906542
+              }
+            },
+            "singleton_accuracy": 0.0,
+            "singleton_financial": {
+              "n_bets": 2,
+              "roi": -1.0,
+              "sharpe": null,
+              "mdd": -1.0,
+              "win_rate": 0.0
+            }
+          },
+          "raps": {
+            "qhat": 1.0999999999999999,
+            "marginal_coverage": 0.8082191780821918,
+            "mean_set_size": 2.0702054794520546,
+            "singleton_rate": 0.0,
+            "singleton_n": 0,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9273670557717251,
+                "mean_set_size": 2.0583657587548636
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.6928251121076233,
+                "mean_set_size": 2.0605381165919283
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.7327102803738318,
+                "mean_set_size": 2.095327102803738
+              }
+            }
+          },
+          "mondrian_raps": {
+            "qhat_by_class": [
+              0.7786044718581342,
+              1.1,
+              1.1
+            ],
+            "marginal_coverage": 0.934931506849315,
+            "mean_set_size": 2.7003424657534247,
+            "singleton_rate": 0.003424657534246575,
+            "singleton_n": 6,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.8728923476005188,
+                "mean_set_size": 2.8352788586251623
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.984304932735426,
+                "mean_set_size": 2.679372197309417
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.983177570093458,
+                "mean_set_size": 2.5233644859813085
+              }
+            },
+            "singleton_accuracy": 0.3333333333333333,
+            "singleton_financial": {
+              "n_bets": 6,
+              "roi": -0.21666666666666665,
+              "sharpe": -0.1949878136424591,
+              "mdd": -0.4166666666666667,
+              "win_rate": 0.3333333333333333
+            }
+          }
+        },
+        "alpha_0.30": {
+          "target_coverage": 0.7,
+          "marginal_lac": {
+            "qhat": 0.7136944613511869,
+            "marginal_coverage": 0.7071917808219178,
+            "mean_set_size": 1.567351598173516,
+            "singleton_rate": 0.5776255707762558,
+            "singleton_n": 1012,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9092088197146563,
+                "mean_set_size": 1.4798962386511025
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.32286995515695066,
+                "mean_set_size": 1.6614349775784754
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.7364485981308411,
+                "mean_set_size": 1.6149532710280374
+              }
+            },
+            "singleton_accuracy": 0.6047430830039525,
+            "singleton_financial": {
+              "n_bets": 1012,
+              "roi": -0.04061264822134387,
+              "sharpe": -0.050694648355952415,
+              "mdd": -0.043297728595240344,
+              "win_rate": 0.6047430830039525
+            }
+          },
+          "mondrian_lac": {
+            "qhat_by_class": [
+              0.5677966101694916,
+              0.7589792060491494,
+              0.7124570118456248
+            ],
+            "marginal_coverage": 0.7037671232876712,
+            "mean_set_size": 1.6598173515981736,
+            "singleton_rate": 0.3561643835616438,
+            "singleton_n": 624,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.6459143968871596,
+                "mean_set_size": 1.5797665369649805
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.7690582959641256,
+                "mean_set_size": 1.7533632286995515
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.7327102803738318,
+                "mean_set_size": 1.697196261682243
+              }
+            },
+            "singleton_accuracy": 0.6762820512820513,
+            "singleton_financial": {
+              "n_bets": 624,
+              "roi": 0.01766025641025641,
+              "sharpe": 0.02382210373210251,
+              "mdd": -0.03593496181815427,
+              "win_rate": 0.6762820512820513
+            }
+          },
+          "aps": {
+            "qhat": 0.8134593428897628,
+            "marginal_coverage": 0.7414383561643836,
+            "mean_set_size": 1.7157534246575343,
+            "singleton_rate": 0.2842465753424658,
+            "singleton_n": 498,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9169909208819714,
+                "mean_set_size": 1.6472114137483787
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.4551569506726457,
+                "mean_set_size": 1.789237668161435
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.7271028037383177,
+                "mean_set_size": 1.753271028037383
+              }
+            },
+            "singleton_accuracy": 0.6927710843373494,
+            "singleton_financial": {
+              "n_bets": 498,
+              "roi": -0.028112449799196776,
+              "sharpe": -0.042591261145699666,
+              "mdd": -0.03980474640844508,
+              "win_rate": 0.6927710843373494
+            }
+          },
+          "mondrian_aps": {
+            "qhat_by_class": [
+              0.7137192704203015,
+              1.0,
+              0.77108929214003
+            ],
+            "marginal_coverage": 0.8458904109589042,
+            "mean_set_size": 2.1940639269406392,
+            "singleton_rate": 0.005136986301369863,
+            "singleton_n": 9,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.8521400778210116,
+                "mean_set_size": 2.178988326848249
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.984304932735426,
+                "mean_set_size": 2.204035874439462
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.7214953271028037,
+                "mean_set_size": 2.2074766355140185
+              }
+            },
+            "singleton_accuracy": 0.3333333333333333,
+            "singleton_financial": {
+              "n_bets": 9,
+              "roi": -0.29444444444444445,
+              "sharpe": -0.2891559167366828,
+              "mdd": -0.39215686274509803,
+              "win_rate": 0.3333333333333333
+            }
+          },
+          "raps": {
+            "qhat": 0.8593797276853252,
+            "marginal_coverage": 0.735730593607306,
+            "mean_set_size": 1.687214611872146,
+            "singleton_rate": 0.3127853881278539,
+            "singleton_n": 548,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9169909208819714,
+                "mean_set_size": 1.616083009079118
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.4327354260089686,
+                "mean_set_size": 1.7668161434977578
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.7271028037383177,
+                "mean_set_size": 1.7233644859813084
+              }
+            },
+            "singleton_accuracy": 0.6916058394160584,
+            "singleton_financial": {
+              "n_bets": 548,
+              "roi": -0.013594890510948903,
+              "sharpe": -0.020193048870340312,
+              "mdd": -0.03012242846372026,
+              "win_rate": 0.6916058394160584
+            }
+          },
+          "mondrian_raps": {
+            "qhat_by_class": [
+              0.7282229965156796,
+              1.1,
+              0.8021336480842565
+            ],
+            "marginal_coverage": 0.8304794520547946,
+            "mean_set_size": 2.1386986301369864,
+            "singleton_rate": 0.007990867579908675,
+            "singleton_n": 14,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.8261997405966277,
+                "mean_set_size": 2.1297016861219196
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.984304932735426,
+                "mean_set_size": 2.1457399103139014
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.708411214953271,
+                "mean_set_size": 2.1457943925233645
+              }
+            },
+            "singleton_accuracy": 0.42857142857142855,
+            "singleton_financial": {
+              "n_bets": 14,
+              "roi": -0.05000000000000001,
+              "sharpe": -0.044746936537817326,
+              "mdd": -0.18404907975460133,
+              "win_rate": 0.42857142857142855
+            }
+          }
+        }
+      }
+    },
+    "validation_selected_blend": {
+      "point_accuracy": 0.5331050228310502,
+      "point_log_loss": 0.9779159347666466,
+      "sets": {
+        "alpha_0.05": {
+          "target_coverage": 0.95,
+          "marginal_lac": {
+            "qhat": 0.8201126934381242,
+            "marginal_coverage": 0.9560502283105022,
+            "mean_set_size": 2.6489726027397262,
+            "singleton_rate": 0.0884703196347032,
+            "singleton_n": 155,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9857328145265889,
+                "mean_set_size": 2.5421530479896237
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.9484304932735426,
+                "mean_set_size": 2.757847533632287
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.9196261682242991,
+                "mean_set_size": 2.7121495327102805
+              }
+            },
+            "singleton_accuracy": 0.7870967741935484,
+            "singleton_financial": {
+              "n_bets": 155,
+              "roi": -0.026516129032258067,
+              "sharpe": -0.051919172424318344,
+              "mdd": -0.05673359604678796,
+              "win_rate": 0.7870967741935484
+            }
+          },
+          "mondrian_lac": {
+            "qhat_by_class": [
+              0.7807124409141855,
+              0.8267264573991031,
+              0.8433996383363471
+            ],
+            "marginal_coverage": 0.9560502283105022,
+            "mean_set_size": 2.6472602739726026,
+            "singleton_rate": 0.08162100456621005,
+            "singleton_n": 143,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9610894941634242,
+                "mean_set_size": 2.582360570687419
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.952914798206278,
+                "mean_set_size": 2.757847533632287
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.9514018691588785,
+                "mean_set_size": 2.6485981308411213
+              }
+            },
+            "singleton_accuracy": 0.7902097902097902,
+            "singleton_financial": {
+              "n_bets": 143,
+              "roi": -0.028531468531468537,
+              "sharpe": -0.05652429982692965,
+              "mdd": -0.04969539325073576,
+              "win_rate": 0.7902097902097902
+            }
+          },
+          "aps": {
+            "qhat": 1.0,
+            "marginal_coverage": 0.9885844748858448,
+            "mean_set_size": 2.9583333333333335,
+            "singleton_rate": 0.0,
+            "singleton_n": 0,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9948119325551232,
+                "mean_set_size": 2.9571984435797667
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.984304932735426,
+                "mean_set_size": 2.9573991031390134
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.983177570093458,
+                "mean_set_size": 2.960747663551402
+              }
+            }
+          },
+          "mondrian_aps": {
+            "qhat_by_class": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "marginal_coverage": 0.9885844748858448,
+            "mean_set_size": 2.9583333333333335,
+            "singleton_rate": 0.0,
+            "singleton_n": 0,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9948119325551232,
+                "mean_set_size": 2.9571984435797667
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.984304932735426,
+                "mean_set_size": 2.9573991031390134
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.983177570093458,
+                "mean_set_size": 2.960747663551402
+              }
+            }
+          },
+          "raps": {
+            "qhat": 1.1,
+            "marginal_coverage": 0.9885844748858448,
+            "mean_set_size": 2.9583333333333335,
+            "singleton_rate": 0.0,
+            "singleton_n": 0,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9948119325551232,
+                "mean_set_size": 2.9571984435797667
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.984304932735426,
+                "mean_set_size": 2.9573991031390134
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.983177570093458,
+                "mean_set_size": 2.960747663551402
+              }
+            }
+          },
+          "mondrian_raps": {
+            "qhat_by_class": [
+              1.1,
+              1.1,
+              1.1
+            ],
+            "marginal_coverage": 0.9885844748858448,
+            "mean_set_size": 2.9583333333333335,
+            "singleton_rate": 0.0,
+            "singleton_n": 0,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9948119325551232,
+                "mean_set_size": 2.9571984435797667
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.984304932735426,
+                "mean_set_size": 2.9573991031390134
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.983177570093458,
+                "mean_set_size": 2.960747663551402
+              }
+            }
+          }
+        },
+        "alpha_0.10": {
+          "target_coverage": 0.9,
+          "marginal_lac": {
+            "qhat": 0.7898852971845673,
+            "marginal_coverage": 0.9240867579908676,
+            "mean_set_size": 2.4531963470319633,
+            "singleton_rate": 0.1695205479452055,
+            "singleton_n": 297,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9701686121919585,
+                "mean_set_size": 2.304798962386511
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.8901345291479821,
+                "mean_set_size": 2.598654708520179
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.8859813084112149,
+                "mean_set_size": 2.5457943925233644
+              }
+            },
+            "singleton_accuracy": 0.7542087542087542,
+            "singleton_financial": {
+              "n_bets": 297,
+              "roi": -0.0017171717171717193,
+              "sharpe": -0.002961954140622523,
+              "mdd": -0.04361149640334172,
+              "win_rate": 0.7542087542087542
+            }
+          },
+          "mondrian_lac": {
+            "qhat_by_class": [
+              0.6969192339716903,
+              0.8014242673240208,
+              0.8123028391167193
+            ],
+            "marginal_coverage": 0.906392694063927,
+            "mean_set_size": 2.4149543378995433,
+            "singleton_rate": 0.12899543378995434,
+            "singleton_n": 226,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.8923476005188068,
+                "mean_set_size": 2.3605706874189365
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.9237668161434978,
+                "mean_set_size": 2.515695067264574
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.9121495327102803,
+                "mean_set_size": 2.4093457943925234
+              }
+            },
+            "singleton_accuracy": 0.7699115044247787,
+            "singleton_financial": {
+              "n_bets": 226,
+              "roi": -0.01495575221238938,
+              "sharpe": -0.027443096406861472,
+              "mdd": -0.050903819918144466,
+              "win_rate": 0.7699115044247787
+            }
+          },
+          "aps": {
+            "qhat": 1.0,
+            "marginal_coverage": 0.9885844748858448,
+            "mean_set_size": 2.9583333333333335,
+            "singleton_rate": 0.0,
+            "singleton_n": 0,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9948119325551232,
+                "mean_set_size": 2.9571984435797667
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.984304932735426,
+                "mean_set_size": 2.9573991031390134
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.983177570093458,
+                "mean_set_size": 2.960747663551402
+              }
+            }
+          },
+          "mondrian_aps": {
+            "qhat_by_class": [
+              0.8603031544448997,
+              1.0,
+              1.0
+            ],
+            "marginal_coverage": 0.954337899543379,
+            "mean_set_size": 2.77796803652968,
+            "singleton_rate": 0.0,
+            "singleton_n": 0,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9169909208819714,
+                "mean_set_size": 2.8793774319066148
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.984304932735426,
+                "mean_set_size": 2.7600896860986546
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.983177570093458,
+                "mean_set_size": 2.646728971962617
+              }
+            }
+          },
+          "raps": {
+            "qhat": 1.1,
+            "marginal_coverage": 0.9885844748858448,
+            "mean_set_size": 2.9583333333333335,
+            "singleton_rate": 0.0,
+            "singleton_n": 0,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9948119325551232,
+                "mean_set_size": 2.9571984435797667
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.984304932735426,
+                "mean_set_size": 2.9573991031390134
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.983177570093458,
+                "mean_set_size": 2.960747663551402
+              }
+            }
+          },
+          "mondrian_raps": {
+            "qhat_by_class": [
+              0.8603031544448997,
+              1.1,
+              1.1
+            ],
+            "marginal_coverage": 0.954337899543379,
+            "mean_set_size": 2.7773972602739727,
+            "singleton_rate": 0.0,
+            "singleton_n": 0,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9169909208819714,
+                "mean_set_size": 2.8793774319066148
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.984304932735426,
+                "mean_set_size": 2.7600896860986546
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.983177570093458,
+                "mean_set_size": 2.6448598130841123
+              }
+            }
+          }
+        },
+        "alpha_0.20": {
+          "target_coverage": 0.8,
+          "marginal_lac": {
+            "qhat": 0.7455049242538325,
+            "marginal_coverage": 0.8156392694063926,
+            "mean_set_size": 1.9788812785388128,
+            "singleton_rate": 0.3915525114155251,
+            "singleton_n": 686,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9312581063553826,
+                "mean_set_size": 1.846952010376135
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.6367713004484304,
+                "mean_set_size": 2.1143497757847536
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.7981308411214953,
+                "mean_set_size": 2.05607476635514
+              }
+            },
+            "singleton_accuracy": 0.6632653061224489,
+            "singleton_financial": {
+              "n_bets": 686,
+              "roi": -0.018367346938775512,
+              "sharpe": -0.025591001120186148,
+              "mdd": -0.041498033403636836,
+              "win_rate": 0.6632653061224489
+            }
+          },
+          "mondrian_lac": {
+            "qhat_by_class": [
+              0.6052842273819055,
+              0.7747136632836755,
+              0.767897776999825
+            ],
+            "marginal_coverage": 0.7945205479452054,
+            "mean_set_size": 1.9777397260273972,
+            "singleton_rate": 0.2482876712328767,
+            "singleton_n": 435,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.7470817120622568,
+                "mean_set_size": 1.9286640726329443
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.8318385650224215,
+                "mean_set_size": 2.071748878923767
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.8317757009345794,
+                "mean_set_size": 1.9700934579439253
+              }
+            },
+            "singleton_accuracy": 0.7195402298850575,
+            "singleton_financial": {
+              "n_bets": 435,
+              "roi": -0.0014022988505747113,
+              "sharpe": -0.0022010960357051624,
+              "mdd": -0.04102722635634944,
+              "win_rate": 0.7195402298850575
+            }
+          },
+          "aps": {
+            "qhat": 0.9999999999999999,
+            "marginal_coverage": 0.8082191780821918,
+            "mean_set_size": 2.0702054794520546,
+            "singleton_rate": 0.0,
+            "singleton_n": 0,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9273670557717251,
+                "mean_set_size": 2.0583657587548636
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.6928251121076233,
+                "mean_set_size": 2.0605381165919283
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.7327102803738318,
+                "mean_set_size": 2.095327102803738
+              }
+            }
+          },
+          "mondrian_aps": {
+            "qhat_by_class": [
+              0.7632711621233861,
+              1.0,
+              1.0
+            ],
+            "marginal_coverage": 0.9526255707762558,
+            "mean_set_size": 2.7636986301369864,
+            "singleton_rate": 0.001141552511415525,
+            "singleton_n": 2,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9130998702983139,
+                "mean_set_size": 2.875486381322957
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.984304932735426,
+                "mean_set_size": 2.7466367713004485
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.983177570093458,
+                "mean_set_size": 2.616822429906542
+              }
+            },
+            "singleton_accuracy": 0.0,
+            "singleton_financial": {
+              "n_bets": 2,
+              "roi": -1.0,
+              "sharpe": null,
+              "mdd": -1.0,
+              "win_rate": 0.0
+            }
+          },
+          "raps": {
+            "qhat": 1.0999999999999999,
+            "marginal_coverage": 0.8082191780821918,
+            "mean_set_size": 2.0702054794520546,
+            "singleton_rate": 0.0,
+            "singleton_n": 0,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9273670557717251,
+                "mean_set_size": 2.0583657587548636
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.6928251121076233,
+                "mean_set_size": 2.0605381165919283
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.7327102803738318,
+                "mean_set_size": 2.095327102803738
+              }
+            }
+          },
+          "mondrian_raps": {
+            "qhat_by_class": [
+              0.7786044718581342,
+              1.1,
+              1.1
+            ],
+            "marginal_coverage": 0.934931506849315,
+            "mean_set_size": 2.7003424657534247,
+            "singleton_rate": 0.003424657534246575,
+            "singleton_n": 6,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.8728923476005188,
+                "mean_set_size": 2.8352788586251623
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.984304932735426,
+                "mean_set_size": 2.679372197309417
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.983177570093458,
+                "mean_set_size": 2.5233644859813085
+              }
+            },
+            "singleton_accuracy": 0.3333333333333333,
+            "singleton_financial": {
+              "n_bets": 6,
+              "roi": -0.21666666666666665,
+              "sharpe": -0.1949878136424591,
+              "mdd": -0.4166666666666667,
+              "win_rate": 0.3333333333333333
+            }
+          }
+        },
+        "alpha_0.30": {
+          "target_coverage": 0.7,
+          "marginal_lac": {
+            "qhat": 0.7136944613511869,
+            "marginal_coverage": 0.7071917808219178,
+            "mean_set_size": 1.567351598173516,
+            "singleton_rate": 0.5776255707762558,
+            "singleton_n": 1012,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9092088197146563,
+                "mean_set_size": 1.4798962386511025
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.32286995515695066,
+                "mean_set_size": 1.6614349775784754
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.7364485981308411,
+                "mean_set_size": 1.6149532710280374
+              }
+            },
+            "singleton_accuracy": 0.6047430830039525,
+            "singleton_financial": {
+              "n_bets": 1012,
+              "roi": -0.04061264822134387,
+              "sharpe": -0.050694648355952415,
+              "mdd": -0.043297728595240344,
+              "win_rate": 0.6047430830039525
+            }
+          },
+          "mondrian_lac": {
+            "qhat_by_class": [
+              0.5677966101694916,
+              0.7589792060491494,
+              0.7124570118456248
+            ],
+            "marginal_coverage": 0.7037671232876712,
+            "mean_set_size": 1.6598173515981736,
+            "singleton_rate": 0.3561643835616438,
+            "singleton_n": 624,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.6459143968871596,
+                "mean_set_size": 1.5797665369649805
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.7690582959641256,
+                "mean_set_size": 1.7533632286995515
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.7327102803738318,
+                "mean_set_size": 1.697196261682243
+              }
+            },
+            "singleton_accuracy": 0.6762820512820513,
+            "singleton_financial": {
+              "n_bets": 624,
+              "roi": 0.01766025641025641,
+              "sharpe": 0.02382210373210251,
+              "mdd": -0.03593496181815427,
+              "win_rate": 0.6762820512820513
+            }
+          },
+          "aps": {
+            "qhat": 0.8134593428897628,
+            "marginal_coverage": 0.7414383561643836,
+            "mean_set_size": 1.7157534246575343,
+            "singleton_rate": 0.2842465753424658,
+            "singleton_n": 498,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9169909208819714,
+                "mean_set_size": 1.6472114137483787
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.4551569506726457,
+                "mean_set_size": 1.789237668161435
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.7271028037383177,
+                "mean_set_size": 1.753271028037383
+              }
+            },
+            "singleton_accuracy": 0.6927710843373494,
+            "singleton_financial": {
+              "n_bets": 498,
+              "roi": -0.028112449799196776,
+              "sharpe": -0.042591261145699666,
+              "mdd": -0.03980474640844508,
+              "win_rate": 0.6927710843373494
+            }
+          },
+          "mondrian_aps": {
+            "qhat_by_class": [
+              0.7137192704203015,
+              1.0,
+              0.77108929214003
+            ],
+            "marginal_coverage": 0.8458904109589042,
+            "mean_set_size": 2.1940639269406392,
+            "singleton_rate": 0.005136986301369863,
+            "singleton_n": 9,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.8521400778210116,
+                "mean_set_size": 2.178988326848249
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.984304932735426,
+                "mean_set_size": 2.204035874439462
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.7214953271028037,
+                "mean_set_size": 2.2074766355140185
+              }
+            },
+            "singleton_accuracy": 0.3333333333333333,
+            "singleton_financial": {
+              "n_bets": 9,
+              "roi": -0.29444444444444445,
+              "sharpe": -0.2891559167366828,
+              "mdd": -0.39215686274509803,
+              "win_rate": 0.3333333333333333
+            }
+          },
+          "raps": {
+            "qhat": 0.8593797276853252,
+            "marginal_coverage": 0.735730593607306,
+            "mean_set_size": 1.687214611872146,
+            "singleton_rate": 0.3127853881278539,
+            "singleton_n": 548,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.9169909208819714,
+                "mean_set_size": 1.616083009079118
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.4327354260089686,
+                "mean_set_size": 1.7668161434977578
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.7271028037383177,
+                "mean_set_size": 1.7233644859813084
+              }
+            },
+            "singleton_accuracy": 0.6916058394160584,
+            "singleton_financial": {
+              "n_bets": 548,
+              "roi": -0.013594890510948903,
+              "sharpe": -0.020193048870340312,
+              "mdd": -0.03012242846372026,
+              "win_rate": 0.6916058394160584
+            }
+          },
+          "mondrian_raps": {
+            "qhat_by_class": [
+              0.7282229965156796,
+              1.1,
+              0.8021336480842565
+            ],
+            "marginal_coverage": 0.8304794520547946,
+            "mean_set_size": 2.1386986301369864,
+            "singleton_rate": 0.007990867579908675,
+            "singleton_n": 14,
+            "per_class": {
+              "H": {
+                "n": 771,
+                "coverage": 0.8261997405966277,
+                "mean_set_size": 2.1297016861219196
+              },
+              "D": {
+                "n": 446,
+                "coverage": 0.984304932735426,
+                "mean_set_size": 2.1457399103139014
+              },
+              "A": {
+                "n": 535,
+                "coverage": 0.708411214953271,
+                "mean_set_size": 2.1457943925233645
+              }
+            },
+            "singleton_accuracy": 0.42857142857142855,
+            "singleton_financial": {
+              "n_bets": 14,
+              "roi": -0.05000000000000001,
+              "sharpe": -0.044746936537817326,
+              "mdd": -0.18404907975460133,
+              "win_rate": 0.42857142857142855
+            }
+          }
+        }
+      }
+    },
+    "market_model_consensus": {
+      "alpha": 0.1,
+      "selection_rate": 0.08105022831050228,
+      "marginal_coverage": 0.06164383561643835,
+      "mean_set_size": 0.08105022831050228,
+      "singleton_rate": 0.08105022831050228,
+      "singleton_n": 142,
+      "per_class": {
+        "H": {
+          "n": 771,
+          "coverage": 0.10765239948119326,
+          "mean_set_size": 0.11284046692607004
+        },
+        "D": {
+          "n": 446,
+          "coverage": 0.0,
+          "mean_set_size": 0.0515695067264574
+        },
+        "A": {
+          "n": 535,
+          "coverage": 0.04672897196261682,
+          "mean_set_size": 0.059813084112149535
+        }
+      },
+      "singleton_accuracy": 0.7605633802816901,
+      "singleton_financial": {
+        "n_bets": 142,
+        "roi": -0.042394366197183085,
+        "sharpe": -0.07802513039015647,
+        "mdd": -0.07941236206079483,
+        "win_rate": 0.7605633802816901
+      }
+    }
+  }
+}

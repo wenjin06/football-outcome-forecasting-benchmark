@@ -1,0 +1,216 @@
+{
+  "status": "complete_existing_llm_subset",
+  "note": "No new API calls; chronological 1,104-match prefix only.",
+  "overall": {
+    "n": 1104,
+    "market_accuracy": 0.5416666666666666,
+    "llm_accuracy": 0.5389492753623188,
+    "market_log_loss": 0.9665392054160163,
+    "llm_log_loss": 0.9672989048340562,
+    "paired": {
+      "a_only_correct": 6,
+      "b_only_correct": 3,
+      "mcnemar_exact_p": 0.5078125
+    }
+  },
+  "rows": [
+    {
+      "alpha": 0.1,
+      "action": "automated",
+      "set_size": 1,
+      "n": 144,
+      "share": 0.13043478260869565,
+      "market_accuracy": 0.8125,
+      "llm_accuracy": 0.8125,
+      "llm_restricted_accuracy": 0.8125,
+      "market_log_loss": 0.6013937948109326,
+      "llm_log_loss": 0.6014128655742714,
+      "market_vs_llm": {
+        "a_only_correct": 0,
+        "b_only_correct": 0,
+        "mcnemar_exact_p": 1.0
+      },
+      "market_vs_llm_restricted": {
+        "a_only_correct": 0,
+        "b_only_correct": 0,
+        "mcnemar_exact_p": 1.0
+      }
+    },
+    {
+      "alpha": 0.1,
+      "action": "review",
+      "set_size": 2,
+      "n": 361,
+      "share": 0.3269927536231884,
+      "market_accuracy": 0.5318559556786704,
+      "llm_accuracy": 0.5318559556786704,
+      "llm_restricted_accuracy": 0.5318559556786704,
+      "market_log_loss": 0.9864666018302163,
+      "llm_log_loss": 0.9870358960092873,
+      "market_vs_llm": {
+        "a_only_correct": 0,
+        "b_only_correct": 0,
+        "mcnemar_exact_p": 1.0
+      },
+      "market_vs_llm_restricted": {
+        "a_only_correct": 0,
+        "b_only_correct": 0,
+        "mcnemar_exact_p": 1.0
+      }
+    },
+    {
+      "alpha": 0.1,
+      "action": "abstain",
+      "set_size": 3,
+      "n": 599,
+      "share": 0.542572463768116,
+      "market_accuracy": 0.48247078464106846,
+      "llm_accuracy": 0.4774624373956594,
+      "llm_restricted_accuracy": 0.4774624373956594,
+      "market_log_loss": 1.0423107396757922,
+      "llm_log_loss": 1.0433632384553424,
+      "market_vs_llm": {
+        "a_only_correct": 6,
+        "b_only_correct": 3,
+        "mcnemar_exact_p": 0.5078125
+      },
+      "market_vs_llm_restricted": {
+        "a_only_correct": 6,
+        "b_only_correct": 3,
+        "mcnemar_exact_p": 0.5078125
+      }
+    },
+    {
+      "alpha": 0.2,
+      "action": "automated",
+      "set_size": 1,
+      "n": 260,
+      "share": 0.23550724637681159,
+      "market_accuracy": 0.7653846153846153,
+      "llm_accuracy": 0.7653846153846153,
+      "llm_restricted_accuracy": 0.7653846153846153,
+      "market_log_loss": 0.6959068803695326,
+      "llm_log_loss": 0.6957493419761669,
+      "market_vs_llm": {
+        "a_only_correct": 0,
+        "b_only_correct": 0,
+        "mcnemar_exact_p": 1.0
+      },
+      "market_vs_llm_restricted": {
+        "a_only_correct": 0,
+        "b_only_correct": 0,
+        "mcnemar_exact_p": 1.0
+      }
+    },
+    {
+      "alpha": 0.2,
+      "action": "review",
+      "set_size": 2,
+      "n": 609,
+      "share": 0.5516304347826086,
+      "market_accuracy": 0.45648604269293924,
+      "llm_accuracy": 0.45320197044334976,
+      "llm_restricted_accuracy": 0.4466338259441708,
+      "market_log_loss": 1.056789206332734,
+      "llm_log_loss": 1.0578683225698267,
+      "market_vs_llm": {
+        "a_only_correct": 5,
+        "b_only_correct": 3,
+        "mcnemar_exact_p": 0.7265625
+      },
+      "market_vs_llm_restricted": {
+        "a_only_correct": 40,
+        "b_only_correct": 34,
+        "mcnemar_exact_p": 0.5613807442989817
+      }
+    },
+    {
+      "alpha": 0.2,
+      "action": "abstain",
+      "set_size": 3,
+      "n": 235,
+      "share": 0.2128623188405797,
+      "market_accuracy": 0.5148936170212766,
+      "llm_accuracy": 0.5106382978723404,
+      "llm_restricted_accuracy": 0.5106382978723404,
+      "market_log_loss": 1.0320802860705036,
+      "llm_log_loss": 1.0330270365020011,
+      "market_vs_llm": {
+        "a_only_correct": 1,
+        "b_only_correct": 0,
+        "mcnemar_exact_p": 1.0
+      },
+      "market_vs_llm_restricted": {
+        "a_only_correct": 1,
+        "b_only_correct": 0,
+        "mcnemar_exact_p": 1.0
+      }
+    },
+    {
+      "alpha": 0.3,
+      "action": "automated",
+      "set_size": 1,
+      "n": 364,
+      "share": 0.32971014492753625,
+      "market_accuracy": 0.7197802197802198,
+      "llm_accuracy": 0.7197802197802198,
+      "llm_restricted_accuracy": 0.6840659340659341,
+      "market_log_loss": 0.7728193418489997,
+      "llm_log_loss": 0.77209500467683,
+      "market_vs_llm": {
+        "a_only_correct": 0,
+        "b_only_correct": 0,
+        "mcnemar_exact_p": 1.0
+      },
+      "market_vs_llm_restricted": {
+        "a_only_correct": 19,
+        "b_only_correct": 6,
+        "mcnemar_exact_p": 0.01463329792022705
+      }
+    },
+    {
+      "alpha": 0.3,
+      "action": "review",
+      "set_size": 2,
+      "n": 724,
+      "share": 0.6557971014492754,
+      "market_accuracy": 0.4558011049723757,
+      "llm_accuracy": 0.4516574585635359,
+      "llm_restricted_accuracy": 0.42955801104972374,
+      "market_log_loss": 1.0611644725747322,
+      "llm_log_loss": 1.062549604626419,
+      "market_vs_llm": {
+        "a_only_correct": 6,
+        "b_only_correct": 3,
+        "mcnemar_exact_p": 0.5078125
+      },
+      "market_vs_llm_restricted": {
+        "a_only_correct": 72,
+        "b_only_correct": 53,
+        "mcnemar_exact_p": 0.10703141160601266
+      }
+    },
+    {
+      "alpha": 0.3,
+      "action": "abstain",
+      "set_size": 3,
+      "n": 16,
+      "share": 0.014492753623188406,
+      "market_accuracy": 0.375,
+      "llm_accuracy": 0.375,
+      "llm_restricted_accuracy": 0.375,
+      "market_log_loss": 1.0918727626337417,
+      "llm_log_loss": 1.0980934678065388,
+      "market_vs_llm": {
+        "a_only_correct": 0,
+        "b_only_correct": 0,
+        "mcnemar_exact_p": 1.0
+      },
+      "market_vs_llm_restricted": {
+        "a_only_correct": 0,
+        "b_only_correct": 0,
+        "mcnemar_exact_p": 1.0
+      }
+    }
+  ]
+}

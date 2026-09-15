@@ -1,0 +1,18 @@
+Highlights — Expert Systems with Applications
+Manuscript: From Point Forecasts to Risk-Controlled Decisions:
+            Market-Anchored Adaptive Conformal Triage for Football Forecasting
+
+(Each item must be <= 85 characters including spaces.)
+
+1. Market-anchored conformal triage turns forecasts into decisions.
+2. Learned models get zero weight against de-vigged closing odds.
+3. Adaptive Mondrian sets hold class coverage near target across seasons.
+4. Prediction-set size routes matches to automation, review, or abstention.
+5. An LLM adds no accuracy in any triage stratum across 1,104 matches.
+
+--- character counts (verified) ---
+1: 64
+2: 62
+3: 70
+4: 72
+5: 67

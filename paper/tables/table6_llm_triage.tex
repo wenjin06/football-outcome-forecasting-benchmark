@@ -1,0 +1,16 @@
+\begin{table}[tbp]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{5pt}
+\caption{Incremental LLM audit on the existing 1,104-match subset at the 90\% conformal operating point. Restricted LLM chooses its highest-probability label within the market prediction set; no new API calls were made.}
+\label{tab:llm-triage}
+\begin{tabular}{lcccccc}
+\toprule
+Triage action & $N$ & Share & Market acc. & LLM acc. & Restricted LLM & $p$ \\
+\midrule
+Automated & 144 & 13.0\% & 81.2\% & 81.2\% & 81.2\% & 1.000 \\
+Review & 361 & 32.7\% & 53.2\% & 53.2\% & 53.2\% & 1.000 \\
+Abstain & 599 & 54.3\% & 48.2\% & 47.7\% & 47.7\% & 0.508 \\
+\bottomrule
+\end{tabular}
+\end{table}
