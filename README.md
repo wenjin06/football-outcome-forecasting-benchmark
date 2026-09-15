@@ -73,10 +73,9 @@ src/
   run_conformal_walkforward.py   # rolling four-season evaluation + adaptive controller
   analyze_conformal_paired.py    # block-bootstrap paired comparisons
   run_llm_conformal_triage.py    # LLM audit inside triage strata
-  run_selective_meta.py          # exploratory error-prediction prototype (not in paper)
 
-  # legacy LLM experiments (reused for the subset audit)
-  run_llm.py, analyze_llm.py, analyze_llm_compare.py, run_llm_transcription.py
+  # LLM experiment that produced the frozen per-match file (paid API; not in refresh)
+  run_llm.py
   llm/llm_client.py, llm/prompts.py
 
   # shared
@@ -84,12 +83,12 @@ src/
 
   # artifact generation
   make_upgrade_outputs.py     # generates paper/tables/*.tex and paper/figures/*.png
-  make_tables.py              # legacy generator for the previous manuscript
-  make_figures.py             # legacy figure generator
 
 results/    # experiment outputs (JSON) = the data source for every table
-paper/      # LaTeX source (main.tex), tables/, figures/, cover letter, highlights
-data/processed/all_matches_featurized.csv   # final feature matrix
+paper/      # LaTeX source (main.tex), tables/, figures/
+docs/REPRODUCE.md           # environment, data download, refresh order, verification
+refresh_all.cmd             # one-shot 23-step refresh
+data/processed/all_matches_featurized.csv   # final feature matrix (optional download)
 ```
 
 ## Setup
@@ -187,12 +186,21 @@ produced it. Re-running after editing a script will legitimately change numbers;
 if you compare against the published values, check out the commit that produced
 the paper first.
 
-## Legacy material
+## Earlier versions
 
-`make_tables.py`, `make_figures.py`, and the `run_ui_*` / `run_stop_loss_*`
-scripts belong to the previous manuscript (an uncertainty-index staking study).
-They are kept for provenance but are not used by the current paper. The
-previous manuscript is recoverable from git history.
+The previous manuscript (an uncertainty-index staking study) and its
+supporting scripts are no longer on `main`. They remain reachable through
+annotated tags, so any earlier state can be checked out:
+
+| Tag | Contents |
+|---|---|
+| `archive/previous-manuscript` | the previous manuscript and its supporting scripts |
+| `archive/pre-cleanup` | state of `main` immediately before the legacy material was removed |
+
+```bash
+git checkout archive/previous-manuscript            # inspect that state
+git checkout archive/previous-manuscript -- paper/  # restore only the old paper
+```
 
 ## LLM configuration
 
