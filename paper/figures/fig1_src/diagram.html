@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background: #ffffff;
+    padding: 60px 66px;
+    width: 2296px;
+  }
+  .canvas { position: relative; }
+  .flow { display: flex; align-items: stretch; gap: 20px; }
+
+  /* ===== stage panels ===== */
+  .stage {
+    flex: 1;
+    background: #fff;
+    border: 2px solid #e2e8f0;
+    border-radius: 26px;
+    box-shadow: 0 14px 40px rgba(15, 23, 42, 0.09);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .stage-head {
+    display: flex; align-items: center; gap: 18px;
+    padding: 20px 26px;
+    color: #fff;
+  }
+  .stage-head .ic {
+    width: 52px; height: 52px; border-radius: 14px;
+    background: rgba(255,255,255,0.22);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .stage-head .ic svg { width: 32px; height: 32px; stroke: #fff; }
+  .stage-head .t { font-size: 38px; font-weight: 700; letter-spacing: 0.3px; }
+  .stage-head .s { font-size: 30px; font-weight: 400; opacity: 0.92; margin-left: auto; }
+  .stage-body { padding: 20px 22px; display: flex; flex-direction: column; gap: 14px; flex: 1; }
+  .head-blue   { background: linear-gradient(135deg, #2563eb, #3b82f6); }
+  .head-violet { background: linear-gradient(135deg, #7c3aed, #8b5cf6); }
+  .head-teal   { background: linear-gradient(135deg, #0d9488, #14b8a6); }
+  .head-amber  { background: linear-gradient(135deg, #d97706, #f59e0b); }
+  .head-slate  { background: linear-gradient(135deg, #475569, #64748b); }
+
+  /* ===== cards ===== */
+  .card {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 18px;
+    padding: 16px 18px;
+    display: flex; align-items: center; gap: 16px;
+    font-size: 34px; color: #1e293b; line-height: 1.2;
+  }
+  .card .ci { width: 44px; height: 44px; flex-shrink: 0; }
+  .card .ci svg { width: 44px; height: 44px; stroke: #475569; fill: none; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+  .card b { font-weight: 700; }
+  .card .sub { font-size: 26px; color: #64748b; }
+  .card.hero { background: #f0f9ff; border-color: #bae6fd; }
+  .card.hero .ci svg { stroke: #0284c7; }
+
+  /* small badges/labels */
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 2px; }
+  .chip {
+    font-size: 26px; font-weight: 600;
+    background: #eef2ff; color: #4338ca;
+    border: 2px solid #c7d2fe;
+    border-radius: 40px; padding: 6px 18px;
+  }
+  .badge {
+    display: inline-block; font-size: 26px; font-weight: 700;
+    color: #fff; border-radius: 12px; padding: 8px 20px;
+  }
+  .badge-red { background: #ef4444; }
+  .badge-green { background: #22c55e; }
+  .badge-amber { background: #f59e0b; }
+  .hint { font-size: 26px; color: #94a3b8; font-style: italic; text-align: center; }
+
+  /* ===== horizontal arrows (fixed narrow column, two-line labels, no squeezing of stage panels) ===== */
+  .arrow {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 8px; width: 100px; flex-shrink: 0;
+  }
+  .arrow svg { display: block; }
+  .arrow .lab {
+    font-size: 22px; color: #475569; font-weight: 600;
+    background: #f1f5f9; border: 2px solid #e2e8f0; border-radius: 12px;
+    padding: 5px 10px; text-align: center; line-height: 1.15;
+    max-width: 96px; white-space: normal;
+  }
+
+  /* ===== bottom protocol bar ===== */
+  .protocol {
+    margin-top: 36px;
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 20px 26px;
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.06);
+  }
+  .protocol .plab {
+    font-size: 32px; font-weight: 700; color: #1e293b;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .protocol .plab svg { width: 42px; height: 42px; stroke: #475569; fill: none; stroke-width: 2.4; }
+  .p-item {
+    font-size: 28px; font-weight: 600;
+    background: #fff; border: 2px solid #e2e8f0; border-radius: 40px;
+    padding: 8px 24px; color: #334155;
+  }
+  .p-item b { color: #0f172a; }
+</style>
+</head>
+<body>
+<div class="canvas">
+
+  <div class="flow">
+
+    <!-- ===== stage 1: data ===== -->
+    <div class="stage">
+      <div class="stage-head head-blue">
+        <span class="ic"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg></span>
+        <span class="t">Data Sources</span>
+        
+      </div>
+      <div class="stage-body">
+        <div class="card"><span class="ci"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span><b>Structured statistics</b><br><span class="sub">results, shots, corners, fouls</span></span></div>
+        <div class="card"><span class="ci"><svg viewBox="0 0 24 24"><polyline points="3 17 8 11 12 14 17 7 21 9"/><line x1="3" y1="21" x2="21" y2="21"/></svg></span><span><b>xG time series</b><br><span class="sub">xG, xGA, npxG, PPDA, deep</span></span></div>
+        <div class="card"><span class="ci"><svg viewBox="0 0 24 24"><line x1="6" y1="20" x2="6" y2="12"/><line x1="12" y1="20" x2="12" y2="5"/><line x1="18" y1="20" x2="18" y2="9"/></svg></span><span><b>Market odds (8 books)</b><br><span class="sub">opening &amp; closing, de-vig</span></span></div>
+        <div class="card"><span class="ci"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="14" height="9" rx="1.5"/><rect x="8" y="8" width="14" height="9" rx="1.5"/><line x1="6" y1="8" x2="6" y2="14"/><line x1="12" y1="10" x2="12" y2="17"/></svg></span><span><b>Referee history</b><br><span class="sub">cards, reds, fouls (EPL)</span></span></div>
+        <div class="hint">11,811 matches · 5 leagues · 2019/20 – 2025/26</div>
+      </div>
+    </div>
+
+    <!-- arrow -->
+    <div class="arrow">
+      <svg width="70" height="40" viewBox="0 0 70 40"><line x1="4" y1="20" x2="52" y2="20" stroke="#94a3b8" stroke-width="5" stroke-linecap="round"/><polygon points="52,10 68,20 52,30" fill="#94a3b8"/></svg>
+      <div class="lab">60<br>features</div>
+    </div>
+
+    <!-- ===== stage 2: feature engineering ===== -->
+    <div class="stage">
+      <div class="stage-head head-violet">
+        <span class="ic"><svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.5 10 19 14 21 14 12.5 22 3"/></svg></span>
+        <span class="t">Features</span>
+      </div>
+      <div class="stage-body">
+        <div class="card hero">
+          <span class="ci"><svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="13" y2="14"/></svg></span>
+          <span><b>Pre-match feature card</b><br><span class="sub">tabular card per match, all inputs pre-kickoff</span></span>
+        </div>
+        <div class="chips">
+          <span class="chip">rolling form</span><span class="chip">league rank</span>
+          <span class="chip">de-vig probs</span><span class="chip">odds movement</span>
+          <span class="chip">xG series</span><span class="chip">referee stats</span>
+        </div>
+        <div style="display:flex; justify-content:center; gap:12px; margin-top:4px;">
+          <span class="badge badge-red">no leakage</span>
+        </div>
+        <div class="hint">information cutoff = kickoff · scalers fit on train only</div>
+      </div>
+    </div>
+
+    <!-- arrow -->
+    <div class="arrow">
+      <svg width="70" height="40" viewBox="0 0 70 40"><line x1="4" y1="20" x2="52" y2="20" stroke="#94a3b8" stroke-width="5" stroke-linecap="round"/><polygon points="52,10 68,20 52,30" fill="#94a3b8"/></svg>
+      <div class="lab">prob-<br>abilities</div>
+    </div>
+
+    <!-- ===== stage 3: models ===== -->
+    <div class="stage">
+      <div class="stage-head head-teal">
+        <span class="ic"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="2" x2="9" y2="5"/><line x1="15" y1="2" x2="15" y2="5"/><line x1="9" y1="19" x2="9" y2="22"/><line x1="15" y1="19" x2="15" y2="22"/></svg></span>
+        <span class="t">Models</span>
+      </div>
+      <div class="stage-body">
+        <div class="card hero"><span class="ci"><svg viewBox="0 0 24 24"><path d="M12 2 L21 7 V12 C21 17 17 21 12 22 C7 21 3 17 3 12 V7 Z"/><path d="M9 12 l2 2 l4 -4"/></svg></span><span><b>Market de-vig (baseline)</b><br><span class="sub">closing odds, margin removed</span></span></div>
+        <div class="card"><span class="ci"><svg viewBox="0 0 24 24"><path d="M4 19 L20 19"/><path d="M6 19 L6 12"/><path d="M10 19 L10 8"/><path d="M14 19 L14 6"/><path d="M18 19 L18 11"/></svg></span><span><b>Statistical</b><br><span class="sub">Poisson · Dixon–Coles · Elo</span></span></div>
+        <div class="card"><span class="ci"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></svg></span><span><b>Machine learning</b><br><span class="sub">Random Forest · XGBoost</span></span></div>
+        <div class="card"><span class="ci"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M6.5 18.5c1.5-2 4-3 5.5-3s4 1 5.5 3"/></svg></span><span><b>LLM (DeepSeek)</b><br><span class="sub">domain-enhanced CoT · no retrieval</span></span></div>
+      </div>
+    </div>
+
+    <!-- arrow -->
+    <div class="arrow">
+      <svg width="70" height="40" viewBox="0 0 70 40"><line x1="4" y1="20" x2="52" y2="20" stroke="#94a3b8" stroke-width="5" stroke-linecap="round"/><polygon points="52,10 68,20 52,30" fill="#94a3b8"/></svg>
+      <div class="lab">position<br>limits</div>
+    </div>
+
+    <!-- ===== stage 4: risk control ===== -->
+    <div class="stage">
+      <div class="stage-head head-amber">
+        <span class="ic"><svg viewBox="0 0 24 24"><path d="M12 2 L20 6 V12 C20 17 16 21 12 22 C8 21 4 17 4 12 V6 Z"/></svg></span>
+        <span class="t">Risk Control</span>
+      </div>
+      <div class="stage-body">
+        <div style="display:flex; gap:18px;">
+          <div class="card" style="flex:1; flex-direction:column; text-align:center; padding:18px 10px; gap:10px;">
+            <span style="font-size:38px; font-weight:700; color:#0f172a;">SCS</span>
+            <span class="sub" style="font-size:24px;">scenario complexity<br>strength gap · odds vol · drift</span>
+          </div>
+          <div class="card" style="flex:1; flex-direction:column; text-align:center; padding:18px 10px; gap:10px;">
+            <span style="font-size:38px; font-weight:700; color:#0f172a;">UI</span>
+            <span class="sub" style="font-size:24px;">uncertainty index<br>confidence · consistency · vol</span>
+          </div>
+        </div>
+        <div style="display:flex; justify-content:center; gap:14px; margin-top:4px;">
+          <span class="badge badge-green">full stake</span>
+          <span class="badge badge-amber">scaled</span>
+          <span class="badge badge-red">no-bet</span>
+        </div>
+        <div class="hint">thresholds tuned on validation · stop-loss rule</div>
+      </div>
+    </div>
+
+    <!-- arrow -->
+    <div class="arrow">
+      <svg width="70" height="40" viewBox="0 0 70 40"><line x1="4" y1="20" x2="52" y2="20" stroke="#94a3b8" stroke-width="5" stroke-linecap="round"/><polygon points="52,10 68,20 52,30" fill="#94a3b8"/></svg>
+    </div>
+
+    <!-- ===== stage 5: decision ===== -->
+    <div class="stage">
+      <div class="stage-head head-slate">
+        <span class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12 l3 3 l5 -6"/></svg></span>
+        <span class="t">Decision</span>
+      </div>
+      <div class="stage-body">
+        <div class="card hero" style="flex-direction:column; text-align:center; padding:30px 16px; gap:14px;">
+          <span style="font-size:40px; font-weight:700; color:#0f172a;">Bet decision</span>
+          <span class="sub" style="font-size:26px;">stake or no-bet · equal-stake or Kelly</span>
+        </div>
+        <div class="chips" style="justify-content:center;">
+          <span class="chip">bootstrap 95% CI</span>
+          <span class="chip">coverage reported</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== evaluation protocol bar ===== -->
+  <div class="protocol">
+    <span class="plab"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>Evaluation protocol</span>
+    <span class="p-item"><b>chronological split</b> · train 2019/20–2023/24</span>
+    <span class="p-item">val 2024/25 · <b>test 2025/26</b> (1,104 matches)</span>
+    <span class="p-item">all metrics with <b>bootstrap CI</b></span>
+    <span class="p-item">equal-stake settlement at <b>closing odds</b></span>
+    <span class="p-item">no-bet <b>excluded</b> from ROI, reported separately</span>
+  </div>
+
+</div>
+</body>
+</html>

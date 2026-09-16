@@ -29,3 +29,6 @@ docs/PAPER_OUTLINE.md
 docs/REVISION_RESPONSE_MAP.md
 
 publish/
+
+# Paper figures must ship even though compiled PDFs are ignored
+!paper/figures/*.pdf

@@ -16,7 +16,6 @@ Outputs (overwrite data/processed; v3 is the canonical version):
 """
 import glob
 import os
-import shutil
 import joblib
 import numpy as np
 import pandas as pd
@@ -91,15 +90,6 @@ def build_xg_features(u):
 
 def main():
     v2_path = os.path.join(OUT, "all_matches_featurized_v2_noxg.csv")
-    fresh_path = os.path.join(OUT, "all_matches_featurized.csv")
-    if not os.path.exists(v2_path):
-        if not os.path.exists(fresh_path):
-            raise FileNotFoundError(
-                "Run data_pipeline.py first: neither the no-xG snapshot nor "
-                "all_matches_featurized.csv exists."
-            )
-        shutil.copyfile(fresh_path, v2_path)
-        print(f"created no-xG snapshot: {v2_path}")
     feat = pd.read_csv(v2_path, parse_dates=["Date"])
     # Drop any residual xG columns (regenerated if the v2 backup was contaminated)
     xg_cols = [c for c in feat.columns if c.startswith(("H_x", "A_x"))

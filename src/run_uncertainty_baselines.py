@@ -138,11 +138,8 @@ def evaluate_at_coverage(risk, cov_frac):
     if cov_frac >= 1.0:
         mask = valid
     else:
-        valid_idx = np.flatnonzero(valid)
-        n_keep = max(1, int(round(cov_frac * len(valid_idx))))
-        keep_idx = valid_idx[np.argsort(risk[valid_idx], kind="stable")[:n_keep]]
-        mask = np.zeros(len(risk), dtype=bool)
-        mask[keep_idx] = True
+        thr = np.nanquantile(risk[valid], 1 - cov_frac)
+        mask = (risk <= thr) & valid
     if mask.sum() < 20:
         return None
     r = rets[mask]

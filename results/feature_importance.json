@@ -1,133 +1,133 @@
 {
   "top20": [
     {
-      "feature": "mkt_prob_A",
-      "importance": 0.012735414505004882,
-      "std": 0.001230949120360982,
-      "group": "market"
-    },
-    {
       "feature": "close_max_h",
-      "importance": 0.008962404727935792,
-      "std": 0.0013720306948950085,
+      "importance": 0.01806750297546387,
+      "std": 0.000559323920128015,
       "group": "market"
     },
     {
-      "feature": "mkt_prob_H",
-      "importance": 0.007426261901855469,
-      "std": 0.0006785838503883954,
-      "group": "market"
-    },
-    {
-      "feature": "open_avg_h",
-      "importance": 0.004156351089477539,
-      "std": 0.0003532164490300952,
-      "group": "market"
-    },
-    {
-      "feature": "mkt_prob_D",
-      "importance": 0.004083395004272461,
-      "std": 0.0016752904167663574,
+      "feature": "mkt_prob_A",
+      "importance": 0.016209757328033446,
+      "std": 0.0015024022950655205,
       "group": "market"
     },
     {
       "feature": "close_avg_h",
-      "importance": 0.0033104419708251953,
-      "std": 0.000360774244307819,
+      "importance": 0.012353658676147461,
+      "std": 0.0011562185676104886,
+      "group": "market"
+    },
+    {
+      "feature": "open_avg_h",
+      "importance": 0.008257043361663819,
+      "std": 0.001376671968369649,
+      "group": "market"
+    },
+    {
+      "feature": "mkt_prob_H",
+      "importance": 0.007330656051635742,
+      "std": 0.0014165536904315885,
+      "group": "market"
+    },
+    {
+      "feature": "mkt_prob_D",
+      "importance": 0.005626857280731201,
+      "std": 0.0019118609975700817,
       "group": "market"
     },
     {
       "feature": "mkt_prob_max",
-      "importance": 0.0029436469078063963,
-      "std": 0.0010802718459591203,
+      "importance": 0.004145777225494385,
+      "std": 0.00040930928299249235,
       "group": "market"
     },
     {
       "feature": "close_vol",
-      "importance": 0.001450502872467041,
-      "std": 0.0005134190798340271,
+      "importance": 0.0022179126739501954,
+      "std": 0.0008257343283353015,
       "group": "market"
     },
     {
-      "feature": "A_season_ppg",
-      "importance": 0.001196742057800293,
-      "std": 0.0006379073475757057,
+      "feature": "H_season_ppg",
+      "importance": 0.0016976118087768555,
+      "std": 0.0007758730858289795,
       "group": "season_cum"
     },
     {
-      "feature": "H_roll_GA",
-      "importance": 0.0009434223175048828,
-      "std": 0.0006078102572623485,
-      "group": "form_rolling"
-    },
-    {
-      "feature": "A_xpts",
-      "importance": 0.0008353948593139649,
-      "std": 0.0006383180863178779,
+      "feature": "A_deep_y",
+      "importance": 0.0012231230735778808,
+      "std": 0.00044953145257497373,
       "group": "xg"
     },
     {
-      "feature": "H_xpts",
-      "importance": 0.0007714152336120606,
-      "std": 0.000249809716114997,
+      "feature": "A_npxGA_y",
+      "importance": 0.0010527491569519043,
+      "std": 0.00016192427958071785,
       "group": "xg"
-    },
-    {
-      "feature": "A_rank",
-      "importance": 0.0007670998573303222,
-      "std": 9.409855627845725e-05,
-      "group": "rank"
     },
     {
       "feature": "H_xGA",
-      "importance": 0.0006549477577209473,
-      "std": 0.0004787304757919339,
+      "importance": 0.0009414911270141602,
+      "std": 0.0003355237239433362,
       "group": "xg"
     },
     {
-      "feature": "H_roll_Corners",
-      "importance": 0.0005717754364013671,
-      "std": 0.0002918753080801884,
-      "group": "form_rolling"
+      "feature": "xg_diff_roll",
+      "importance": 0.0009185552597045898,
+      "std": 0.000387109958644475,
+      "group": "xg"
     },
     {
-      "feature": "H_rank",
-      "importance": 0.0005152702331542968,
-      "std": 0.0003687936685612778,
-      "group": "rank"
-    },
-    {
-      "feature": "A_roll_Win",
-      "importance": 0.00047687292098999026,
-      "std": 0.00011977093591785266,
-      "group": "form_rolling"
-    },
-    {
-      "feature": "ref_games",
-      "importance": 0.0004383087158203125,
-      "std": 0.0005081436668472792,
+      "feature": "ref_cards_avg",
+      "importance": 0.0008850336074829101,
+      "std": 0.0003560422108793757,
       "group": "referee"
     },
     {
-      "feature": "H_season_ga",
-      "importance": 0.0004255056381225586,
-      "std": 0.00022735979792311588,
+      "feature": "H_season_gd",
+      "importance": 0.0008604884147644043,
+      "std": 0.0003730210537834699,
       "group": "season_cum"
     },
     {
-      "feature": "H_season_games",
-      "importance": 0.0004102230072021484,
-      "std": 0.00022900483556705472,
-      "group": "season_cum"
+      "feature": "A_ppda_coef_y",
+      "importance": 0.000814354419708252,
+      "std": 0.00031328665471884,
+      "group": "xg"
+    },
+    {
+      "feature": "H_deep_y",
+      "importance": 0.0007376194000244141,
+      "std": 0.0006156736446589754,
+      "group": "xg"
+    },
+    {
+      "feature": "H_roll_Fouls",
+      "importance": 0.0006934404373168945,
+      "std": 0.0009571679258931928,
+      "group": "form_rolling"
+    },
+    {
+      "feature": "H_roll_Corners",
+      "importance": 0.0006874322891235352,
+      "std": 9.667117380905939e-05,
+      "group": "form_rolling"
+    },
+    {
+      "feature": "H_xpts",
+      "importance": 0.0006524562835693359,
+      "std": 0.0004374447092935948,
+      "group": "xg"
     }
   ],
   "group_importance": {
-    "market": 0.04510562419891358,
-    "season_cum": 0.002858984470367432,
-    "rank": 0.001282370090484619,
-    "xg": 0.0009752154350280763,
-    "form_rolling": 0.0002158045768737792,
-    "referee": -0.00012339353561401366
+    "market": 0.07446657419204712,
+    "xg": 0.006941938400268554,
+    "season_cum": 0.0019210100173950196,
+    "rank": 0.000478053092956543,
+    "referee": 0.00046455860137939453,
+    "form_rolling": 0.0001070022583007813
   },
-  "baseline_logloss": 0.9834636449813843
+  "baseline_logloss": 0.9713131189346313
 }

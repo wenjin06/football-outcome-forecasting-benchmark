@@ -1,0 +1,36 @@
+{
+  "provider": "deepseek",
+  "n_matches_total": 120,
+  "temperature": 0.3,
+  "n_samples": 1,
+  "n_ok": 120,
+  "success_rate": 1.0,
+  "accuracy": 0.49166666666666664,
+  "macro_f1": 0.3599700374531835,
+  "log_loss": 1.0277125530001305,
+  "brier": 0.61608,
+  "ece": 0.07233333333333333,
+  "fin_all": {
+    "n_bets": 120,
+    "roi": -0.07200000000000001,
+    "sharpe": -0.06813168600832614,
+    "mdd": -0.16849906344164833,
+    "win_rate": 0.49166666666666664
+  },
+  "fin_risk": {
+    "roi": 0.0014724035782490597,
+    "sharpe": 0.0050283458518485865,
+    "mdd": -0.03801032867018134,
+    "win_rate": 0.49166666666666664,
+    "n_bets": 120,
+    "n_no_bet": 0,
+    "coverage": 1.0
+  },
+  "consistency_mean": 1.0,
+  "cost_usd": 0.017575880000000002,
+  "tokens": {
+    "prompt": 68512,
+    "completion": 28515
+  },
+  "elapsed_s": 337.2
+}
